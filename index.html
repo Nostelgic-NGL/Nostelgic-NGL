@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nostelgic NGL - Anonymous Messaging</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Glowing Background Orbs -->
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+
+        <!-- LOADING POPUP OVERLAY -->
+        <div id="loading-overlay" class="loading-overlay" style="display: none;">
+            <div class="loading-card">
+                <div class="spinner"></div>
+                <h3>Creating your account...</h3>
+                <p>Please wait a moment</p>
+            </div>
+        </div>
+
+        <!-- SCREEN 1: Get Started -->
+        <div id="screen-1" class="screen">
+            <div class="brand-logo-img">
+                <img src="assets/images/Nostelgic-NGL.png" alt="Nostelgic NGL Logo">
+            </div>
+            <h1>Nostelgic NGL</h1>
+            <p class="subtitle">Send and receive anonymous messages safely & secretly.</p>
+            
+            <div class="hero-card">
+                <div class="feature-item"><i class="fa-solid fa-shield-halved"></i> 100% Anonymous</div>
+                <div class="feature-item"><i class="fa-solid fa-bolt"></i> Instant Delivery</div>
+            </div>
+
+            <button class="btn-primary" id="btn-screen-1">
+                Get Started <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- SCREEN 2: Choose Platform -->
+        <div id="screen-2" class="screen">
+            <button class="back-btn" id="btn-back-2"><i class="fa-solid fa-chevron-left"></i></button>
+            <h2>Where do you want your link?</h2>
+            <p class="subtitle">Select your primary social platform</p>
+
+            <div class="platform-options">
+                <div class="platform-card" id="platform-insta">
+                    <img src="assets/images/Insta_Logo.png" alt="Instagram Logo" class="platform-logo">
+                    <span>Instagram</span>
+                </div>
+                <div class="platform-card" id="platform-snap">
+                    <img src="assets/images/Snap_Logo.png" alt="Snapchat Logo" class="platform-logo">
+                    <span>Snapchat</span>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="next-btn-2" disabled>
+                Continue <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- SCREEN 3: Choose Username -->
+        <div id="screen-3" class="screen">
+            <button class="back-btn" id="btn-back-3"><i class="fa-solid fa-chevron-left"></i></button>
+            <h2>Pick your Username</h2>
+            <p class="subtitle">This will be your unique NGL link handle</p>
+
+            <div class="input-group">
+                <span class="input-prefix">ngl.ee/</span>
+                <input type="text" id="username-input" placeholder="secret_user">
+            </div>
+            <p class="error-msg" id="username-error"></p>
+
+            <button class="btn-primary" id="next-btn-3" disabled>
+                Continue <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- SCREEN 4: Choose Profile Picture -->
+        <div id="screen-4" class="screen">
+            <button class="back-btn" id="btn-back-4"><i class="fa-solid fa-chevron-left"></i></button>
+            <h2>Choose Profile Picture</h2>
+            <p class="subtitle">Upload or select your display photo</p>
+
+            <div class="profile-pic-container">
+                <div class="profile-preview" id="image-preview-box">
+                    <i class="fa-solid fa-user" id="default-pic-icon"></i>
+                    <img id="uploaded-img-tag" src="" alt="Profile Preview" style="display: none;">
+                </div>
+                
+                <label for="file-input" class="upload-btn-label">
+                    <i class="fa-solid fa-camera"></i> Upload Photo
+                </label>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+            </div>
+
+            <div class="screen-4-buttons">
+                <button class="btn-primary" id="btn-create-account">
+                    Create Account <i class="fa-solid fa-check"></i>
+                </button>
+                <button class="btn-skip" id="btn-skip-account">
+                    Skip for now
+                </button>
+            </div>
+        </div>
+
+        <!-- SCREEN 5: Dashboard -->
+        <div id="screen-5" class="screen">
+            
+            <!-- Top Navigation (PLAY & INBOX with Settings Icon)[cite: 11] -->
+            <div class="ngl-top-nav">
+                <div class="nav-tabs">
+                    <span class="tab-item active" id="nav-play-btn">PLAY</span>
+                    <span class="tab-item" id="nav-inbox-btn">INBOX <span class="badge-dot" id="mini-msg-count">0</span></span>
+                </div>
+                <button class="ngl-settings-btn" id="nav-settings-btn"><i class="fa-solid fa-gear"></i></button>
+            </div>
+
+            <!-- Dynamic View Container -->
+            <div id="main-content-view" class="ngl-content-scroll">
+                
+                <!-- PLAY VIEW[cite: 11] -->
+                <div class="play-view-container">
+                    
+                    <!-- Preview Story Card[cite: 11] -->
+                    <div class="preview-story-card">
+                        <div class="story-avatar-wrap" id="dash-avatar-wrap">
+                            <i class="fa-solid fa-user" id="dash-default-icon"></i>
+                            <img id="dash-img-tag" src="" alt="Avatar" style="display: none;">
+                            <span class="edit-badge"><i class="fa-solid fa-pen"></i></span>
+                        </div>
+                        <h3>send me anonymous messages!</h3>
+                    </div>
+
+                    <!-- Step 1: Copy Link[cite: 11] -->
+                    <div class="ngl-step-box">
+                        <span class="step-title">Step 1: Copy your link</span>
+                        <div class="link-display-text" id="display-link-text">NGL.LINK/LOADING</div>
+                        <button class="ngl-btn-outline" id="btn-copy-link">
+                            copy link
+                        </button>
+                    </div>
+
+                    <!-- Step 2: Share on Story[cite: 11] -->
+                    <div class="ngl-step-box">
+                        <span class="step-title">Step 2: Share link on your story</span>
+                        <button class="ngl-btn-gradient" id="btn-share-story">
+                            Share!
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>

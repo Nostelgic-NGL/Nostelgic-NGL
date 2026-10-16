@@ -1,0 +1,564 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none;
+    outline: none !important;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    background-color: #0b0f19;
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+/* ==============================================
+   AUTOMATIC RESPONSIVE APP CONTAINER
+   ============================================== */
+.app-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    min-height: 100vh;
+    background: #0b0f19;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px;
+}
+
+@media (min-width: 768px) {
+    body, html {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .app-container {
+        max-width: 420px !important;
+        height: 90vh !important;
+        border-radius: 24px;
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+}
+
+/* Glowing Background Orbs */
+.glow-orb {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    filter: blur(70px);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.orb-1 {
+    top: -40px;
+    left: -40px;
+    background: rgba(139, 92, 246, 0.25);
+}
+
+.orb-2 {
+    bottom: -40px;
+    right: -40px;
+    background: rgba(244, 63, 94, 0.2);
+}
+
+/* ==============================================
+   SCREENS CONFIGURATION
+   ============================================== */
+.screen {
+    display: none;
+    width: 100%;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    gap: 15px;
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* ==============================================
+   BRAND LOGO STYLING
+   ============================================== */
+.brand-logo-img {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.brand-logo-img img {
+    max-width: 110px;
+    height: auto;
+    object-fit: contain;
+}
+
+.screen h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: #94a3b8;
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* Hero Cards / Features */
+.hero-card {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.feature-item {
+    font-size: 13px;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.feature-item i {
+    color: #a78bfa;
+}
+
+/* ==============================================
+   BUTTONS STYLING & PREMIUM CLICKS
+   ============================================== */
+.btn-primary, .ngl-btn-outline, .ngl-btn-gradient, .platform-card, .tab-item, .setting-link-btn {
+    user-select: none;
+    transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-primary:active, .ngl-btn-outline:active, .ngl-btn-gradient:active, .platform-card:active {
+    transform: scale(0.96) !important;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-skip {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 6px;
+}
+
+.back-btn {
+    position: absolute;
+    top: 5px;
+    left: 0;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* ==============================================
+   PLATFORM CARDS (Screen 2)
+   ============================================== */
+.platform-options {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.platform-card {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 16px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+}
+
+.platform-card.selected {
+    border-color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.platform-logo {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.platform-card span {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+}
+
+/* ==============================================
+   USERNAME INPUT (Screen 3)
+   ============================================== */
+.input-group {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    padding: 4px 12px;
+}
+
+.input-prefix {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.input-group input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 12px 8px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+}
+
+.error-msg {
+    font-size: 12px;
+    color: #f43f5e;
+    min-height: 18px;
+}
+
+/* ==============================================
+   PROFILE PICTURE UPLOAD (Screen 4)
+   ============================================== */
+.profile-pic-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-preview {
+    width: 90px;
+    height: 90px;
+    background: rgba(139, 92, 246, 0.15);
+    border: 2px dashed rgba(139, 92, 246, 0.5);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.profile-preview i {
+    font-size: 36px;
+    color: #a78bfa;
+}
+
+.profile-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.upload-btn-label {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.screen-4-buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* ==============================================
+   DASHBOARD / PLAY & INBOX (Screen 5)
+   ============================================== */
+.ngl-top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 5px 0 15px 0;
+}
+
+.nav-tabs {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+}
+
+.tab-item {
+    font-size: 15px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    position: relative;
+}
+
+.tab-item.active {
+    color: #ffffff;
+}
+
+.badge-dot {
+    position: absolute;
+    top: -6px;
+    right: -16px;
+    background: #f43f5e;
+    color: white;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 10px;
+}
+
+.ngl-settings-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.ngl-content-scroll {
+    width: 100%;
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 10px;
+}
+
+.play-view-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.preview-story-card {
+    width: 100%;
+    background: linear-gradient(135deg, #f43f5e, #ec4899, #8b5cf6);
+    border-radius: 22px;
+    padding: 25px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+}
+
+.story-avatar-wrap {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.story-avatar-wrap i {
+    font-size: 24px;
+    color: white;
+}
+
+.edit-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #0b0f19;
+    color: white;
+    font-size: 9px;
+    padding: 3px;
+    border-radius: 50%;
+}
+
+.preview-story-card h3 {
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.ngl-step-box {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 14px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.step-title {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.link-display-text {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    color: #a78bfa;
+    text-align: center;
+    word-break: break-all;
+}
+
+.ngl-btn-outline {
+    width: 100%;
+    padding: 11px;
+    background: transparent;
+    border: 2px solid #8b5cf6;
+    color: #a78bfa;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.ngl-btn-gradient {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #f43f5e, #ff7a00);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* Settings & Overlays Items */
+.setting-item, .setting-link-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 10px 14px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #cbd5e1;
+    font-size: 13px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+
+.setting-link-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(11, 15, 25, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+}
+
+.spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(139, 92, 246, 0.2);
+    border-top-color: #8b5cf6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Anonymous Message - Nostelgic NGL</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="app-container send-page-container">
+        <!-- Glowing Background Orbs -->
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+
+        <!-- SUCCESS POPUP OVERLAY -->
+        <div id="success-overlay" class="loading-overlay" style="display: none;">
+            <div class="loading-card">
+                <div class="spinner"></div>
+                <h3>Sending message...</h3>
+                <p>Please wait a moment</p>
+            </div>
+        </div>
+
+        <!-- SCREEN 1: SEND MESSAGE VIEW -->
+        <div class="screen active send-screen-content" id="view-send-screen">
+            
+            <!-- Target User Profile Header -->
+            <div class="send-profile-header">
+                <div class="send-avatar-wrap" id="target-avatar-box">
+                    <i class="fa-solid fa-user" id="target-default-icon"></i>
+                    <img id="target-img-tag" src="" alt="Avatar" style="display: none;">
+                </div>
+                <h3 id="target-username">@loading...</h3>
+                <span class="send-badge"><i class="fa-solid fa-user-secret"></i> Anonymous Q&A</span>
+            </div>
+
+            <!-- Message Input Card -->
+            <div class="send-msg-card">
+                <textarea id="anonymous-msg-input" placeholder="Send me anonymous messages..."></textarea>
+                <button class="btn-primary" id="btn-send-msg">
+                    Send! <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <div class="footer-branding">
+                <p>Build your own <a href="index.html">Nostelgic NGL</a></p>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: SUCCESS / NEXT ACTION VIEW -->
+        <div class="screen send-screen-content" id="view-success-screen" style="text-align: center; gap: 15px;">
+            <div class="success-icon-large">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <h2 style="font-size: 22px; font-weight: 700; color: #fff;">All Done!</h2>
+                <p style="font-size: 12px; color: #94a3b8;">Your anonymous message was sent successfully.</p>
+            </div>
+
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn-primary" id="btn-send-another">
+                    Send another message <i class="fa-solid fa-arrow-rotate-right"></i>
+                </button>
+                <button class="ngl-btn-outline" id="btn-get-own" style="border-color: #8b5cf6; color: #a78bfa;">
+                    Get your own messages! <i class="fa-solid fa-sparkles"></i>
+                </button>
+                <a href="https://instagram.com/Jitu_Gurjar_99" target="_blank" class="ngl-btn-outline" style="text-decoration: none; border-color: #fd1d1d; color: #ff7a00; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                    <i class="fa-brands fa-instagram"></i> Follow the Developer
+                </a>
+            </div>
+
+            <div class="footer-branding">
+                <p>Powered by <a href="index.html">Nostelgic NGL</a></p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Styling -->
+    <style>
+        .send-page-container {
+            max-width: 390px !important;
+            height: 100vh !important;
+            max-height: 750px !important;
+            border-radius: 28px !important;
+            margin: auto;
+        }
+
+        .send-screen-content {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 18px !important;
+            gap: 12px !important;
+        }
+
+        .success-icon-large {
+            width: 70px;
+            height: 70px;
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #10b981;
+            font-size: 38px;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
+        }
+
+        .send-profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .send-avatar-wrap {
+            width: 65px;
+            height: 65px;
+            background: rgba(139, 92, 246, 0.2);
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .send-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .send-avatar-wrap i {
+            font-size: 26px;
+            color: #a78bfa;
+        }
+
+        .send-profile-header h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .send-badge {
+            font-size: 11px;
+            color: #a78bfa;
+            background: rgba(139, 92, 246, 0.12);
+            padding: 2px 10px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .send-msg-card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .send-msg-card textarea {
+            width: 100%;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 12px;
+            color: white;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .send-msg-card textarea:focus {
+            border-color: #8b5cf6;
+        }
+
+        .ngl-btn-outline {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 2px solid #8b5cf6;
+            color: #a78bfa;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .ngl-btn-outline:active {
+            transform: scale(0.98);
+        }
+
+        .footer-branding {
+            text-align: center;
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        .footer-branding a {
+            color: #a78bfa;
+            text-decoration: none;
+        }
+    </style>
+
+    <script type="module" src="send.js"></script>
+</body>
+</html>
