@@ -1,7 +1,7 @@
 * {
     margin: 0;
     padding: 0;
-    box-init: border-box;
+    box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
     -webkit-tap-highlight-color: transparent !important;
     -webkit-touch-callout: none;
@@ -14,13 +14,14 @@ body, html {
     background-color: #0b0f19;
     color: #ffffff;
     overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .app-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100% !important;
-    min-height: 100vh;
+    width: 100%;
+    height: 100vh;
     background: #0b0f19;
     display: flex;
     flex-direction: column;
@@ -28,21 +29,6 @@ body, html {
     overflow-y: auto;
     overflow-x: hidden;
     padding: 16px;
-}
-
-@media (min-width: 768px) {
-    body, html {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .app-container {
-        max-width: 420px !important;
-        height: 90vh !important;
-        border-radius: 24px;
-        box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-    }
 }
 
 .glow-orb {
