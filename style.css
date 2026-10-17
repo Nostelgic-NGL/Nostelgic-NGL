@@ -1,7 +1,7 @@
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    box-init: border-box;
     font-family: 'Poppins', sans-serif;
     -webkit-tap-highlight-color: transparent !important;
     -webkit-touch-callout: none;
@@ -16,9 +16,6 @@ body, html {
     overflow-x: hidden;
 }
 
-/* ==============================================
-   AUTOMATIC RESPONSIVE APP CONTAINER
-   ============================================== */
 .app-container {
     width: 100% !important;
     max-width: 100% !important;
@@ -48,7 +45,6 @@ body, html {
     }
 }
 
-/* Glowing Background Orbs */
 .glow-orb {
     position: absolute;
     width: 180px;
@@ -71,9 +67,6 @@ body, html {
     background: rgba(244, 63, 94, 0.2);
 }
 
-/* ==============================================
-   SCREENS CONFIGURATION
-   ============================================== */
 .screen {
     display: none;
     width: 100%;
@@ -91,9 +84,6 @@ body, html {
     display: flex;
 }
 
-/* ==============================================
-   BRAND LOGO STYLING
-   ============================================== */
 .brand-logo-img {
     width: 100%;
     display: flex;
@@ -121,7 +111,6 @@ body, html {
     line-height: 1.4;
 }
 
-/* Hero Cards / Features */
 .hero-card {
     width: 100%;
     background: rgba(255, 255, 255, 0.03);
@@ -146,9 +135,6 @@ body, html {
     color: #a78bfa;
 }
 
-/* ==============================================
-   BUTTONS STYLING & PREMIUM CLICKS
-   ============================================== */
 .btn-primary, .ngl-btn-outline, .ngl-btn-gradient, .platform-card, .tab-item, .setting-link-btn {
     user-select: none;
     transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
@@ -206,9 +192,6 @@ body, html {
     cursor: pointer;
 }
 
-/* ==============================================
-   PLATFORM CARDS (Screen 2)
-   ============================================== */
 .platform-options {
     width: 100%;
     display: flex;
@@ -245,9 +228,6 @@ body, html {
     color: #fff;
 }
 
-/* ==============================================
-   USERNAME INPUT (Screen 3)
-   ============================================== */
 .input-group {
     width: 100%;
     background: rgba(0, 0, 0, 0.2);
@@ -280,9 +260,6 @@ body, html {
     min-height: 18px;
 }
 
-/* ==============================================
-   PROFILE PICTURE UPLOAD (Screen 4)
-   ============================================== */
 .profile-pic-container {
     width: 100%;
     display: flex;
@@ -335,9 +312,6 @@ body, html {
     gap: 8px;
 }
 
-/* ==============================================
-   DASHBOARD / PLAY & INBOX (Screen 5)
-   ============================================== */
 .ngl-top-nav {
     display: flex;
     justify-content: space-between;
@@ -502,28 +476,6 @@ body, html {
     cursor: pointer;
 }
 
-/* Settings & Overlays Items */
-.setting-item, .setting-link-btn {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    padding: 10px 14px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #cbd5e1;
-    font-size: 13px;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
-}
-
-.setting-link-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #fff;
-}
-
-/* Loading Overlay */
 .loading-overlay {
     position: absolute;
     top: 0;

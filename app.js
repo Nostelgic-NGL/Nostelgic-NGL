@@ -19,9 +19,6 @@ let selectedPlatformName = "";
 let usernameValue = "";
 let profilePicDataUrl = ""; 
 
-// ==========================================
-// CUSTOM CENTER POPUP MODALS (Alert & Confirm)
-// ==========================================
 function showCustomAlert(message, title = "Nostelgic NGL") {
     return new Promise((resolve) => {
         const modalId = 'custom-alert-modal';
@@ -86,7 +83,6 @@ function showCustomConfirm(message, title = "Confirm Action") {
         };
     });
 }
-// ==========================================
 
 function goToScreen(screenNumber) {
     document.querySelectorAll('.screen').forEach(screen => {
@@ -299,7 +295,7 @@ function showPlayView() {
             <div class="preview-story-card">
                 <div class="story-avatar-wrap">
                     <i class="fa-solid fa-user" id="dash-default-icon" style="${profilePicDataUrl ? 'display:none;' : ''}"></i>
-                    <img id="dash-img-tag" src="${profilePicDataUrl \vert{}\vert{} ''}" alt="Avatar" style="${profilePicDataUrl ? 'display:block;' : 'display:none;'} width:100%; height:100%; object-fit:cover;">
+                    <img id="dash-img-tag" src="${profilePicDataUrl || ''}" alt="Avatar" style="${profilePicDataUrl ? 'display:block;' : 'display:none;'} width:100%; height:100%; object-fit:cover;">
                     <span class="edit-badge"><i class="fa-solid fa-pen"></i></span>
                 </div>
                 <h3>send me anonymous messages!</h3>
@@ -482,6 +478,38 @@ function showSettingsView() {
                 <i class="fa-solid fa-chevron-right" style="font-size: 11px;"></i>
             </button>
 
----
+            <button class="setting-link-btn" onclick="showCustomAlert('Terms of Use: Use Nostelgic NGL responsibly and respect others privacy.', 'Terms of Use')">
+                <span><i class="fa-solid fa-file-contract"></i> Terms of Use</span>
+                <i class="fa-solid fa-chevron-right" style="font-size: 11px;"></i>
+            </button>
 
-<FollowUp>Bhai, ab is `app.js` ko apne project me daal le, sab kuch ekdum complete aur solid hai!</FollowUp>
+            <button class="setting-link-btn" onclick="showCustomAlert('Privacy Policy: Your messages are 100% anonymous and secure.', 'Privacy Policy')">
+                <span><i class="fa-solid fa-shield-halved"></i> Privacy Policy</span>
+                <i class="fa-solid fa-chevron-right" style="font-size: 11px;"></i>
+            </button>
+
+            <a href="https://instagram.com/Jitu_Gurjar_99" target="_blank" class="btn-primary" style="text-decoration: none; background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 5px; font-size: 14px; padding: 11px;">
+                <i class="fa-brands fa-instagram"></i> Follow the Developer
+            </a>
+
+            <button class="btn-primary" id="delete-account-btn" style="background: rgba(244, 63, 94, 0.2); border: 1px solid #f43f5e; color: #f43f5e; font-size: 14px; padding: 11px;">
+                <i class="fa-solid fa-trash"></i> Delete Account
+            </button>
+        </div>
+    `;
+
+    document.getElementById('delete-account-btn').addEventListener('click', async () => {
+        const confirmed = await showCustomConfirm("Are you sure you want to delete your account? This will permanently remove your profile and messages.", "Delete Account");
+        if (confirmed) {
+            try {
+                await remove(ref(db, `users/${usernameValue}`));
+            } catch (error) {
+                console.error("Error deleting account:", error);
+            }
+
+            localStorage.removeItem('ngl_logged_user');
+            localStorage.removeItem('ngl_profile_pic');
+            window.location.reload();
+        }
+    });
+}

@@ -7,17 +7,14 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- html2canvas library for story card generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
     <div class="app-container">
-        <!-- Glowing Background Orbs -->
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
 
-        <!-- LOADING POPUP OVERLAY -->
         <div id="loading-overlay" class="loading-overlay" style="display: none;">
             <div class="loading-card">
                 <div class="spinner"></div>
@@ -26,8 +23,7 @@
             </div>
         </div>
 
-        <!-- SCREEN 1: Get Started -->
-        <div id="screen-1" class="screen">
+        <div id="screen-1" class="screen active">
             <div class="brand-logo-img">
                 <img src="Nostelgic-NGL.png" alt="Nostelgic NGL Logo">
             </div>
@@ -44,7 +40,6 @@
             </button>
         </div>
 
-        <!-- SCREEN 2: Choose Platform -->
         <div id="screen-2" class="screen">
             <button class="back-btn" id="btn-back-2"><i class="fa-solid fa-chevron-left"></i></button>
             <h2>Where do you want your link?</h2>
@@ -66,7 +61,6 @@
             </button>
         </div>
 
-        <!-- SCREEN 3: Choose Username -->
         <div id="screen-3" class="screen">
             <button class="back-btn" id="btn-back-3"><i class="fa-solid fa-chevron-left"></i></button>
             <h2>Pick your Username</h2>
@@ -83,7 +77,6 @@
             </button>
         </div>
 
-        <!-- SCREEN 4: Choose Profile Picture -->
         <div id="screen-4" class="screen">
             <button class="back-btn" id="btn-back-4"><i class="fa-solid fa-chevron-left"></i></button>
             <h2>Choose Profile Picture</h2>
@@ -111,10 +104,7 @@
             </div>
         </div>
 
-        <!-- SCREEN 5: Dashboard -->
         <div id="screen-5" class="screen">
-            
-            <!-- Top Navigation -->
             <div class="ngl-top-nav">
                 <div class="nav-tabs">
                     <span class="tab-item active" id="nav-play-btn">PLAY</span>
@@ -123,10 +113,7 @@
                 <button class="ngl-settings-btn" id="nav-settings-btn"><i class="fa-solid fa-gear"></i></button>
             </div>
 
-            <!-- Dynamic View Container -->
             <div id="main-content-view" class="ngl-content-scroll">
-                
-                <!-- PLAY VIEW -->
                 <div class="play-view-container">
                     <div class="preview-story-card">
                         <div class="story-avatar-wrap" id="dash-avatar-wrap">
@@ -148,9 +135,7 @@
                         <button class="ngl-btn-gradient" id="btn-share-story">Share!</button>
                     </div>
                 </div>
-
             </div>
-
         </div>
 
     </div>

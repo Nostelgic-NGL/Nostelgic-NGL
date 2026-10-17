@@ -18,30 +18,27 @@ const db = getDatabase(app);
 const urlParams = new URLSearchParams(window.location.search);
 let profileUser = urlParams.get('user') ? urlParams.get('user').toLowerCase().trim() : null;
 
-// Fallback agar URL me user na ho toh localStorage wala utha lo testing ke liye
 if (!profileUser) {
     profileUser = localStorage.getItem('ngl_logged_user');
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
     if (!profileUser) {
-        alert("Target user nahi mila! Pehle account banao ya valid link kholo.");
+        alert("Target user nahi mila!");
         window.location.href = "index.html";
         return;
     }
 
-    // Turant username set kar do
-    document.getElementById('target-username').innerText = `@${profileUser}`;
+    document.getElementById('target-username-title').innerText = `@${profileUser}`;
 
-    // Firebase se profile pic fetch karo
     try {
         const dbRef = ref(db);
         const snapshot = await get(child(dbRef, `users/${profileUser}`));
         if (snapshot.exists()) {
             const userData = snapshot.val();
             if (userData.profilePic) {
-                const imgTag = document.getElementById('target-img-tag');
-                const defaultIcon = document.getElementById('target-default-icon');
+                const imgTag = document.getElementById('send-img-tag');
+                const defaultIcon = document.getElementById('send-default-icon');
                 imgTag.src = userData.profilePic;
                 imgTag.style.display = 'block';
                 defaultIcon.style.display = 'none';
@@ -59,7 +56,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function sendAnonymousMessage() {
-    const msgText = document.getElementById('anonymous-msg-input').value.trim();
+    const msgText = document.getElementById('msg-input-box').value.trim();
     if (!msgText) {
         alert("Pehle message toh type kar bhai!");
         return;
@@ -74,10 +71,8 @@ async function sendAnonymousMessage() {
             text: msgText,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
-        console.log("Message successfully sent to Firebase!");
     } catch (error) {
         console.error("Firebase save error:", error);
-        alert("Message bhejte waqt error aaya: " + error.message);
         successOverlay.style.display = 'none';
         return;
     }
@@ -90,7 +85,7 @@ async function sendAnonymousMessage() {
 }
 
 function resetToSendScreen() {
-    document.getElementById('anonymous-msg-input').value = "";
+    document.getElementById('msg-input-box').value = "";
     document.getElementById('view-success-screen').classList.remove('active');
     document.getElementById('view-send-screen').classList.add('active');
 }
