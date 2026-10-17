@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2canvas library for story card generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -27,7 +29,7 @@
         <!-- SCREEN 1: Get Started -->
         <div id="screen-1" class="screen">
             <div class="brand-logo-img">
-                <img src="assets/images/Nostelgic-NGL.png" alt="Nostelgic NGL Logo">
+                <img src="Nostelgic-NGL.png" alt="Nostelgic NGL Logo">
             </div>
             <h1>Nostelgic NGL</h1>
             <p class="subtitle">Send and receive anonymous messages safely & secretly.</p>
@@ -50,11 +52,11 @@
 
             <div class="platform-options">
                 <div class="platform-card" id="platform-insta">
-                    <img src="assets/images/Insta_Logo.png" alt="Instagram Logo" class="platform-logo">
+                    <img src="Insta_Logo.png" alt="Instagram Logo" class="platform-logo">
                     <span>Instagram</span>
                 </div>
                 <div class="platform-card" id="platform-snap">
-                    <img src="assets/images/Snap_Logo.png" alt="Snapchat Logo" class="platform-logo">
+                    <img src="Snap_Logo.png" alt="Snapchat Logo" class="platform-logo">
                     <span>Snapchat</span>
                 </div>
             </div>
@@ -112,7 +114,7 @@
         <!-- SCREEN 5: Dashboard -->
         <div id="screen-5" class="screen">
             
-            <!-- Top Navigation (PLAY & INBOX with Settings Icon)[cite: 11] -->
+            <!-- Top Navigation -->
             <div class="ngl-top-nav">
                 <div class="nav-tabs">
                     <span class="tab-item active" id="nav-play-btn">PLAY</span>
@@ -124,10 +126,8 @@
             <!-- Dynamic View Container -->
             <div id="main-content-view" class="ngl-content-scroll">
                 
-                <!-- PLAY VIEW[cite: 11] -->
+                <!-- PLAY VIEW -->
                 <div class="play-view-container">
-                    
-                    <!-- Preview Story Card[cite: 11] -->
                     <div class="preview-story-card">
                         <div class="story-avatar-wrap" id="dash-avatar-wrap">
                             <i class="fa-solid fa-user" id="dash-default-icon"></i>
@@ -137,23 +137,16 @@
                         <h3>send me anonymous messages!</h3>
                     </div>
 
-                    <!-- Step 1: Copy Link[cite: 11] -->
                     <div class="ngl-step-box">
                         <span class="step-title">Step 1: Copy your link</span>
                         <div class="link-display-text" id="display-link-text">NGL.LINK/LOADING</div>
-                        <button class="ngl-btn-outline" id="btn-copy-link">
-                            copy link
-                        </button>
+                        <button class="ngl-btn-outline" id="btn-copy-link">copy link</button>
                     </div>
 
-                    <!-- Step 2: Share on Story[cite: 11] -->
                     <div class="ngl-step-box">
                         <span class="step-title">Step 2: Share link on your story</span>
-                        <button class="ngl-btn-gradient" id="btn-share-story">
-                            Share!
-                        </button>
+                        <button class="ngl-btn-gradient" id="btn-share-story">Share!</button>
                     </div>
-
                 </div>
 
             </div>
