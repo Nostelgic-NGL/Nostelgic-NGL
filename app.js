@@ -19,6 +19,40 @@ let selectedPlatformName = "";
 let usernameValue = "";
 let profilePicDataUrl = ""; 
 
+// ==========================================
+// AUTOMATIC DISPLAY SIZE DETECTOR & RESIZER
+// ==========================================
+function detectAndApplyDisplaySize() {
+    const container = document.getElementById('dynamic-app-container');
+    if (!container) return;
+
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    if (screenWidth > 768) {
+        // PC / Laptop View: Center phone frame container
+        container.style.maxWidth = "420px";
+        container.style.height = "90vh";
+        container.style.maxHeight = "780px";
+        container.style.borderRadius = "28px";
+        container.style.margin = "auto";
+        container.style.boxShadow = "0 25px 50px rgba(0,0,0,0.8)";
+        container.style.border = "1px solid rgba(255, 255, 255, 0.08)";
+    } else {
+        // Mobile / Small Screen View: 100% full screen
+        container.style.maxWidth = "100%";
+        container.style.height = "100vh";
+        container.style.maxHeight = "100vh";
+        container.style.borderRadius = "0px";
+        container.style.margin = "0";
+        container.style.boxShadow = "none";
+        container.style.border = "none";
+    }
+}
+
+window.addEventListener('resize', detectAndApplyDisplaySize);
+// ==========================================
+
 function showCustomAlert(message, title = "Nostelgic NGL") {
     return new Promise((resolve) => {
         const modalId = 'custom-alert-modal';
@@ -92,6 +126,8 @@ function goToScreen(screenNumber) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+    detectAndApplyDisplaySize(); // Display size detect karke apply karo
+
     const savedUser = localStorage.getItem('ngl_logged_user');
     const savedPic = localStorage.getItem('ngl_profile_pic');
     
