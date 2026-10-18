@@ -23,12 +23,13 @@ html, body {
     height: 100vh !important;
     max-width: 100% !important;
     max-height: 100vh !important;
-    background: #0b0f19;
+    background: #ffffff !important;
+    color: #111827 !important;
     display: flex;
     flex-direction: column;
     position: relative;
     overflow: hidden !important;
-    padding: 16px;
+    padding: 20px;
 }
 
 @media (min-width: 768px) {
@@ -36,37 +37,20 @@ html, body {
         display: flex;
         justify-content: center;
         align-items: center;
+        background-color: #05070c;
     }
     .app-container {
         max-width: 410px !important;
-        height: 88vh !important;
-        max-height: 750px !important;
-        border-radius: 28px;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9);
+        height: 90vh !important;
+        max-height: 780px !important;
+        border-radius: 36px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
         border: 1px solid rgba(255, 255, 255, 0.08);
     }
 }
 
 .glow-orb {
-    position: absolute;
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    filter: blur(70px);
-    z-index: 0;
-    pointer-events: none;
-}
-
-.orb-1 {
-    top: -40px;
-    left: -40px;
-    background: rgba(139, 92, 246, 0.25);
-}
-
-.orb-2 {
-    bottom: -40px;
-    right: -40px;
-    background: rgba(244, 63, 94, 0.2);
+    display: none;
 }
 
 .screen {
@@ -75,12 +59,13 @@ html, body {
     height: 100%;
     flex: 1;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     position: relative;
     z-index: 1;
     text-align: center;
-    gap: 12px;
+    gap: 18px;
+    padding-top: 10px;
 }
 
 .screen.active {
@@ -92,44 +77,44 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 2px;
+    margin-bottom: 5px;
 }
 
 .brand-logo-img img {
     max-width: 110px;
     height: auto;
     object-fit: contain;
-    mix-blend-mode: screen; /* Logo ko background me perfectly ghul mil jane ke liye */
-    filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.4)); /* Soft glowing effect */
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.4));
 }
 
 .screen h1 {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
-    color: #ffffff;
+    color: #111827;
 }
 
 .subtitle {
-    font-size: 12px;
-    color: #94a3b8;
+    font-size: 13px;
+    color: #64748b;
     text-align: center;
-    line-height: 1.3;
+    line-height: 1.4;
 }
 
 .hero-card {
     width: 100%;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    padding: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 .feature-item {
-    font-size: 12px;
-    color: #cbd5e1;
+    font-size: 13px;
+    color: #334155;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -137,7 +122,7 @@ html, body {
 }
 
 .feature-item i {
-    color: #a78bfa;
+    color: #8b5cf6;
 }
 
 .btn-primary, .ngl-btn-outline, .ngl-btn-gradient, .platform-card, .tab-item, .setting-link-btn {
@@ -151,15 +136,15 @@ html, body {
 
 .btn-primary {
     width: 100%;
-    padding: 13px;
+    padding: 15px;
     background: linear-gradient(135deg, #8b5cf6, #ec4899);
     border: none;
-    border-radius: 14px;
+    border-radius: 16px;
     color: white;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -175,21 +160,21 @@ html, body {
     background: transparent;
     border: none;
     color: #64748b;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    padding: 4px;
+    padding: 6px;
 }
 
 .back-btn {
     position: absolute;
-    top: 2px;
+    top: 5px;
     left: 0;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #fff;
-    width: 32px;
-    height: 32px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #111827;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -201,50 +186,50 @@ html, body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .platform-card {
     width: 100%;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 14px;
-    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 16px;
+    border-radius: 20px;
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 15px;
     cursor: pointer;
 }
 
 .platform-card.selected {
     border-color: #8b5cf6;
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(139, 92, 246, 0.05);
 }
 
 .platform-logo {
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     object-fit: contain;
 }
 
 .platform-card span {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
-    color: #fff;
+    color: #111827;
 }
 
 .input-group {
     width: 100%;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 14px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     padding: 4px 12px;
 }
 
 .input-prefix {
-    font-size: 12px;
+    font-size: 13px;
     color: #64748b;
     font-weight: 600;
 }
@@ -253,16 +238,16 @@ html, body {
     width: 100%;
     background: transparent;
     border: none;
-    padding: 10px 8px;
-    color: #fff;
+    padding: 12px 8px;
+    color: #111827;
     font-size: 14px;
     outline: none;
 }
 
 .error-msg {
-    font-size: 11px;
+    font-size: 12px;
     color: #f43f5e;
-    min-height: 16px;
+    min-height: 18px;
 }
 
 .profile-pic-container {
@@ -270,14 +255,14 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
 }
 
 .profile-preview {
-    width: 75px;
-    height: 75px;
-    background: rgba(139, 92, 246, 0.15);
-    border: 2px dashed rgba(139, 92, 246, 0.5);
+    width: 90px;
+    height: 90px;
+    background: rgba(139, 92, 246, 0.1);
+    border: 2px dashed #8b5cf6;
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -286,8 +271,8 @@ html, body {
 }
 
 .profile-preview i {
-    font-size: 30px;
-    color: #a78bfa;
+    font-size: 36px;
+    color: #8b5cf6;
 }
 
 .profile-preview img {
@@ -297,13 +282,13 @@ html, body {
 }
 
 .upload-btn-label {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 8px 16px;
-    border-radius: 12px;
-    font-size: 12px;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    padding: 10px 20px;
+    border-radius: 14px;
+    font-size: 13px;
     font-weight: 600;
-    color: #fff;
+    color: #111827;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -314,7 +299,7 @@ html, body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 
 .ngl-top-nav {
@@ -322,25 +307,27 @@ html, body {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 2px 0 10px 0;
+    padding: 10px 5px 20px 5px;
 }
 
 .nav-tabs {
     display: flex;
-    gap: 16px;
+    gap: 20px;
     align-items: center;
+    margin: 0 auto;
 }
 
 .tab-item {
-    font-size: 14px;
-    font-weight: 700;
-    color: #64748b;
+    font-size: 15px;
+    font-weight: 800;
+    color: #9ca3af;
     cursor: pointer;
+    letter-spacing: 0.5px;
     position: relative;
 }
 
 .tab-item.active {
-    color: #ffffff;
+    color: #000000;
 }
 
 .badge-dot {
@@ -355,15 +342,10 @@ html, body {
 }
 
 .ngl-settings-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    font-size: 18px;
     cursor: pointer;
 }
 
@@ -371,114 +353,147 @@ html, body {
     width: 100%;
     flex: 1;
     overflow-y: auto;
-    padding-bottom: 5px;
+    padding-bottom: 10px;
 }
 
 .play-view-container {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 }
 
 .preview-story-card {
     width: 100%;
-    background: linear-gradient(135deg, #f43f5e, #ec4899, #8b5cf6);
-    border-radius: 20px;
-    padding: 20px 15px;
+    height: 230px;
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4, #ffd1ff);
+    border-radius: 28px;
+    padding: 25px 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-align: center;
-    gap: 10px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    gap: 12px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    position: relative;
+    overflow: hidden;
 }
 
 .story-avatar-wrap {
-    width: 52px;
-    height: 52px;
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid white;
+    width: 65px;
+    height: 65px;
+    background: rgba(255, 255, 255, 0.4);
+    border: 3px solid white;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
 .story-avatar-wrap i {
-    font-size: 20px;
-    color: white;
+    font-size: 26px;
+    color: #4b5563;
 }
 
 .edit-badge {
     position: absolute;
     bottom: 0;
     right: 0;
-    background: #0b0f19;
-    color: white;
-    font-size: 8px;
-    padding: 2px;
+    background: #ffffff;
+    color: #111827;
+    font-size: 10px;
+    padding: 4px;
     border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .preview-story-card h3 {
-    color: white;
-    font-size: 16px;
-    font-weight: 700;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 800;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.story-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+    margin-top: -4px;
+}
+
+.story-dots span {
+    width: 6px;
+    height: 6px;
+    background: #d1d5db;
+    border-radius: 50%;
+}
+
+.story-dots span.active {
+    width: 18px;
+    background: #3b82f6;
+    border-radius: 4px;
 }
 
 .ngl-step-box {
     width: 100%;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 12px;
-    border-radius: 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 18px;
+    border-radius: 24px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
 }
 
 .step-title {
-    font-size: 11px;
-    color: #94a3b8;
-    font-weight: 600;
+    font-size: 13px;
+    color: #374151;
+    font-weight: 700;
+    text-align: center;
 }
 
 .link-display-text {
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 8px;
-    border-radius: 8px;
-    font-size: 11px;
-    color: #a78bfa;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    padding: 12px;
+    border-radius: 14px;
+    font-size: 12px;
+    color: #64748b;
     text-align: center;
     word-break: break-all;
+    font-weight: 600;
 }
 
 .ngl-btn-outline {
     width: 100%;
-    padding: 10px;
+    padding: 13px;
     background: transparent;
-    border: 2px solid #8b5cf6;
-    color: #a78bfa;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 12px;
+    border: 2px solid #ef4444;
+    color: #ef4444;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 14px;
     cursor: pointer;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
 }
 
 .ngl-btn-gradient {
     width: 100%;
-    padding: 11px;
-    background: linear-gradient(135deg, #f43f5e, #ff7a00);
+    padding: 15px;
+    background: linear-gradient(135deg, #ec4899, #f97316);
     border: none;
-    border-radius: 10px;
+    border-radius: 16px;
     color: white;
-    font-weight: 700;
-    font-size: 12px;
+    font-weight: 800;
+    font-size: 15px;
     cursor: pointer;
+    box-shadow: 0 8px 20px rgba(249, 115, 22, 0.3);
 }
 
 .loading-overlay {
@@ -498,18 +513,18 @@ html, body {
 .loading-card {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 20px;
-    border-radius: 18px;
+    padding: 25px;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     text-align: center;
 }
 
 .spinner {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border: 3px solid rgba(139, 92, 246, 0.2);
     border-top-color: #8b5cf6;
     border-radius: 50%;
