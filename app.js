@@ -19,9 +19,6 @@ let selectedPlatformName = "";
 let usernameValue = "";
 let profilePicDataUrl = ""; 
 
-// ==========================================
-// THEME SWITCHER LOGIC
-// ==========================================
 function initTheme() {
     const savedTheme = localStorage.getItem('ngl_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -155,9 +152,7 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('username-input').addEventListener('input', validateUsername);
     document.getElementById('next-btn-3').addEventListener('click', checkAndProceedUsername);
     
-    // Setup file inputs for both registration and dashboard
     document.getElementById('file-input').addEventListener('change', handleProfilePicSelect);
-    document.getElementById('global-file-input').addEventListener('change', handleDashboardPicUpdate);
 
     document.getElementById('btn-create-account').addEventListener('click', completeLogin);
     document.getElementById('btn-skip-account').addEventListener('click', completeLogin);
@@ -234,26 +229,33 @@ function handleProfilePicSelect(event) {
     }
 }
 
-async function handleDashboardPicUpdate(event) {
-    const file = event.target.files[0];
-    if (file && usernameValue) {
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            profilePicDataUrl = e.target.result;
-            localStorage.setItem('ngl_profile_pic', profilePicDataUrl);
-            
-            try {
-                await update(ref(db, `users/${usernameValue}`), {
-                    profilePic: profilePicDataUrl
-                });
-                updateAvatarDisplay();
-                await showCustomAlert("Profile picture updated successfully!", "Success");
-            } catch (err) {
-                console.error("Error updating profile picture:", err);
+// Mobile-friendly dynamic file picker for Dashboard
+function triggerMobileFilePicker() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (file && usernameValue) {
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                profilePicDataUrl = event.target.result;
+                localStorage.setItem('ngl_profile_pic', profilePicDataUrl);
+                
+                try {
+                    await update(ref(db, `users/${usernameValue}`), {
+                        profilePic: profilePicDataUrl
+                    });
+                    updateAvatarDisplay();
+                    await showCustomAlert("Profile picture updated successfully!", "Success");
+                } catch (err) {
+                    console.error("Error updating profile picture:", err);
+                }
             }
+            reader.readAsDataURL(file);
         }
-        reader.readAsDataURL(file);
-    }
+    };
+    fileInput.click();
 }
 
 function updateAvatarDisplay() {
@@ -371,9 +373,12 @@ function showPlayView() {
 
     document.getElementById('btn-copy-link-inner').addEventListener('click', copyLink);
     document.getElementById('btn-share-story-inner').addEventListener('click', copyLink);
-    document.getElementById('dash-avatar-wrap').addEventListener('click', () => {
-        document.getElementById('global-file-input').click();
-    });
+    
+    // Direct touch/click trigger for mobile browsers
+    const avatarWrap = document.getElementById('dash-avatar-wrap');
+    if (avatarWrap) {
+        avatarWrap.onclick = triggerMobileFilePicker;
+    }
 }
 
 function showInboxView() {
