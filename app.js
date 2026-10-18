@@ -154,7 +154,7 @@ window.addEventListener('DOMContentLoaded', () => {
     
     const fileInput = document.getElementById('file-input');
     if (fileInput) {
-        fileInput.addEventListener('change', handleProfilePicSelect);
+        fileInput.addEventListener('change', (e) => handleImageCompression(e, false));
     }
     const previewBox = document.getElementById('image-preview-box');
     if (previewBox) {
@@ -223,46 +223,65 @@ async function checkAndProceedUsername() {
     }
 }
 
-function handleProfilePicSelect(event) {
+// Image Compression helper to prevent mobile crashing & storage limits
+function handleImageCompression(event, isDashboard = false) {
     const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            profilePicDataUrl = e.target.result;
-            const previewImg = document.getElementById('uploaded-img-tag');
-            const defaultIcon = document.getElementById('default-pic-icon');
-            if(previewImg) { previewImg.src = profilePicDataUrl; previewImg.style.display = 'block'; }
-            if(defaultIcon) defaultIcon.style.display = 'none';
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 300;
+            const MAX_HEIGHT = 300;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+            } else {
+                if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            profilePicDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+
+            if (isDashboard && usernameValue) {
+                localStorage.setItem('ngl_profile_pic', profilePicDataUrl);
+                update(ref(db, `users/${usernameValue}`), {
+                    profilePic: profilePicDataUrl
+                }).then(() => {
+                    updateAvatarDisplay();
+                    showCustomAlert("Profile picture updated successfully!", "Success");
+                }).catch(err => console.error(err));
+            } else {
+                const previewImg = document.getElementById('uploaded-img-tag');
+                const defaultIcon = document.getElementById('default-pic-icon');
+                if(previewImg) { previewImg.src = profilePicDataUrl; previewImg.style.display = 'block'; }
+                if(defaultIcon) defaultIcon.style.display = 'none';
+            }
         }
-        reader.readAsDataURL(file);
     }
+    reader.readAsDataURL(file);
 }
 
 function triggerMobileFilePicker() {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
-    fileInput.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (file && usernameValue) {
-            const reader = new FileReader();
-            reader.onload = async function(event) {
-                profilePicDataUrl = event.target.result;
-                localStorage.setItem('ngl_profile_pic', profilePicDataUrl);
-                
-                try {
-                    await update(ref(db, `users/${usernameValue}`), {
-                        profilePic: profilePicDataUrl
-                    });
-                    updateAvatarDisplay();
-                    await showCustomAlert("Profile picture updated successfully!", "Success");
-                } catch (err) {
-                    console.error("Error updating profile picture:", err);
-                }
-            }
-            reader.readAsDataURL(file);
-        }
-    };
+    fileInput.onchange = (e) => handleImageCompression(e, true);
     fileInput.click();
 }
 
