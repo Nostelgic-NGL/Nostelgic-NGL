@@ -85,7 +85,7 @@
             <div class="profile-pic-container">
                 <div class="profile-preview" id="image-preview-box">
                     <i class="fa-solid fa-user" id="default-pic-icon"></i>
-                    <img id="uploaded-img-tag" src="" alt="Profile Preview" style="display: none;">
+                    <img id="uploaded-img-tag" src="" alt="Profile Preview" style="display: none; width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 
                 <label for="file-input" class="upload-btn-label">
@@ -117,9 +117,9 @@
             <div id="main-content-view" class="ngl-content-scroll">
                 <div class="play-view-container">
                     <div class="preview-story-card">
-                        <div class="story-avatar-wrap" id="dash-avatar-wrap">
+                        <div class="story-avatar-wrap" id="dash-avatar-wrap" style="cursor: pointer;" title="Change Profile Picture">
                             <i class="fa-solid fa-user" id="dash-default-icon"></i>
-                            <img id="dash-img-tag" src="" alt="Avatar" style="display: none;">
+                            <img id="dash-img-tag" src="" alt="Avatar" style="display: none; width: 100%; height: 100%; object-fit: cover;">
                             <span class="edit-badge"><i class="fa-solid fa-pen"></i></span>
                         </div>
                         <h3>send me anonymous messages!</h3>
@@ -146,6 +146,9 @@
         </div>
 
     </div>
+
+    <!-- Hidden global file input for dashboard profile picture change -->
+    <input type="file" id="global-file-input" accept="image/*" style="display: none;">
 
     <script type="module" src="app.js"></script>
 </body>
