@@ -27,15 +27,15 @@ function showCustomAlert(message, title = "Nostelgic NGL") {
 
         const modalHtml = `
             <div id="${modalId}" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(10px); z-index: 99999; display: flex; justify-content: center; align-items: center; padding: 20px;">
-                <div style="background: #131b2e; border: 1px solid rgba(139, 92, 246, 0.3); width: 100%; max-width: 320px; border-radius: 20px; padding: 22px; display: flex; flex-direction: column; gap: 15px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.6);">
-                    <div style="width: 50px; height: 50px; background: rgba(139, 92, 246, 0.15); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto; color: #a78bfa; font-size: 22px;">
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; width: 100%; max-width: 320px; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 15px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+                    <div style="width: 50px; height: 50px; background: rgba(139, 92, 246, 0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto; color: #8b5cf6; font-size: 22px;">
                         <i class="fa-solid fa-bell"></i>
                     </div>
                     <div>
-                        <h3 style="color: #fff; font-size: 16px; font-weight: 700; margin-bottom: 5px;">${title}</h3>
-                        <p style="color: #94a3b8; font-size: 13px; line-height: 1.4; word-break: break-word;">${message}</p>
+                        <h3 style="color: #111827; font-size: 16px; font-weight: 700; margin-bottom: 5px;">${title}</h3>
+                        <p style="color: #64748b; font-size: 13px; line-height: 1.4; word-break: break-word;">${message}</p>
                     </div>
-                    <button id="custom-alert-ok" class="btn-primary" style="padding: 12px; font-size: 14px; border-radius: 12px;">OK</button>
+                    <button id="custom-alert-ok" class="btn-primary" style="padding: 12px; font-size: 14px; border-radius: 14px;">OK</button>
                 </div>
             </div>
         `;
@@ -56,17 +56,17 @@ function showCustomConfirm(message, title = "Confirm Action") {
 
         const modalHtml = `
             <div id="${modalId}" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(10px); z-index: 99999; display: flex; justify-content: center; align-items: center; padding: 20px;">
-                <div style="background: #131b2e; border: 1px solid rgba(244, 63, 94, 0.3); width: 100%; max-width: 320px; border-radius: 20px; padding: 22px; display: flex; flex-direction: column; gap: 15px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.6);">
-                    <div style="width: 50px; height: 50px; background: rgba(244, 63, 94, 0.15); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto; color: #f43f5e; font-size: 22px;">
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; width: 100%; max-width: 320px; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 15px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+                    <div style="width: 50px; height: 50px; background: rgba(244, 63, 94, 0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto; color: #f43f5e; font-size: 22px;">
                         <i class="fa-solid fa-triangle-exclamation"></i>
                     </div>
                     <div>
-                        <h3 style="color: #fff; font-size: 16px; font-weight: 700; margin-bottom: 5px;">${title}</h3>
-                        <p style="color: #94a3b8; font-size: 13px; line-height: 1.4; word-break: break-word;">${message}</p>
+                        <h3 style="color: #111827; font-size: 16px; font-weight: 700; margin-bottom: 5px;">${title}</h3>
+                        <p style="color: #64748b; font-size: 13px; line-height: 1.4; word-break: break-word;">${message}</p>
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <button id="custom-confirm-no" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-weight: 600; border-radius: 12px; cursor: pointer;">Cancel</button>
-                        <button id="custom-confirm-yes" style="flex: 1; padding: 12px; background: #f43f5e; border: none; color: white; font-weight: 600; border-radius: 12px; cursor: pointer;">Confirm</button>
+                        <button id="custom-confirm-no" style="flex: 1; padding: 12px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155; font-weight: 600; border-radius: 14px; cursor: pointer;">Cancel</button>
+                        <button id="custom-confirm-yes" style="flex: 1; padding: 12px; background: #f43f5e; border: none; color: white; font-weight: 600; border-radius: 14px; cursor: pointer;">Confirm</button>
                     </div>
                 </div>
             </div>
@@ -291,7 +291,7 @@ function showPlayView() {
     document.getElementById('nav-inbox-btn').classList.remove('active');
     
     document.getElementById('main-content-view').innerHTML = `
-        <div class="play-view-container" style="display: flex; flex-direction: column; gap: 14px;">
+        <div class="play-view-container">
             <div class="preview-story-card">
                 <div class="story-avatar-wrap">
                     <i class="fa-solid fa-user" id="dash-default-icon" style="${profilePicDataUrl ? 'display:none;' : ''}"></i>
@@ -301,9 +301,15 @@ function showPlayView() {
                 <h3>send me anonymous messages!</h3>
             </div>
 
+            <div class="story-dots">
+                <span></span>
+                <span class="active"></span>
+                <span></span>
+            </div>
+
             <div class="ngl-step-box">
                 <span class="step-title">Step 1: Copy your link</span>
-                <div class="link-display-text" id="display-link-text" style="font-size: 11px; word-break: break-all; text-align: center;">${getExactSendLink()}</div>
+                <div class="link-display-text" id="display-link-text">${getExactSendLink()}</div>
                 <button class="ngl-btn-outline" id="btn-copy-link-inner">copy link</button>
             </div>
 
@@ -322,29 +328,29 @@ function showInboxView() {
     document.getElementById('nav-inbox-btn').classList.add('active');
     document.getElementById('nav-play-btn').classList.remove('active');
 
-    let html = `<div style="display: flex; flex-direction: column; gap: 8px; max-height: 450px; overflow-y: auto; padding-right: 4px;">`;
+    let html = `<div style="display: flex; flex-direction: column; gap: 10px; max-height: 450px; overflow-y: auto; padding-right: 4px;">`;
     
     if (cachedMessages.length === 0) {
         html += `
-            <div class="ngl-step-box" style="text-align: center; padding: 40px 15px; color: #94a3b8;">
-                <i class="fa-regular fa-comment-dots" style="font-size: 36px; color: #a78bfa; margin-bottom: 8px;"></i>
+            <div class="ngl-step-box" style="text-align: center; padding: 40px 15px; color: #64748b;">
+                <i class="fa-regular fa-comment-dots" style="font-size: 36px; color: #8b5cf6; margin-bottom: 8px;"></i>
                 <p style="font-size: 13px;">No messages yet! Share your link to get questions.</p>
             </div>
         `;
     } else {
         cachedMessages.reverse().forEach(msg => {
             html += `
-                <div onclick="openNglReplyCard('${encodeURIComponent(msg.text)}', '${msg.id}')" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 12px 16px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s;">
+                <div onclick="openNglReplyCard('${encodeURIComponent(msg.text)}', '${msg.id}')" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 14px 16px; border-radius: 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 12px; overflow: hidden;">
-                        <div style="width: 42px; height: 42px; background: rgba(255,255,255,0.06); border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0; font-size: 18px;">
+                        <div style="width: 44px; height: 44px; background: rgba(139, 92, 246, 0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0; font-size: 18px;">
                             💌
                         </div>
-                        <div style="display: flex; flex-direction: column; overflow: hidden;">
-                            <span style="font-size: 14px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${msg.text}</span>
+                        <div style="display: flex; flex-direction: column; overflow: hidden; text-align: left;">
+                            <span style="font-size: 14px; font-weight: 600; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${msg.text}</span>
                             <span style="font-size: 11px; color: #64748b;">${msg.time || 'recently'}</span>
                         </div>
                     </div>
-                    <div style="color: #64748b; font-size: 14px; padding-left: 10px;">
+                    <div style="color: #94a3b8; font-size: 14px; padding-left: 10px;">
                         <i class="fa-solid fa-chevron-right"></i>
                     </div>
                 </div>
@@ -358,35 +364,35 @@ function showInboxView() {
 window.openNglReplyCard = function(encodedText, msgId) {
     const text = decodeURIComponent(encodedText);
     const modalHtml = `
-        <div id="ngl-reply-modal" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(11,15,25,0.95); backdrop-filter: blur(15px); z-index: 1000; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 20px;">
+        <div id="ngl-reply-modal" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(11, 15, 25, 0.9); backdrop-filter: blur(15px); z-index: 1000; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 20px;">
             
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <i class="fa-solid fa-triangle-exclamation" style="color: #94a3b8; font-size: 18px; cursor: pointer;" onclick="showCustomAlert('Message reported successfully.', 'Report')"></i>
                 <div style="display: flex; gap: 15px;">
                     <i class="fa-brands fa-instagram" style="color: #fff; font-size: 20px;"></i>
-                    <i class="fa-brands fa-twitter" style="color: #64748b; font-size: 20px;"></i>
+                    <i class="fa-brands fa-twitter" style="color: #94a3b8; font-size: 20px;"></i>
                     <i class="fa-brands fa-snapchat" style="color: #64748b; font-size: 20px;"></i>
                 </div>
                 <i class="fa-solid fa-xmark" style="color: #fff; font-size: 22px; cursor: pointer;" onclick="closeNglModal()"></i>
             </div>
 
-            <div id="ngl-story-preview-card" style="width: 100%; background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
-                <div style="width: 100%; height: 130px; background: linear-gradient(135deg, #ff007f, #ff7a00); display: flex; justify-content: center; align-items: center; padding: 15px; text-align: center;">
-                    <h3 style="color: white; font-size: 22px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">send me anonymous messages!</h3>
+            <div id="ngl-story-preview-card" style="width: 100%; background: white; border-radius: 28px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+                <div style="width: 100%; height: 130px; background: linear-gradient(135deg, #ff9a9e, #fad0c4, #ffd1ff); display: flex; justify-content: center; align-items: center; padding: 15px; text-align: center;">
+                    <h3 style="color: white; font-size: 22px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">send me anonymous messages!</h3>
                 </div>
                 <div style="padding: 30px 20px; text-align: center; background: #ffffff;">
-                    <p style="color: #0b0f19; font-size: 18px; font-weight: 600; word-break: break-word;">${text}</p>
+                    <p style="color: #111827; font-size: 18px; font-weight: 700; word-break: break-word;">${text}</p>
                 </div>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button class="btn-primary" onclick="showCustomAlert('Hints feature coming soon!', 'Coming Soon')" style="background: #ff007f; font-weight: 700; border-radius: 16px; padding: 15px;">
+                <button class="btn-primary" onclick="showCustomAlert('Hints feature coming soon!', 'Coming Soon')" style="background: #ec4899; font-weight: 700; border-radius: 16px; padding: 15px;">
                     see hints
                 </button>
-                <button class="btn-primary" onclick="shareToInstagramDirect()" style="background: #0b0f19; color: #ffffff; font-weight: 700; border-radius: 16px; padding: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                <button class="btn-primary" onclick="shareToInstagramDirect()" style="background: #111827; color: #ffffff; font-weight: 700; border-radius: 16px; padding: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;">
                     <i class="fa-brands fa-instagram"></i> reply
                 </button>
-                <button onclick="deleteMessage('${msgId}')" style="background: transparent; border: none; color: #f43f5e; font-size: 12px; cursor: pointer; padding: 5px;">
+                <button onclick="deleteMessage('${msgId}')" style="background: transparent; border: none; color: #f43f5e; font-size: 13px; cursor: pointer; padding: 5px; font-weight: 600;">
                     Delete message
                 </button>
             </div>
@@ -459,40 +465,40 @@ function showSettingsView() {
     document.getElementById('nav-inbox-btn').classList.remove('active');
 
     document.getElementById('main-content-view').innerHTML = `
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 18px; border-radius: 18px; display: flex; flex-direction: column; gap: 10px; max-height: 440px; overflow-y: auto;">
-            <h4 style="font-size: 15px; color: #fff;"><i class="fa-solid fa-gear"></i> Account Settings</h4>
-            <p style="font-size: 12px; color: #94a3b8; margin-bottom: 5px;">Logged in as <b>@${usernameValue}</b></p>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 24px; display: flex; flex-direction: column; gap: 12px; max-height: 440px; overflow-y: auto; text-align: left;">
+            <h4 style="font-size: 16px; color: #111827; font-weight: 700;"><i class="fa-solid fa-gear"></i> Account Settings</h4>
+            <p style="font-size: 12px; color: #64748b; margin-bottom: 5px;">Logged in as <b>@${usernameValue}</b></p>
             
-            <div class="setting-item">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 12px 14px; border-radius: 14px; border: 1px solid #e2e8f0; font-size: 13px; color: #111827; font-weight: 600;">
                 <span><i class="fa-solid fa-pause"></i> Pause my link</span>
-                <input type="checkbox" id="pause-link-toggle" style="accent-color: #8b5cf6; cursor: pointer;">
+                <input type="checkbox" id="pause-link-toggle" style="accent-color: #8b5cf6; cursor: pointer; width: 16px; height: 16px;">
             </div>
 
-            <div class="setting-item">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 12px 14px; border-radius: 14px; border: 1px solid #e2e8f0; font-size: 13px; color: #111827; font-weight: 600;">
                 <span><i class="fa-solid fa-bell"></i> Notifications</span>
-                <input type="checkbox" id="notif-toggle" checked style="accent-color: #8b5cf6; cursor: pointer;">
+                <input type="checkbox" id="notif-toggle" checked style="accent-color: #8b5cf6; cursor: pointer; width: 16px; height: 16px;">
             </div>
 
-            <button class="setting-link-btn" onclick="showCustomAlert('No users blocked yet!', 'Blocked Users')">
+            <button onclick="showCustomAlert('No users blocked yet!', 'Blocked Users')" style="background: #ffffff; border: 1px solid #e2e8f0; padding: 12px 14px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; color: #111827; font-size: 13px; font-weight: 600; cursor: pointer;">
                 <span><i class="fa-solid fa-ban"></i> Blocked Users</span>
-                <i class="fa-solid fa-chevron-right" style="font-size: 11px;"></i>
+                <i class="fa-solid fa-chevron-right" style="font-size: 11px; color: #94a3b8;"></i>
             </button>
 
-            <button class="setting-link-btn" onclick="showCustomAlert('Terms of Use: Use Nostelgic NGL responsibly and respect others privacy.', 'Terms of Use')">
+            <button onclick="showCustomAlert('Terms of Use: Use Nostelgic NGL responsibly and respect others privacy.', 'Terms of Use')" style="background: #ffffff; border: 1px solid #e2e8f0; padding: 12px 14px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; color: #111827; font-size: 13px; font-weight: 600; cursor: pointer;">
                 <span><i class="fa-solid fa-file-contract"></i> Terms of Use</span>
-                <i class="fa-solid fa-chevron-right" style="font-size: 11px;"></i>
+                <i class="fa-solid fa-chevron-right" style="font-size: 11px; color: #94a3b8;"></i>
             </button>
 
-            <button class="setting-link-btn" onclick="showCustomAlert('Privacy Policy: Your messages are 100% anonymous and secure.', 'Privacy Policy')">
+            <button onclick="showCustomAlert('Privacy Policy: Your messages are 100% anonymous and secure.', 'Privacy Policy')" style="background: #ffffff; border: 1px solid #e2e8f0; padding: 12px 14px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; color: #111827; font-size: 13px; font-weight: 600; cursor: pointer;">
                 <span><i class="fa-solid fa-shield-halved"></i> Privacy Policy</span>
-                <i class="fa-solid fa-chevron-right" style="font-size: 11px;"></i>
+                <i class="fa-solid fa-chevron-right" style="font-size: 11px; color: #94a3b8;"></i>
             </button>
 
-            <a href="https://instagram.com/Jitu_Gurjar_99" target="_blank" class="btn-primary" style="text-decoration: none; background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 5px; font-size: 14px; padding: 11px;">
+            <a href="https://instagram.com/Jitu_Gurjar_99" target="_blank" class="btn-primary" style="text-decoration: none; background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 5px; font-size: 14px; padding: 12px;">
                 <i class="fa-brands fa-instagram"></i> Follow the Developer
             </a>
 
-            <button class="btn-primary" id="delete-account-btn" style="background: rgba(244, 63, 94, 0.2); border: 1px solid #f43f5e; color: #f43f5e; font-size: 14px; padding: 11px;">
+            <button class="btn-primary" id="delete-account-btn" style="background: rgba(244, 63, 94, 0.1); border: 1px solid #f43f5e; color: #f43f5e; font-size: 14px; padding: 12px;">
                 <i class="fa-solid fa-trash"></i> Delete Account
             </button>
         </div>
