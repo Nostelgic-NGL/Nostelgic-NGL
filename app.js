@@ -19,6 +19,31 @@ let selectedPlatformName = "";
 let usernameValue = "";
 let profilePicDataUrl = ""; 
 
+// ==========================================
+// THEME SWITCHER LOGIC (Dark / Light Mode)
+// ==========================================
+function initTheme() {
+    const savedTheme = localStorage.getItem('ngl_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('ngl_theme', newTheme);
+    updateThemeIcon(newTheme);
+}
+
+function updateThemeIcon(theme) {
+    const btn = document.getElementById('theme-toggle-btn');
+    if (btn) {
+        btn.innerHTML = theme === 'dark' ? '<i class="fa-solid fa-sun" style="color: #facc15;"></i>' : '<i class="fa-solid fa-moon"></i>';
+    }
+}
+// ==========================================
+
 function showCustomAlert(message, title = "Nostelgic NGL") {
     return new Promise((resolve) => {
         const modalId = 'custom-alert-modal';
@@ -27,13 +52,13 @@ function showCustomAlert(message, title = "Nostelgic NGL") {
 
         const modalHtml = `
             <div id="${modalId}" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(10px); z-index: 99999; display: flex; justify-content: center; align-items: center; padding: 20px;">
-                <div style="background: #ffffff; border: 1px solid #e2e8f0; width: 100%; max-width: 320px; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 15px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+                <div style="background: var(--bg-color); border: 1px solid var(--border-color); width: 100%; max-width: 320px; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 15px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
                     <div style="width: 50px; height: 50px; background: rgba(139, 92, 246, 0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto; color: #8b5cf6; font-size: 22px;">
                         <i class="fa-solid fa-bell"></i>
                     </div>
                     <div>
-                        <h3 style="color: #111827; font-size: 16px; font-weight: 700; margin-bottom: 5px;">${title}</h3>
-                        <p style="color: #64748b; font-size: 13px; line-height: 1.4; word-break: break-word;">${message}</p>
+                        <h3 style="color: var(--text-color); font-size: 16px; font-weight: 700; margin-bottom: 5px;">${title}</h3>
+                        <p style="color: var(--sub-text); font-size: 13px; line-height: 1.4; word-break: break-word;">${message}</p>
                     </div>
                     <button id="custom-alert-ok" class="btn-primary" style="padding: 12px; font-size: 14px; border-radius: 14px;">OK</button>
                 </div>
@@ -56,16 +81,16 @@ function showCustomConfirm(message, title = "Confirm Action") {
 
         const modalHtml = `
             <div id="${modalId}" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(10px); z-index: 99999; display: flex; justify-content: center; align-items: center; padding: 20px;">
-                <div style="background: #ffffff; border: 1px solid #e2e8f0; width: 100%; max-width: 320px; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 15px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
+                <div style="background: var(--bg-color); border: 1px solid var(--border-color); width: 100%; max-width: 320px; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 15px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
                     <div style="width: 50px; height: 50px; background: rgba(244, 63, 94, 0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto; color: #f43f5e; font-size: 22px;">
                         <i class="fa-solid fa-triangle-exclamation"></i>
                     </div>
                     <div>
-                        <h3 style="color: #111827; font-size: 16px; font-weight: 700; margin-bottom: 5px;">${title}</h3>
-                        <p style="color: #64748b; font-size: 13px; line-height: 1.4; word-break: break-word;">${message}</p>
+                        <h3 style="color: var(--text-color); font-size: 16px; font-weight: 700; margin-bottom: 5px;">${title}</h3>
+                        <p style="color: var(--sub-text); font-size: 13px; line-height: 1.4; word-break: break-word;">${message}</p>
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <button id="custom-confirm-no" style="flex: 1; padding: 12px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155; font-weight: 600; border-radius: 14px; cursor: pointer;">Cancel</button>
+                        <button id="custom-confirm-no" style="flex: 1; padding: 12px; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); font-weight: 600; border-radius: 14px; cursor: pointer;">Cancel</button>
                         <button id="custom-confirm-yes" style="flex: 1; padding: 12px; background: #f43f5e; border: none; color: white; font-weight: 600; border-radius: 14px; cursor: pointer;">Confirm</button>
                     </div>
                 </div>
@@ -92,6 +117,10 @@ function goToScreen(screenNumber) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+    initTheme(); // Theme initialize karo
+
+    document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
+
     const savedUser = localStorage.getItem('ngl_logged_user');
     const savedPic = localStorage.getItem('ngl_profile_pic');
     
@@ -332,7 +361,7 @@ function showInboxView() {
     
     if (cachedMessages.length === 0) {
         html += `
-            <div class="ngl-step-box" style="text-align: center; padding: 40px 15px; color: #64748b;">
+            <div class="ngl-step-box" style="text-align: center; padding: 40px 15px; color: var(--sub-text);">
                 <i class="fa-regular fa-comment-dots" style="font-size: 36px; color: #8b5cf6; margin-bottom: 8px;"></i>
                 <p style="font-size: 13px;">No messages yet! Share your link to get questions.</p>
             </div>
@@ -340,17 +369,17 @@ function showInboxView() {
     } else {
         cachedMessages.reverse().forEach(msg => {
             html += `
-                <div onclick="openNglReplyCard('${encodeURIComponent(msg.text)}', '${msg.id}')" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 14px 16px; border-radius: 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                <div onclick="openNglReplyCard('${encodeURIComponent(msg.text)}', '${msg.id}')" style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 14px 16px; border-radius: 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 12px; overflow: hidden;">
                         <div style="width: 44px; height: 44px; background: rgba(139, 92, 246, 0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0; font-size: 18px;">
                             💌
                         </div>
                         <div style="display: flex; flex-direction: column; overflow: hidden; text-align: left;">
-                            <span style="font-size: 14px; font-weight: 600; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${msg.text}</span>
-                            <span style="font-size: 11px; color: #64748b;">${msg.time || 'recently'}</span>
+                            <span style="font-size: 14px; font-weight: 600; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${msg.text}</span>
+                            <span style="font-size: 11px; color: var(--sub-text);">${msg.time || 'recently'}</span>
                         </div>
                     </div>
-                    <div style="color: #94a3b8; font-size: 14px; padding-left: 10px;">
+                    <div style="color: var(--sub-text); font-size: 14px; padding-left: 10px;">
                         <i class="fa-solid fa-chevron-right"></i>
                     </div>
                 </div>
@@ -364,13 +393,13 @@ function showInboxView() {
 window.openNglReplyCard = function(encodedText, msgId) {
     const text = decodeURIComponent(encodedText);
     const modalHtml = `
-        <div id="ngl-reply-modal" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(11, 15, 25, 0.9); backdrop-filter: blur(15px); z-index: 1000; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 20px;">
+        <div id="ngl-reply-modal" style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(11,15,25,0.9); backdrop-filter: blur(15px); z-index: 1000; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 20px;">
             
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <i class="fa-solid fa-triangle-exclamation" style="color: #94a3b8; font-size: 18px; cursor: pointer;" onclick="showCustomAlert('Message reported successfully.', 'Report')"></i>
                 <div style="display: flex; gap: 15px;">
                     <i class="fa-brands fa-instagram" style="color: #fff; font-size: 20px;"></i>
-                    <i class="fa-brands fa-twitter" style="color: #94a3b8; font-size: 20px;"></i>
+                    <i class="fa-brands fa-twitter" style="color: #64748b; font-size: 20px;"></i>
                     <i class="fa-brands fa-snapchat" style="color: #64748b; font-size: 20px;"></i>
                 </div>
                 <i class="fa-solid fa-xmark" style="color: #fff; font-size: 22px; cursor: pointer;" onclick="closeNglModal()"></i>
@@ -465,33 +494,33 @@ function showSettingsView() {
     document.getElementById('nav-inbox-btn').classList.remove('active');
 
     document.getElementById('main-content-view').innerHTML = `
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 24px; display: flex; flex-direction: column; gap: 12px; max-height: 440px; overflow-y: auto; text-align: left;">
-            <h4 style="font-size: 16px; color: #111827; font-weight: 700;"><i class="fa-solid fa-gear"></i> Account Settings</h4>
-            <p style="font-size: 12px; color: #64748b; margin-bottom: 5px;">Logged in as <b>@${usernameValue}</b></p>
+        <div style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 18px; border-radius: 24px; display: flex; flex-direction: column; gap: 12px; max-height: 440px; overflow-y: auto; text-align: left;">
+            <h4 style="font-size: 16px; color: var(--text-color); font-weight: 700;"><i class="fa-solid fa-gear"></i> Account Settings</h4>
+            <p style="font-size: 12px; color: var(--sub-text); margin-bottom: 5px;">Logged in as <b>@${usernameValue}</b></p>
             
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 12px 14px; border-radius: 14px; border: 1px solid #e2e8f0; font-size: 13px; color: #111827; font-weight: 600;">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border-color); font-size: 13px; color: var(--text-color); font-weight: 600;">
                 <span><i class="fa-solid fa-pause"></i> Pause my link</span>
                 <input type="checkbox" id="pause-link-toggle" style="accent-color: #8b5cf6; cursor: pointer; width: 16px; height: 16px;">
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 12px 14px; border-radius: 14px; border: 1px solid #e2e8f0; font-size: 13px; color: #111827; font-weight: 600;">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border-color); font-size: 13px; color: var(--text-color); font-weight: 600;">
                 <span><i class="fa-solid fa-bell"></i> Notifications</span>
                 <input type="checkbox" id="notif-toggle" checked style="accent-color: #8b5cf6; cursor: pointer; width: 16px; height: 16px;">
             </div>
 
-            <button onclick="showCustomAlert('No users blocked yet!', 'Blocked Users')" style="background: #ffffff; border: 1px solid #e2e8f0; padding: 12px 14px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; color: #111827; font-size: 13px; font-weight: 600; cursor: pointer;">
+            <button onclick="showCustomAlert('No users blocked yet!', 'Blocked Users')" style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 12px 14px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; color: var(--text-color); font-size: 13px; font-weight: 600; cursor: pointer;">
                 <span><i class="fa-solid fa-ban"></i> Blocked Users</span>
-                <i class="fa-solid fa-chevron-right" style="font-size: 11px; color: #94a3b8;"></i>
+                <i class="fa-solid fa-chevron-right" style="font-size: 11px; color: var(--sub-text);"></i>
             </button>
 
-            <button onclick="showCustomAlert('Terms of Use: Use Nostelgic NGL responsibly and respect others privacy.', 'Terms of Use')" style="background: #ffffff; border: 1px solid #e2e8f0; padding: 12px 14px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; color: #111827; font-size: 13px; font-weight: 600; cursor: pointer;">
+            <button onclick="showCustomAlert('Terms of Use: Use Nostelgic NGL responsibly and respect others privacy.', 'Terms of Use')" style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 12px 14px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; color: var(--text-color); font-size: 13px; font-weight: 600; cursor: pointer;">
                 <span><i class="fa-solid fa-file-contract"></i> Terms of Use</span>
-                <i class="fa-solid fa-chevron-right" style="font-size: 11px; color: #94a3b8;"></i>
+                <i class="fa-solid fa-chevron-right" style="font-size: 11px; color: var(--sub-text);"></i>
             </button>
 
-            <button onclick="showCustomAlert('Privacy Policy: Your messages are 100% anonymous and secure.', 'Privacy Policy')" style="background: #ffffff; border: 1px solid #e2e8f0; padding: 12px 14px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; color: #111827; font-size: 13px; font-weight: 600; cursor: pointer;">
+            <button onclick="showCustomAlert('Privacy Policy: Your messages are 100% anonymous and secure.', 'Privacy Policy')" style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 12px 14px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; color: var(--text-color); font-size: 13px; font-weight: 600; cursor: pointer;">
                 <span><i class="fa-solid fa-shield-halved"></i> Privacy Policy</span>
-                <i class="fa-solid fa-chevron-right" style="font-size: 11px; color: #94a3b8;"></i>
+                <i class="fa-solid fa-chevron-right" style="font-size: 11px; color: var(--sub-text);"></i>
             </button>
 
             <a href="https://instagram.com/Jitu_Gurjar_99" target="_blank" class="btn-primary" style="text-decoration: none; background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 5px; font-size: 14px; padding: 12px;">
