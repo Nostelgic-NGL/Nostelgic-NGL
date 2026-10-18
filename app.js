@@ -119,7 +119,11 @@ function goToScreen(screenNumber) {
 window.addEventListener('DOMContentLoaded', () => {
     initTheme(); // Theme initialize karo
 
-    document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
+    // Theme Toggle Button Event Listener
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', toggleTheme);
+    }
 
     const savedUser = localStorage.getItem('ngl_logged_user');
     const savedPic = localStorage.getItem('ngl_profile_pic');
