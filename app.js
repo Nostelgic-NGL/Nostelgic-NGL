@@ -152,7 +152,15 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('username-input').addEventListener('input', validateUsername);
     document.getElementById('next-btn-3').addEventListener('click', checkAndProceedUsername);
     
-    document.getElementById('file-input').addEventListener('change', handleProfilePicSelect);
+    // File inputs setup for both registration and preview box click
+    const fileInput = document.getElementById('file-input');
+    if (fileInput) {
+        fileInput.addEventListener('change', handleProfilePicSelect);
+    }
+    const previewBox = document.getElementById('image-preview-box');
+    if (previewBox) {
+        previewBox.onclick = () => triggerMobileFilePicker(false);
+    }
 
     document.getElementById('btn-create-account').addEventListener('click', completeLogin);
     document.getElementById('btn-skip-account').addEventListener('click', completeLogin);
@@ -229,27 +237,34 @@ function handleProfilePicSelect(event) {
     }
 }
 
-// Mobile-friendly dynamic file picker for Dashboard
-function triggerMobileFilePicker() {
+// Mobile & PC friendly dynamic file picker
+function triggerMobileFilePicker(isDashboard = true) {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.onchange = async (e) => {
         const file = e.target.files[0];
-        if (file && usernameValue) {
+        if (file) {
             const reader = new FileReader();
             reader.onload = async function(event) {
                 profilePicDataUrl = event.target.result;
-                localStorage.setItem('ngl_profile_pic', profilePicDataUrl);
                 
-                try {
-                    await update(ref(db, `users/${usernameValue}`), {
-                        profilePic: profilePicDataUrl
-                    });
-                    updateAvatarDisplay();
-                    await showCustomAlert("Profile picture updated successfully!", "Success");
-                } catch (err) {
-                    console.error("Error updating profile picture:", err);
+                if (isDashboard && usernameValue) {
+                    localStorage.setItem('ngl_profile_pic', profilePicDataUrl);
+                    try {
+                        await update(ref(db, `users/${usernameValue}`), {
+                            profilePic: profilePicDataUrl
+                        });
+                        updateAvatarDisplay();
+                        await showCustomAlert("Profile picture updated successfully!", "Success");
+                    } catch (err) {
+                        console.error("Error updating profile picture:", err);
+                    }
+                } else {
+                    const previewImg = document.getElementById('uploaded-img-tag');
+                    const defaultIcon = document.getElementById('default-pic-icon');
+                    if(previewImg) { previewImg.src = profilePicDataUrl; previewImg.style.display = 'block'; }
+                    if(defaultIcon) defaultIcon.style.display = 'none';
                 }
             }
             reader.readAsDataURL(file);
@@ -374,10 +389,9 @@ function showPlayView() {
     document.getElementById('btn-copy-link-inner').addEventListener('click', copyLink);
     document.getElementById('btn-share-story-inner').addEventListener('click', copyLink);
     
-    // Direct touch/click trigger for mobile browsers
     const avatarWrap = document.getElementById('dash-avatar-wrap');
     if (avatarWrap) {
-        avatarWrap.onclick = triggerMobileFilePicker;
+        avatarWrap.onclick = () => triggerMobileFilePicker(true);
     }
 }
 
