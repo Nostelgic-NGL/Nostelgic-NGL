@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, set, get, child, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, set, get, child, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD7G84Hb8htLjomY_rSzfNqvi6sIWcNZ0Q",
@@ -20,7 +20,7 @@ let usernameValue = "";
 let profilePicDataUrl = ""; 
 
 // ==========================================
-// THEME SWITCHER LOGIC (Dark / Light Mode)
+// THEME SWITCHER LOGIC
 // ==========================================
 function initTheme() {
     const savedTheme = localStorage.getItem('ngl_theme') || 'dark';
@@ -42,7 +42,6 @@ function updateThemeIcon(theme) {
         btn.innerHTML = theme === 'dark' ? '<i class="fa-solid fa-sun" style="color: #facc15;"></i>' : '<i class="fa-solid fa-moon"></i>';
     }
 }
-// ==========================================
 
 function showCustomAlert(message, title = "Nostelgic NGL") {
     return new Promise((resolve) => {
@@ -117,9 +116,8 @@ function goToScreen(screenNumber) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-    initTheme(); // Theme initialize karo
+    initTheme();
 
-    // Theme Toggle Button Event Listener
     const themeBtn = document.getElementById('theme-toggle-btn');
     if (themeBtn) {
         themeBtn.addEventListener('click', toggleTheme);
@@ -133,17 +131,7 @@ window.addEventListener('DOMContentLoaded', () => {
         profilePicDataUrl = savedPic || "";
         
         updateDisplayedLink();
-        
-        const dashImg = document.getElementById('dash-img-tag');
-        const dashIcon = document.getElementById('dash-default-icon');
-        
-        if (profilePicDataUrl) {
-            if(dashImg) { dashImg.src = profilePicDataUrl; dashImg.style.display = 'block'; }
-            if(dashIcon) dashIcon.style.display = 'none';
-        } else {
-            if(dashImg) dashImg.style.display = 'none';
-            if(dashIcon) dashIcon.style.display = 'block';
-        }
+        updateAvatarDisplay();
 
         listenToMessages(usernameValue);
         goToScreen(5);
@@ -166,7 +154,10 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('next-btn-2').addEventListener('click', () => goToScreen(3));
     document.getElementById('username-input').addEventListener('input', validateUsername);
     document.getElementById('next-btn-3').addEventListener('click', checkAndProceedUsername);
-    document.getElementById('file-input').addEventListener('change', previewImage);
+    
+    // Setup file inputs for both registration and dashboard
+    document.getElementById('file-input').addEventListener('change', handleProfilePicSelect);
+    document.getElementById('global-file-input').addEventListener('change', handleDashboardPicUpdate);
 
     document.getElementById('btn-create-account').addEventListener('click', completeLogin);
     document.getElementById('btn-skip-account').addEventListener('click', completeLogin);
@@ -228,7 +219,7 @@ async function checkAndProceedUsername() {
     }
 }
 
-function previewImage(event) {
+function handleProfilePicSelect(event) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
@@ -240,6 +231,41 @@ function previewImage(event) {
             if(defaultIcon) defaultIcon.style.display = 'none';
         }
         reader.readAsDataURL(file);
+    }
+}
+
+async function handleDashboardPicUpdate(event) {
+    const file = event.target.files[0];
+    if (file && usernameValue) {
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            profilePicDataUrl = e.target.result;
+            localStorage.setItem('ngl_profile_pic', profilePicDataUrl);
+            
+            try {
+                await update(ref(db, `users/${usernameValue}`), {
+                    profilePic: profilePicDataUrl
+                });
+                updateAvatarDisplay();
+                await showCustomAlert("Profile picture updated successfully!", "Success");
+            } catch (err) {
+                console.error("Error updating profile picture:", err);
+            }
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+function updateAvatarDisplay() {
+    const dashImg = document.getElementById('dash-img-tag');
+    const dashIcon = document.getElementById('dash-default-icon');
+    
+    if (profilePicDataUrl) {
+        if(dashImg) { dashImg.src = profilePicDataUrl; dashImg.style.display = 'block'; }
+        if(dashIcon) dashIcon.style.display = 'none';
+    } else {
+        if(dashImg) dashImg.style.display = 'none';
+        if(dashIcon) dashIcon.style.display = 'block';
     }
 }
 
@@ -265,17 +291,7 @@ async function completeLogin() {
     setTimeout(() => {
         if (loadingOverlay) loadingOverlay.style.display = 'none';
         updateDisplayedLink();
-        
-        const dashImg = document.getElementById('dash-img-tag');
-        const dashIcon = document.getElementById('dash-default-icon');
-        if (profilePicDataUrl) {
-            if(dashImg) { dashImg.src = profilePicDataUrl; dashImg.style.display = 'block'; }
-            if(dashIcon) dashIcon.style.display = 'none';
-        } else {
-            if(dashImg) dashImg.style.display = 'none';
-            if(dashIcon) dashIcon.style.display = 'block';
-        }
-
+        updateAvatarDisplay();
         listenToMessages(usernameValue);
         goToScreen(5);
     }, 2500);
@@ -326,7 +342,7 @@ function showPlayView() {
     document.getElementById('main-content-view').innerHTML = `
         <div class="play-view-container">
             <div class="preview-story-card">
-                <div class="story-avatar-wrap">
+                <div class="story-avatar-wrap" id="dash-avatar-wrap" style="cursor: pointer;" title="Change Profile Picture">
                     <i class="fa-solid fa-user" id="dash-default-icon" style="${profilePicDataUrl ? 'display:none;' : ''}"></i>
                     <img id="dash-img-tag" src="${profilePicDataUrl || ''}" alt="Avatar" style="${profilePicDataUrl ? 'display:block;' : 'display:none;'} width:100%; height:100%; object-fit:cover;">
                     <span class="edit-badge"><i class="fa-solid fa-pen"></i></span>
@@ -355,6 +371,9 @@ function showPlayView() {
 
     document.getElementById('btn-copy-link-inner').addEventListener('click', copyLink);
     document.getElementById('btn-share-story-inner').addEventListener('click', copyLink);
+    document.getElementById('dash-avatar-wrap').addEventListener('click', () => {
+        document.getElementById('global-file-input').click();
+    });
 }
 
 function showInboxView() {
