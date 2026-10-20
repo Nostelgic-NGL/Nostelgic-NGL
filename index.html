@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nostelgic NGL - Home</title>
+    <title>Nostelgic NGL</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -34,7 +34,9 @@
             background-color: #f1f5f9 !important;
             color: #0f172a !important;
         }
-        body.light-mode .single-unified-card {
+        body.light-mode .single-unified-card,
+        body.light-mode .message-card,
+        body.light-mode .settings-card {
             background: #ffffff !important;
             border: 1px solid #e2e8f0 !important;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
@@ -53,7 +55,8 @@
             color: #475569 !important;
         }
         body.light-mode .step-title,
-        body.light-mode h3 {
+        body.light-mode h3,
+        body.light-mode .settings-title {
             color: #0f172a !important;
         }
         body.light-mode .nav-tab {
@@ -64,6 +67,9 @@
         }
         body.light-mode .icon-btn {
             color: #0f172a !important;
+        }
+        body.light-mode .msg-text {
+            color: #1e293b !important;
         }
 
         /* Main Container */
@@ -94,6 +100,7 @@
             align-items: center;
             width: 100%;
             padding: 0 4px;
+            flex-shrink: 0;
         }
 
         .nav-tabs {
@@ -107,9 +114,9 @@
         }
 
         .nav-tab {
-            padding: 8px 22px;
+            padding: 8px 18px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             border: none;
@@ -141,7 +148,21 @@
             transform: scale(0.92);
         }
 
-        /* Single Unified Card */
+        /* App Views Container */
+        .app-view {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin: 12px 0;
+            overflow: hidden;
+        }
+
+        .app-view.hidden {
+            display: none !important;
+        }
+
+        /* Single Unified Card (Home View) */
         .single-unified-card {
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(16px);
@@ -153,7 +174,6 @@
             flex-direction: column;
             gap: 18px;
             text-align: center;
-            margin: auto 0;
             transition: all 0.3s ease;
         }
 
@@ -210,7 +230,6 @@
             text-overflow: ellipsis;
             width: 100%;
             user-select: text;
-            transition: color 0.3s ease;
         }
 
         .btn-sm-copy {
@@ -223,10 +242,6 @@
             font-weight: 700;
             cursor: pointer;
             white-space: nowrap;
-            transition: transform 0.1s ease;
-        }
-        .btn-sm-copy:active {
-            transform: scale(0.96);
         }
 
         .btn-action-primary {
@@ -241,10 +256,130 @@
             cursor: pointer;
             font-size: 14px;
             text-align: center;
-            transition: transform 0.1s ease;
         }
-        .btn-action-primary:active {
-            transform: scale(0.97);
+
+        /* Inbox Scrollable Area */
+        .messages-scroll-area {
+            height: 100%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding-right: 4px;
+        }
+
+        .messages-scroll-area::-webkit-scrollbar {
+            width: 4px;
+        }
+        .messages-scroll-area::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .message-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .msg-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: #f8fafc;
+            line-height: 1.4;
+            word-break: break-word;
+            user-select: text;
+        }
+
+        .msg-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-reply {
+            background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .empty-inbox {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: #64748b;
+            gap: 10px;
+        }
+
+        .empty-inbox i {
+            font-size: 48px;
+            color: #334155;
+            margin-bottom: 4px;
+        }
+
+        /* Settings View Card */
+        .settings-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            border-radius: 28px;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .settings-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            font-weight: 700;
+            width: 100%;
+            padding: 14px;
+            border-radius: 35px;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
         }
 
         .hidden { display: none !important; }
@@ -271,49 +406,71 @@
             </button>
             
             <div class="nav-tabs">
-                <button class="nav-tab active">HOME</button>
-                <button id="toInboxBtn" class="nav-tab" type="button">INBOX</button>
+                <button id="navHomeBtn" class="nav-tab active" type="button">HOME</button>
+                <button id="navInboxBtn" class="nav-tab" type="button">INBOX</button>
             </div>
 
-            <!-- Settings Button with Cog Icon -->
-            <button id="settingsBtn" class="icon-btn" type="button" title="Settings">
+            <button id="navSettingsBtn" class="icon-btn" type="button" title="Settings">
                 <i class="fas fa-cog" style="font-size: 14px;"></i>
             </button>
         </div>
 
-        <!-- Single Unified Card -->
-        <div class="single-unified-card">
-            
-            <!-- Profile Section -->
-            <div>
-                <div class="avatar-circle">
-                    <img id="userAvatarImg" src="Default-User.png" alt="Avatar">
+        <!-- ================= 1. HOME VIEW ================= -->
+        <div id="homeView" class="app-view">
+            <div class="single-unified-card">
+                <div>
+                    <div class="avatar-circle">
+                        <img id="userAvatarImg" src="Default-User.png" alt="Avatar">
+                    </div>
+                    <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">send me anonymous messages!</h3>
+                    <p id="platformLabel" style="font-size: 12px; color: #94a3b8; text-transform: capitalize;">Instagram</p>
                 </div>
-                <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">send me anonymous messages!</h3>
-                <p id="platformLabel" style="font-size: 12px; color: #94a3b8; text-transform: capitalize;">Instagram</p>
-            </div>
 
-            <div style="height: 1px; background: rgba(100, 116, 139, 0.2); width: 100%;"></div>
+                <div style="height: 1px; background: rgba(100, 116, 139, 0.2); width: 100%;"></div>
 
-            <!-- Step 1 Section -->
-            <div class="step-section">
-                <p class="step-title">Step 1: Copy your link</p>
-                <div class="link-row">
-                    <span id="profileLinkText" class="link-text">https://loading...</span>
-                    <button id="copyLinkBtn" class="btn-sm-copy" type="button">copy link</button>
+                <div class="step-section">
+                    <p class="step-title">Step 1: Copy your link</p>
+                    <div class="link-row">
+                        <span id="profileLinkText" class="link-text">https://loading...</span>
+                        <button id="copyLinkBtn" class="btn-sm-copy" type="button">copy link</button>
+                    </div>
+                </div>
+
+                <div style="height: 1px; background: rgba(100, 116, 139, 0.2); width: 100%;"></div>
+
+                <div class="step-section">
+                    <p class="step-title">Step 2: Share link on your story</p>
+                    <button id="shareStoryBtn" class="btn-action-primary" type="button">
+                        Share!
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <div style="height: 1px; background: rgba(100, 116, 139, 0.2); width: 100%;"></div>
+        <!-- ================= 2. INBOX VIEW ================= -->
+        <div id="inboxView" class="app-view hidden">
+            <div id="messagesContainer" class="messages-scroll-area">
+                <!-- Messages load here -->
+            </div>
+            <div id="emptyState" class="empty-inbox hidden">
+                <i class="far fa-envelope-open"></i>
+                <p style="font-size: 14px; font-weight: 700;">No messages yet!</p>
+                <p style="font-size: 11px;">Share your link to start receiving anonymous messages.</p>
+            </div>
+        </div>
 
-            <!-- Step 2 Section -->
-            <div class="step-section">
-                <p class="step-title">Step 2: Share link on your story</p>
-                <button id="shareStoryBtn" class="btn-action-primary" type="button">
-                    Share!
+        <!-- ================= 3. SETTINGS VIEW ================= -->
+        <div id="settingsView" class="app-view hidden">
+            <div class="settings-card">
+                <h2 class="settings-title"><i class="fas fa-cog"></i> Account Settings</h2>
+                <p style="font-size: 13px; color: #94a3b8; line-height: 1.4;">Manage your account preferences and session.</p>
+                
+                <div style="height: 1px; background: rgba(100, 116, 139, 0.2); width: 100%; margin: 6px 0;"></div>
+                
+                <button id="logoutBtn" class="btn-logout" type="button">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
                 </button>
             </div>
-
         </div>
 
         <!-- Bottom Spacer -->
