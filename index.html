@@ -29,28 +29,32 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Light Theme Styles */
+        /* Fully Fixed Light Theme Overrides */
         body.light-mode {
-            background-color: #f8fafc;
-            color: #030712;
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
         }
-        body.light-mode .single-unified-card,
-        body.light-mode .nav-tabs,
-        body.light-mode .icon-btn {
-            background: rgba(255, 255, 255, 0.85) !important;
-            border-color: rgba(0, 0, 0, 0.08) !important;
+        body.light-mode .single-unified-card {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
         }
+        body.light-mode .nav-tabs,
+        body.light-mode .icon-btn {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        }
         body.light-mode .link-row {
-            background: #f1f5f9 !important;
-            border-color: #e2e8f0 !important;
+            background: #f8fafc !important;
+            border: 1px solid #cbd5e1 !important;
         }
         body.light-mode .link-text {
-            color: #64748b !important;
+            color: #475569 !important;
         }
         body.light-mode .step-title,
         body.light-mode h3 {
-            color: #1e293b !important;
+            color: #0f172a !important;
         }
         body.light-mode .nav-tab {
             color: #64748b !important;
@@ -59,10 +63,10 @@
             color: #ffffff !important;
         }
         body.light-mode .icon-btn {
-            color: #1e293b !important;
+            color: #0f172a !important;
         }
 
-        /* Main Container filling the screen naturally like an App */
+        /* Main Container */
         .main-container {
             width: 100%;
             max-width: 420px;
@@ -99,6 +103,7 @@
             display: flex;
             padding: 3px;
             gap: 4px;
+            transition: all 0.3s ease;
         }
 
         .nav-tab {
@@ -130,7 +135,7 @@
             justify-content: center;
             color: #f8fafc;
             cursor: pointer;
-            transition: transform 0.1s ease;
+            transition: all 0.3s ease;
         }
         .icon-btn:active {
             transform: scale(0.92);
@@ -149,6 +154,7 @@
             gap: 18px;
             text-align: center;
             margin: auto 0;
+            transition: all 0.3s ease;
         }
 
         .avatar-circle {
@@ -183,6 +189,7 @@
             font-weight: 700;
             text-align: center;
             color: #cbd5e1;
+            transition: color 0.3s ease;
         }
 
         .link-row {
@@ -192,6 +199,7 @@
             border: 1px solid #1e293b;
             border-radius: 16px;
             padding: 4px 4px 4px 14px;
+            transition: all 0.3s ease;
         }
 
         .link-text {
@@ -202,6 +210,7 @@
             text-overflow: ellipsis;
             width: 100%;
             user-select: text;
+            transition: color 0.3s ease;
         }
 
         .btn-sm-copy {
@@ -279,11 +288,11 @@
                 <div class="avatar-circle">
                     <img id="userAvatarImg" src="Default-User.png" alt="Avatar">
                 </div>
-                <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">send me anonymous messages!</h3>
+                <h3 id="cardTitleText" style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">send me anonymous messages!</h3>
                 <p id="platformLabel" style="font-size: 12px; color: #94a3b8; text-transform: capitalize;">Instagram</p>
             </div>
 
-            <div style="height: 1px; background: rgba(255, 255, 255, 0.08); width: 100%;"></div>
+            <div style="height: 1px; background: rgba(100, 116, 139, 0.2); width: 100%;"></div>
 
             <!-- Step 1 Section -->
             <div class="step-section">
@@ -294,7 +303,7 @@
                 </div>
             </div>
 
-            <div style="height: 1px; background: rgba(255, 255, 255, 0.08); width: 100%;"></div>
+            <div style="height: 1px; background: rgba(100, 116, 139, 0.2); width: 100%;"></div>
 
             <!-- Step 2 Section -->
             <div class="step-section">
@@ -306,7 +315,7 @@
 
         </div>
 
-        <!-- Bottom Spacer for Balance -->
+        <!-- Bottom Spacer -->
         <div></div>
 
     </div>
