@@ -31,7 +31,7 @@
             width: 100%;
             max-width: 420px;
             min-height: 100vh;
-            background: rgba(15, 23, 42, 0.95);
+            background: #030712;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -51,14 +51,14 @@
             }
         }
 
-        /* Real NGL Style Welcome Screen with Vibrant Gradient */
+        /* Welcome screen matched with website dark theme background */
         .welcome-gradient-screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(180deg, #ff007f 0%, #ff5500 100%);
+            background: #030712;
             z-index: 20;
             display: flex;
             flex-direction: column;
@@ -73,7 +73,6 @@
             display: none !important;
         }
 
-        /* Big Logo & Title Styling matching reference */
         .brand-logo-container {
             display: flex;
             flex-direction: column;
@@ -92,16 +91,13 @@
         }
 
         .brand-title-lg {
-            font-size: 42px;
+            font-size: 38px;
             font-weight: 900;
-            font-style: italic;
             color: #ffffff;
-            text-shadow: 3px 3px 0px #000000;
-            letter-spacing: -1px;
+            letter-spacing: -0.5px;
             text-align: center;
         }
 
-        /* Big White Pill Button */
         .btn-pill-white {
             background: #ffffff;
             color: #000000;
@@ -137,9 +133,9 @@
     <!-- Phone Display Container -->
     <div class="phone-container">
         
-        <!-- ================= WELCOME SCREEN (REAL NGL STYLE GRADIENT) ================= -->
+        <!-- ================= WELCOME SCREEN (MATCHED WITH WEBSITE BG) ================= -->
         <div id="welcomeScreen" class="welcome-gradient-screen">
-            <div></div> <!-- Spacer -->
+            <div></div>
             
             <div class="brand-logo-container">
                 <img src="Nostelgic-NGL.png" alt="Logo" class="brand-large-logo">
@@ -150,7 +146,7 @@
                 <button id="getStartedBtn" class="btn-pill-white">
                     Get Started!
                 </button>
-                <p style="color: rgba(255, 255, 255, 0.9); font-size: 11px; text-align: center; line-height: 1.4;">
+                <p style="color: #94a3b8; font-size: 11px; text-align: center; line-height: 1.4;">
                     By continuing, you agree to our <a href="#" style="color: #fff; text-decoration: underline;">Terms of Use</a> and have read and agreed to our <a href="#" style="color: #fff; text-decoration: underline;">Privacy Policy</a>[cite: 20].
                 </p>
             </div>
