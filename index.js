@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             await remove(ref(rtdb, `messages/${uid}/${msgId}`));
                             card.remove();
                             if (messagesContainer.children.length === 0) {
-                                emptyState.classList.remove('hidden');
+                                emptyState.classList.add('hidden');
                             }
                             showCustomAlert("Message deleted.");
                         } catch (err) {
@@ -230,21 +230,97 @@ document.addEventListener('DOMContentLoaded', async () => {
                         }
                     });
 
-                    // Share Reply with Link
+                    // Share Reply - Direct Instagram Story Card Generator
                     card.querySelector('.btn-reply').addEventListener('click', (e) => {
                         const replyBtn = e.currentTarget;
                         const text = decodeURIComponent(replyBtn.getAttribute('data-text'));
-                        const shareText = `"${text}"\n\nAnswered on my Nostelgic NGL! Ask me anything 👇\n${profileUrl}`;
 
-                        if (navigator.share) {
-                            navigator.share({
-                                title: 'Nostelgic NGL Reply',
-                                text: shareText,
-                            }).catch(() => {});
-                        } else {
-                            navigator.clipboard.writeText(shareText);
-                            showCustomAlert("Reply & link copied! Paste it on your story 🚀");
+                        // Create Canvas to draw NGL style card matching user design[cite: 2, 3]
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 1080;
+                        canvas.height = 1920;
+                        const ctx = canvas.getContext('2d');
+
+                        // Background Gradient
+                        const bgGradient = ctx.createLinearGradient(0, 0, 0, 1920);
+                        bgGradient.addColorStop(0, '#030712');
+                        bgGradient.addColorStop(1, '#0f172a');
+                        ctx.fillStyle = bgGradient;
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                        // Helper function for rounded rectangles
+                        ctx.roundRect = function(x, y, w, h, r) {
+                            if (w < 2 * r) r = w / 2;
+                            if (h < 2 * r) r = h / 2;
+                            this.beginPath();
+                            this.moveTo(x + r, y);
+                            this.arcTo(x + w, y, x + w, y + h, r);
+                            this.arcTo(x + w, y + h, x, y + h, r);
+                            this.arcTo(x, y + h, x, y, r);
+                            this.arcTo(x, y, x + w, y, r);
+                            this.closePath();
+                            this.fill();
+                        };
+                        
+                        // Draw Card Box Shadow & Body
+                        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                        ctx.shadowBlur = 60;
+                        ctx.shadowOffsetY = 25;
+                        ctx.fillStyle = '#ffffff';
+                        ctx.roundRect(110, 550, 860, 780, 48);
+                        ctx.shadowBlur = 0; // Reset shadow
+
+                        // Top Header inside card (Gradient Header)
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.roundRect(110, 550, 860, 220, [48, 48, 0, 0]);
+                        ctx.clip();
+                        const cardHeaderGrad = ctx.createLinearGradient(110, 550, 970, 770);
+                        cardHeaderGrad.addColorStop(0, '#db2777');
+                        cardHeaderGrad.addColorStop(1, '#ff5e36');
+                        ctx.fillStyle = cardHeaderGrad;
+                        ctx.fillRect(110, 550, 860, 220);
+                        
+                        // Header Text inside Card
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 42px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('send me anonymous messages!', 540, 680);
+                        ctx.restore();
+
+                        // Message Text (User Question)
+                        ctx.fillStyle = '#0f172a';
+                        ctx.font = 'bold 50px sans-serif';
+                        ctx.textAlign = 'center';
+                        
+                        // Text Wrapping for long messages
+                        const words = text.split(' ');
+                        let line = '';
+                        let y = 920;
+                        const maxWidth = 760;
+                        
+                        for (let n = 0; n < words.length; n++) {
+                            let testLine = line + words[n] + ' ';
+                            let metrics = ctx.measureText(testLine);
+                            let testWidth = metrics.width;
+                            if (testWidth > maxWidth && n > 0) {
+                                ctx.fillText(line, 540, y);
+                                line = words[n] + ' ';
+                                y += 70;
+                            } else {
+                                line = testLine;
+                            }
                         }
+                        ctx.fillText(line, 540, y);
+
+                        // Footer Branding inside Image
+                        ctx.fillStyle = '#94a3b8';
+                        ctx.font = 'bold 30px sans-serif';
+                        ctx.fillText('Nostelgic NGL • Anonymous Q&A', 540, 1750);
+
+                        // Convert canvas to data URL and trigger native Android Story Intent
+                        const dataUrl = canvas.toDataURL('image/png');
+                        window.location.href = `instagram-story://${encodeURIComponent(dataUrl)}`;
                     });
 
                     messagesContainer.appendChild(card);
