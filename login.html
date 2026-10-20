@@ -13,7 +13,9 @@
             padding: 0;
             -webkit-tap-highlight-color: transparent;
             outline: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
+
         body {
             background-color: #030712;
             color: #f8fafc;
@@ -23,7 +25,6 @@
             min-height: 100vh;
             width: 100vw;
             overflow-x: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .phone-container {
@@ -36,6 +37,7 @@
             justify-content: center;
             padding: 20px;
             box-sizing: border-box;
+            position: relative;
         }
 
         @media (min-width: 480px) {
@@ -47,6 +49,75 @@
                 backdrop-filter: blur(12px);
                 margin: 20px;
             }
+        }
+
+        /* Real NGL Style Welcome Screen with Vibrant Gradient */
+        .welcome-gradient-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #ff007f 0%, #ff5500 100%);
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 50px 24px 30px 24px;
+            box-sizing: border-box;
+            border-radius: inherit;
+        }
+
+        .welcome-gradient-screen.hidden {
+            display: none !important;
+        }
+
+        /* Big Logo & Title Styling matching reference */
+        .brand-logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            gap: 16px;
+        }
+
+        .brand-large-logo {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .brand-title-lg {
+            font-size: 42px;
+            font-weight: 900;
+            font-style: italic;
+            color: #ffffff;
+            text-shadow: 3px 3px 0px #000000;
+            letter-spacing: -1px;
+            text-align: center;
+        }
+
+        /* Big White Pill Button */
+        .btn-pill-white {
+            background: #ffffff;
+            color: #000000;
+            font-weight: 800;
+            font-size: 17px;
+            width: 100%;
+            padding: 18px;
+            border-radius: 40px;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: transform 0.1s ease;
+        }
+        .btn-pill-white:active {
+            transform: scale(0.97);
         }
 
         .hidden { display: none !important; }
@@ -66,7 +137,26 @@
     <!-- Phone Display Container -->
     <div class="phone-container">
         
-        <!-- Header Logo -->
+        <!-- ================= WELCOME SCREEN (REAL NGL STYLE GRADIENT) ================= -->
+        <div id="welcomeScreen" class="welcome-gradient-screen">
+            <div></div> <!-- Spacer -->
+            
+            <div class="brand-logo-container">
+                <img src="Nostelgic-NGL.png" alt="Logo" class="brand-large-logo">
+                <h1 class="brand-title-lg">Nostelgic NGL</h1>
+            </div>
+
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 14px;">
+                <button id="getStartedBtn" class="btn-pill-white">
+                    Get Started!
+                </button>
+                <p style="color: rgba(255, 255, 255, 0.9); font-size: 11px; text-align: center; line-height: 1.4;">
+                    By continuing, you agree to our <a href="#" style="color: #fff; text-decoration: underline;">Terms of Use</a> and have read and agreed to our <a href="#" style="color: #fff; text-decoration: underline;">Privacy Policy</a>[cite: 20].
+                </p>
+            </div>
+        </div>
+
+        <!-- Header Logo for Subsequent Steps -->
         <div id="headerLogoArea" class="text-center" style="margin-bottom: 20px;">
             <div style="display: flex; justify-content: center; margin-bottom: 8px;">
                 <img src="Nostelgic-NGL.png" alt="Logo" style="width: 45px; height: 45px; object-fit: contain; border-radius: 12px;">
@@ -75,16 +165,6 @@
                 Nostelgic NGL
             </h1>
             <p id="stepIndicator" style="color: #94a3b8; font-size: 12px; margin-top: 4px;">Secure Anonymous Messaging Platform</p>
-        </div>
-
-        <!-- WELCOME / GET STARTED SCREEN -->
-        <div id="welcomeScreen" class="text-center" style="display: flex; flex-direction: column; gap: 14px;">
-            <p style="color: #cbd5e1; font-size: 13px; line-height: 1.5;">
-                Generate your personalized link to receive secure, anonymous messages and confessions from your peers.
-            </p>
-            <button id="getStartedBtn" class="btn-primary" style="margin-top: 6px;">
-                Get Started <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
-            </button>
         </div>
 
         <!-- STEP 1: Choose Platform -->
@@ -117,7 +197,7 @@
             <button id="backBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 12px; cursor: pointer; padding: 4px;">Back</button>
         </div>
 
-        <!-- STEP 3: Profile Photo Upload (With Gallery Button Trigger) -->
+        <!-- STEP 3: Profile Photo Upload -->
         <div id="step3" class="hidden text-center" style="display: flex; flex-direction: column; gap: 14px;">
             <p style="font-size: 13px; color: #cbd5e1;">Upload Profile Photo (Optional)</p>
             
@@ -127,7 +207,6 @@
                     <img id="previewImg" class="hidden" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;" />
                 </div>
                 
-                <!-- Custom Gallery Picker Button -->
                 <button type="button" id="uploadBtnTrigger" style="background: rgba(236, 72, 153, 0.15); border: 1px solid #ec4899; color: #f472b6; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer;">
                     <i class="fas fa-image" style="margin-right: 6px;"></i> Choose from Gallery
                 </button>
