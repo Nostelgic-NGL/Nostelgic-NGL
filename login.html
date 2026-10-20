@@ -50,7 +50,6 @@
             }
         }
 
-        /* Welcome screen matched with website dark theme background */
         .welcome-gradient-screen {
             position: absolute;
             top: 0;
@@ -97,7 +96,6 @@
             text-align: center;
         }
 
-        /* Real NGL Style Platform Selection Cards matching reference */
         .platform-card-ngl {
             background: #1e2538;
             border: 2px solid transparent;
@@ -115,7 +113,6 @@
             background: #252e46;
         }
 
-        /* Big White Pill Button matching reference */
         .btn-pill-white {
             background: #ffffff;
             color: #000000;
@@ -178,15 +175,13 @@
                     Get Started!
                 </button>
                 <p style="color: #94a3b8; font-size: 11px; text-align: center; line-height: 1.4;">
-                    By continuing, you agree to our <a href="#" style="color: #fff; text-decoration: underline;">Terms of Use</a> and have read and agreed to our <a href="#" style="color: #fff; text-decoration: underline;">Privacy Policy</a>[cite: 20].
+                    By continuing, you agree to our <a href="#" style="color: #fff; text-decoration: underline;">Terms of Use</a> and have read and agreed to our <a href="#" style="color: #fff; text-decoration: underline;">Privacy Policy</a>.
                 </p>
             </div>
         </div>
 
-        <!-- ================= STEP 1: CHOOSE PLATFORM (MATCHED WITH REFERENCE) ================= -->
+        <!-- ================= STEP 1: CHOOSE PLATFORM ================= -->
         <div id="step1" class="hidden" style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
-            
-            <!-- Top Header with Back Arrow -->
             <div>
                 <button id="step1BackBtn" style="background: transparent; border: none; color: #ffffff; font-size: 22px; cursor: pointer; padding: 4px; margin-bottom: 20px;">
                     <i class="fas fa-chevron-left"></i>
@@ -197,45 +192,37 @@
                 </h2>
             </div>
 
-            <!-- Platform Cards Container -->
             <div style="display: flex; flex-direction: column; gap: 12px; margin: auto 0;">
-                
-                <!-- Instagram Card -->
                 <div class="platform-card-ngl selected" data-platform="instagram">
                     <div style="display: flex; align-items: center; gap: 14px;">
                         <img src="Insta_Logo.png" alt="Insta" style="width: 28px; height: 28px; object-fit: contain;">
-                        <span style="font-size: 16px; font-weight: 700;">Instagram</span>[cite: 34]
+                        <span style="font-size: 16px; font-weight: 700;">Instagram</span>
                     </div>
-                    <div style="width: 20px; height: 20px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center;">
+                    <div class="radio-indicator" style="width: 20px; height: 20px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center;">
                         <div style="width: 8px; height: 8px; border-radius: 50%; background: #030712;"></div>
                     </div>
                 </div>
 
-                <!-- X / Twitter Card -->
                 <div class="platform-card-ngl" data-platform="twitter">
                     <div style="display: flex; align-items: center; gap: 14px;">
                         <div style="width: 28px; height: 28px; background: #000; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 14px;">𝕏</div>
-                        <span style="font-size: 16px; font-weight: 700;">X / Twitter</span>[cite: 34]
+                        <span style="font-size: 16px; font-weight: 700;">X / Twitter</span>
                     </div>
-                    <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #475569;"></div>
+                    <div class="radio-indicator" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #475569;"></div>
                 </div>
 
-                <!-- Snapchat Card -->
                 <div class="platform-card-ngl" data-platform="snapchat">
                     <div style="display: flex; align-items: center; gap: 14px;">
                         <img src="Snap_Logo.png" alt="Snap" style="width: 28px; height: 28px; object-fit: contain;">
-                        <span style="font-size: 16px; font-weight: 700;">Snapchat</span>[cite: 34]
+                        <span style="font-size: 16px; font-weight: 700;">Snapchat</span>
                     </div>
-                    <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #475569;"></div>
+                    <div class="radio-indicator" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #475569;"></div>
                 </div>
-
             </div>
 
-            <!-- Bottom Continue Button -->
             <div style="padding-bottom: 10px;">
-                <button id="platformNextBtn" class="btn-pill-white">Continue</button>[cite: 34]
+                <button id="platformNextBtn" class="btn-pill-white">Continue</button>
             </div>
-
         </div>
 
         <!-- ================= STEP 2: CHOOSE USERNAME ================= -->
