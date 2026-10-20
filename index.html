@@ -7,25 +7,80 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            margin: 0;
-            padding: 10px 14px;
+        * {
             box-sizing: border-box;
-            height: 100vh;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #030712;
+            color: #f8fafc;
+            min-height: 100vh;
+            width: 100vw;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            background-color: #030712;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
+        /* Light Theme Styles */
+        body.light-mode {
+            background-color: #f8fafc;
+            color: #030712;
+        }
+        body.light-mode .single-unified-card,
+        body.light-mode .nav-tabs,
+        body.light-mode .icon-btn {
+            background: rgba(255, 255, 255, 0.85) !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+        }
+        body.light-mode .link-row {
+            background: #f1f5f9 !important;
+            border-color: #e2e8f0 !important;
+        }
+        body.light-mode .link-text {
+            color: #64748b !important;
+        }
+        body.light-mode .step-title,
+        body.light-mode h3 {
+            color: #1e293b !important;
+        }
+        body.light-mode .nav-tab {
+            color: #64748b !important;
+        }
+        body.light-mode .nav-tab.active {
+            color: #ffffff !important;
+        }
+        body.light-mode .icon-btn {
+            color: #1e293b !important;
+        }
+
+        /* Main Container filling the screen naturally like an App */
         .main-container {
             width: 100%;
-            max-width: 380px;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 850px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            justify-content: space-between;
+            padding: 20px 16px;
+        }
+
+        @media (min-width: 480px) {
+            .main-container {
+                height: 90vh;
+                border-radius: 36px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+            }
         }
 
         /* Top Navigation Bar */
@@ -34,7 +89,7 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            padding: 0 2px;
+            padding: 0 4px;
         }
 
         .nav-tabs {
@@ -47,9 +102,9 @@
         }
 
         .nav-tab {
-            padding: 7px 18px;
+            padding: 8px 22px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             border: none;
@@ -67,37 +122,42 @@
         .icon-btn {
             background: rgba(15, 23, 42, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            width: 38px;
-            height: 38px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #f8fafc;
             cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        .icon-btn:active {
+            transform: scale(0.92);
         }
 
-        /* Single Unified Card containing everything */
+        /* Single Unified Card */
         .single-unified-card {
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            border-radius: 24px;
-            padding: 16px;
+            border-radius: 28px;
+            padding: 22px 18px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 18px;
             text-align: center;
+            margin: auto 0;
         }
 
         .avatar-circle {
-            width: 54px;
-            height: 54px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            margin: 0 auto 6px auto;
+            margin: 0 auto 8px auto;
             border: 2px solid #ec4899;
-            box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
             overflow: hidden;
             background: #020617;
             display: flex;
@@ -114,12 +174,12 @@
         .step-section {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             text-align: left;
         }
 
         .step-title {
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 700;
             text-align: center;
             color: #cbd5e1;
@@ -130,29 +190,34 @@
             align-items: center;
             background: #020617;
             border: 1px solid #1e293b;
-            border-radius: 14px;
-            padding: 4px 4px 4px 12px;
+            border-radius: 16px;
+            padding: 4px 4px 4px 14px;
         }
 
         .link-text {
-            font-size: 11px;
+            font-size: 12px;
             color: #94a3b8;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             width: 100%;
+            user-select: text;
         }
 
         .btn-sm-copy {
             background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
             color: #ffffff;
             border: none;
-            padding: 9px 14px;
-            border-radius: 10px;
-            font-size: 11px;
+            padding: 11px 18px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             white-space: nowrap;
+            transition: transform 0.1s ease;
+        }
+        .btn-sm-copy:active {
+            transform: scale(0.96);
         }
 
         .btn-action-primary {
@@ -160,25 +225,31 @@
             color: #ffffff;
             font-weight: 700;
             width: 100%;
-            padding: 12px;
-            border-radius: 30px;
+            padding: 14px;
+            border-radius: 35px;
             border: none;
             box-shadow: 0 8px 20px rgba(255, 94, 54, 0.3);
             cursor: pointer;
-            font-size: 13px;
+            font-size: 14px;
             text-align: center;
+            transition: transform 0.1s ease;
         }
+        .btn-action-primary:active {
+            transform: scale(0.97);
+        }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <!-- Custom Alert Modal -->
     <div id="customAlertModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000;">
-        <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); padding: 25px; border-radius: 22px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.8); max-width: 280px; width: 90%;">
-            <div style="font-size: 28px; margin-bottom: 10px; color: #ec4899;"><i class="fas fa-info-circle"></i></div>
-            <h3 style="color: #f8fafc; font-size: 15px; font-weight: 700; margin-bottom: 4px;">Notification</h3>
-            <p id="customAlertText" style="color: #94a3b8; font-size: 12px; margin-bottom: 16px; line-height: 1.4;">Action successful!</p>
-            <button id="customAlertOkBtn" style="background: linear-gradient(135deg, #db2777, #7c3aed); color: #ffffff; border: none; width: 100%; padding: 10px; border-radius: 20px; font-weight: 700; font-size: 12px; cursor: pointer;">OK</button>
+        <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); padding: 30px; border-radius: 24px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.8); max-width: 280px; width: 90%;">
+            <div style="font-size: 32px; margin-bottom: 12px; color: #ec4899;"><i class="fas fa-info-circle"></i></div>
+            <h3 style="color: #f8fafc; font-size: 16px; font-weight: 700; margin-bottom: 6px;">Notification</h3>
+            <p id="customAlertText" style="color: #94a3b8; font-size: 12px; margin-bottom: 20px; line-height: 1.4;">Action successful!</p>
+            <button id="customAlertOkBtn" style="background: linear-gradient(135deg, #db2777, #7c3aed); color: #ffffff; border: none; width: 100%; padding: 12px; border-radius: 30px; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 5px 15px rgba(219,39,119,0.4);">OK</button>
         </div>
     </div>
 
@@ -187,7 +258,7 @@
         <!-- Top Navigation Bar -->
         <div class="top-nav">
             <button id="themeToggleBtn" class="icon-btn" type="button">
-                <i class="fas fa-moon" style="font-size: 13px;"></i>
+                <i id="themeIcon" class="fas fa-moon" style="font-size: 14px;"></i>
             </button>
             
             <div class="nav-tabs">
@@ -196,7 +267,7 @@
             </div>
 
             <button id="logoutBtn" class="icon-btn" style="color: #f87171;" type="button">
-                <i class="fas fa-sign-out-alt" style="font-size: 13px;"></i>
+                <i class="fas fa-sign-out-alt" style="font-size: 14px;"></i>
             </button>
         </div>
 
@@ -208,11 +279,11 @@
                 <div class="avatar-circle">
                     <img id="userAvatarImg" src="Default-User.png" alt="Avatar">
                 </div>
-                <h3 style="font-size: 13px; font-weight: 800; margin-bottom: 2px;">send me anonymous messages!</h3>
-                <p id="platformLabel" style="font-size: 11px; color: #94a3b8; text-transform: capitalize;">Instagram</p>
+                <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">send me anonymous messages!</h3>
+                <p id="platformLabel" style="font-size: 12px; color: #94a3b8; text-transform: capitalize;">Instagram</p>
             </div>
 
-            <div style="height: 1px; background: rgba(255, 255, 255, 0.06); width: 100%;"></div>
+            <div style="height: 1px; background: rgba(255, 255, 255, 0.08); width: 100%;"></div>
 
             <!-- Step 1 Section -->
             <div class="step-section">
@@ -223,7 +294,7 @@
                 </div>
             </div>
 
-            <div style="height: 1px; background: rgba(255, 255, 255, 0.06); width: 100%;"></div>
+            <div style="height: 1px; background: rgba(255, 255, 255, 0.08); width: 100%;"></div>
 
             <!-- Step 2 Section -->
             <div class="step-section">
@@ -234,6 +305,9 @@
             </div>
 
         </div>
+
+        <!-- Bottom Spacer for Balance -->
+        <div></div>
 
     </div>
 
