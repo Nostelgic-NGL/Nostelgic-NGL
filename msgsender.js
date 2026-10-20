@@ -1,7 +1,6 @@
 import { rtdb } from './firebase-config.js';
-import { ref, set, get, child, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { ref, get, child, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// Custom Alert Function
 function showCustomAlert(message, callback) {
     const alertModal = document.getElementById('customAlertModal');
     const alertText = document.getElementById('customAlertText');
@@ -29,6 +28,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const anonymousMessageInput = document.getElementById('anonymousMessageInput');
     const sendMessageBtn = document.getElementById('sendMessageBtn');
     
+    // Sections
+    const formSection = document.getElementById('formSection');
+    const successSection = document.getElementById('successSection');
+    const sendAnotherBtn = document.getElementById('sendAnotherBtn');
+
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
 
@@ -61,12 +65,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         const dbRef = ref(rtdb);
-        // Find UID from username
         const usernameSnapshot = await get(child(dbRef, `usernames/${username}`));
         if (usernameSnapshot.exists()) {
             targetUid = usernameSnapshot.val().uid;
             
-            // Fetch User Profile Data
             const userSnapshot = await get(child(dbRef, `users/${targetUid}`));
             if (userSnapshot.exists()) {
                 const userData = userSnapshot.val();
@@ -87,7 +89,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error("Error fetching target user:", error);
     }
 
-    // Send Anonymous Message Action
+    // Send Message Action -> Switch to Success Step
     if (sendMessageBtn) {
         sendMessageBtn.addEventListener('click', async () => {
             const messageText = anonymousMessageInput.value.trim();
@@ -109,13 +111,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
 
                 anonymousMessageInput.value = '';
-                showCustomAlert("Your anonymous message has been sent successfully! 🚀", () => {
-                    // Optional: redirect or reload
-                });
+                
+                // Switch to 2nd Step (Success & Options View)
+                formSection.classList.add('hidden');
+                successSection.classList.remove('hidden');
+
             } catch (error) {
                 console.error("Error sending message:", error);
                 showCustomAlert("Failed to send message. Try again.");
             }
+        });
+    }
+
+    // Send Another Message Button Click -> Switch back to Form Step
+    if (sendAnotherBtn) {
+        sendAnotherBtn.addEventListener('click', () => {
+            successSection.classList.add('hidden');
+            formSection.classList.remove('hidden');
         });
     }
 });
