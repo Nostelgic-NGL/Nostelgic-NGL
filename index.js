@@ -12,7 +12,7 @@ function showCustomAlert(message) {
 
     if (okBtn) {
         okBtn.onclick = () => {
-            alertModal.classList.add('hidden');
+            if (alertModal) alertModal.classList.add('hidden');
         };
     }
 }
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         copyLinkBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(profileUrl).then(() => {
                 showCustomAlert("Link copied to clipboard! 📋");
-            }).catch(err => {
+            }).catch(() => {
                 showCustomAlert("Failed to copy link.");
             });
         });
