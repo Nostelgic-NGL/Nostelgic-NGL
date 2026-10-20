@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const snapshot = await get(child(dbRef, `usernames/${username}`));
                 if (snapshot.exists()) {
                     if (usernameErrorText) {
-                        usernameErrorText.innerText = "This username is not available. Please try a different one.";
+                        usernameErrorText.innerText = "This username is not available for use. Please try a different one.";
                         usernameErrorText.classList.remove('hidden');
                     }
                     return;
