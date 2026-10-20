@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
 
-    // Theme Toggle Logic
+    // Theme Toggle Initialization & Handler
     const savedTheme = localStorage.getItem('ngl_theme') || 'dark';
     if (savedTheme === 'light') {
         document.body.classList.add('light-mode');
