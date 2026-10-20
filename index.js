@@ -47,9 +47,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Settings Options
     const pauseLinkOption = document.getElementById('pauseLinkOption');
-    const supportOption = document.getElementById('supportOption');
-    const feedbackOption = document.getElementById('feedbackOption');
-    const followDevOption = document.getElementById('followDevOption');
     const deleteAccountOption = document.getElementById('deleteAccountOption');
     const logoutBtn = document.getElementById('logoutBtn');
 
@@ -124,9 +121,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (error) {
         console.error("Error loading profile:", error);
-        const username = localStorage.getItem('ngl_username') || 'user';
-        profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
-        if (profileLinkText) profileLinkText.innerText = profileUrl;
     }
 
     // Copy Link Action
@@ -172,27 +166,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-pause-circle" style="color: #ec4899; margin-right: 8px;"></i> Pause my link';
                 showCustomAlert("Your link is now active again! 🚀");
             }
-        });
-    }
-
-    // Support Gmail Link
-    if (supportOption) {
-        supportOption.addEventListener('click', () => {
-            window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Support%20Request%20-%20Nostelgic%20NGL";
-        });
-    }
-
-    // Feedback Gmail Link
-    if (feedbackOption) {
-        feedbackOption.addEventListener('click', () => {
-            window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Feedback%20-%20Nostelgic%20NGL";
-        });
-    }
-
-    // Follow Developer Instagram Direct Link
-    if (followDevOption) {
-        followDevOption.addEventListener('click', () => {
-            window.open("https://instagram.com/Jitu_Gurjar_99", "_blank");
         });
     }
 
@@ -279,7 +252,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error("Error loading messages:", error);
             messagesContainer.innerHTML = '';
-            emptyState.classList.remove('hidden');
+            emptyState.classList.add('hidden');
         }
     }
 
