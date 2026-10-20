@@ -227,7 +227,7 @@
             </div>
         </div>
 
-        <!-- ================= STEP 2: CHOOSE USERNAME ================= -->
+        <!-- ================= STEP 2: CHOOSE USERNAME & CREATE ACCOUNT ================= -->
         <div id="step2" class="hidden" style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
             <div>
                 <button id="step2BackBtn" type="button" style="background: transparent; border: none; color: #ffffff; font-size: 22px; cursor: pointer; padding: 4px; margin-bottom: 20px;">
@@ -242,38 +242,7 @@
             </div>
 
             <div style="padding-bottom: 10px;">
-                <button id="usernameNextBtn" class="btn-pill-white" type="button">Continue</button>
-            </div>
-        </div>
-
-        <!-- ================= STEP 3: PROFILE PICTURE ================= -->
-        <div id="step3" class="hidden" style="display: flex; flex-direction: column; height: 100%; justify-content: space-between; text-align: center;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <button id="step3BackBtn" type="button" style="background: transparent; border: none; color: #ffffff; font-size: 22px; cursor: pointer; padding: 4px;">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <span id="skipBtn" style="color: #94a3b8; font-size: 15px; font-weight: 600; cursor: pointer;">skip</span>
-            </div>
-            
-            <div style="display: flex; flex-direction: column; align-items: center; margin: auto 0;">
-                <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 40px;">Choose a profile picture</h2>
-                
-                <div id="avatarPreviewContainer" style="width: 140px; height: 140px; border-radius: 50%; border: 3px solid #334155; position: relative; display: flex; align-items: center; justify-content: center; background: #161e31; cursor: pointer; overflow: hidden; margin-bottom: 20px;">
-                    <img id="previewImg" class="hidden" style="width: 100%; height: 100%; object-fit: cover; position: absolute;" />
-                    <i class="fas fa-user" id="defaultUserIcon" style="font-size: 60px; color: #475569;"></i>
-                    
-                    <div style="position: absolute; bottom: 5px; right: 5px; width: 36px; height: 36px; background: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000000; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                        <i class="fas fa-plus" style="font-size: 16px; font-weight: 900;"></i>
-                    </div>
-                </div>
-                
-                <!-- Native file input jo Google Photos aur Gallery kholta hai -->
-                <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
-            </div>
-
-            <div style="padding-bottom: 10px; display: flex; flex-direction: column; gap: 10px;">
-                <button id="choosePhotoBtn" class="btn-pill-white" type="button">Choose photo</button>
-                <button id="createAccountBtn" class="btn-pill-white hidden" type="button" style="background: linear-gradient(135deg, #db2777, #7c3aed); color: #fff;">Create Account 🚀</button>
+                <button id="usernameNextBtn" class="btn-pill-white" type="button" style="background: linear-gradient(135deg, #db2777, #7c3aed); color: #fff;">Create Account 🚀</button>
             </div>
         </div>
 
