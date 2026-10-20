@@ -144,7 +144,7 @@ async function saveUserDataToDatabase() {
         localStorage.setItem('ngl_uid', user.uid);
         localStorage.setItem('ngl_username', userData.username);
 
-        window.location.href = "dashboard.html";
+        window.location.href = "index.html";
 
     } catch (error) {
         loadingOverlay.classList.add('hidden');
