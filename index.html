@@ -1,245 +1,540 @@
-import { auth, rtdb } from './firebase-config.js';
-import { ref, get, child, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-// Custom Alert Function
-function showCustomAlert(message) {
-    const alertModal = document.getElementById('customAlertModal');
-    const alertText = document.getElementById('customAlertText');
-    const okBtn = document.getElementById('customAlertOkBtn');
-    
-    if (alertText) alertText.innerText = message;
-    if (alertModal) alertModal.classList.remove('hidden');
-
-    if (okBtn) {
-        okBtn.onclick = () => {
-            if (alertModal) alertModal.classList.add('hidden');
-        };
-    }
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const uid = localStorage.getItem('ngl_uid');
-    if (!uid) {
-        window.location.replace("login.html");
-        return;
-    }
-
-    // Views
-    const homeView = document.getElementById('homeView');
-    const inboxView = document.getElementById('inboxView');
-    const settingsView = document.getElementById('settingsView');
-
-    // Nav Buttons
-    const navHomeBtn = document.getElementById('navHomeBtn');
-    const navInboxBtn = document.getElementById('navInboxBtn');
-    const settingsBtn = document.getElementById('settingsBtn');
-
-    // Home Elements
-    const profileLinkText = document.getElementById('profileLinkText');
-    const userAvatarImg = document.getElementById('userAvatarImg');
-    const platformLabel = document.getElementById('platformLabel');
-    const copyLinkBtn = document.getElementById('copyLinkBtn');
-    const shareStoryBtn = document.getElementById('shareStoryBtn');
-
-    // Inbox Elements
-    const messagesContainer = document.getElementById('messagesContainer');
-    const emptyState = document.getElementById('emptyState');
-
-    // Settings & Theme
-    const logoutBtn = document.getElementById('logoutBtn');
-    const themeToggleBtn = document.getElementById('themeToggleBtn');
-    const themeIcon = document.getElementById('themeIcon');
-
-    // Theme Toggle Handler
-    const savedTheme = localStorage.getItem('ngl_theme') || 'dark';
-    if (savedTheme === 'light') {
-        document.body.classList.add('light-mode');
-        if (themeIcon) themeIcon.className = "fas fa-sun";
-    }
-
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            localStorage.setItem('ngl_theme', isLight ? 'light' : 'dark');
-            if (themeIcon) {
-                themeIcon.className = isLight ? "fas fa-sun" : "fas fa-moon";
-            }
-        });
-    }
-
-    // Switch View Function (Instant & Zero Delay)
-    function switchView(viewName) {
-        homeView.classList.add('hidden');
-        inboxView.classList.add('hidden');
-        settingsView.classList.add('hidden');
-
-        navHomeBtn.classList.remove('active');
-        navInboxBtn.classList.remove('active');
-
-        if (viewName === 'home') {
-            homeView.classList.remove('hidden');
-            navHomeBtn.classList.add('active');
-        } else if (viewName === 'inbox') {
-            inboxView.classList.remove('hidden');
-            navInboxBtn.classList.add('active');
-            loadInboxMessages(); // Fetch messages instantly on tab click
-        } else if (viewName === 'settings') {
-            settingsView.classList.remove('hidden');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nostelgic NGL</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-    }
 
-    if (navHomeBtn) navHomeBtn.addEventListener('click', () => switchView('home'));
-    if (navInboxBtn) navInboxBtn.addEventListener('click', () => switchView('inbox'));
-    if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
+        body {
+            background-color: #030712;
+            color: #f8fafc;
+            min-height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
 
-    // Load Profile & Generate Link
-    const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
-    let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
+        /* Light Theme Overrides */
+        body.light-mode {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .single-unified-card,
+        body.light-mode .message-card,
+        body.light-mode .settings-card {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+        }
+        body.light-mode .nav-tabs,
+        body.light-mode .icon-btn {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        }
+        body.light-mode .link-row {
+            background: #f8fafc !important;
+            border: 1px solid #cbd5e1 !important;
+        }
+        body.light-mode .link-text {
+            color: #475569 !important;
+        }
+        body.light-mode .step-title,
+        body.light-mode h3,
+        body.light-mode .settings-title {
+            color: #0f172a !important;
+        }
+        body.light-mode .nav-tab {
+            color: #64748b !important;
+        }
+        body.light-mode .nav-tab.active {
+            color: #ffffff !important;
+        }
+        body.light-mode .icon-btn {
+            color: #0f172a !important;
+        }
+        body.light-mode .msg-text {
+            color: #1e293b !important;
+        }
+        body.light-mode .setting-item {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #0f172a !important;
+        }
 
-    try {
-        const dbRef = ref(rtdb);
-        const snapshot = await get(child(dbRef, `users/${uid}`));
-        if (snapshot.exists()) {
-            const data = snapshot.val();
-            const username = data.username || localStorage.getItem('ngl_username');
-            profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
+        /* Main Container */
+        .main-container {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 850px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 16px;
+        }
+
+        @media (min-width: 480px) {
+            .main-container {
+                height: 90vh;
+                border-radius: 36px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+            }
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 4px;
+            flex-shrink: 0;
+        }
+
+        .nav-tabs {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            display: flex;
+            padding: 3px;
+            gap: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab {
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4);
+        }
+
+        .icon-btn {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f8fafc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .icon-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* App Views Container */
+        .app-view {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin: 12px 0;
+            overflow: hidden;
+        }
+
+        .app-view.hidden {
+            display: none !important;
+        }
+
+        /* Single Unified Card (Home View) */
+        .single-unified-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            border-radius: 28px;
+            padding: 22px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin: 0 auto 8px auto;
+            border: 2px solid #ec4899;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+            overflow: hidden;
+            background: #020617;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .step-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .step-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+            color: #cbd5e1;
+            transition: color 0.3s ease;
+        }
+
+        .link-row {
+            display: flex;
+            align-items: center;
+            background: #020617;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 4px 4px 4px 14px;
+            transition: all 0.3s ease;
+        }
+
+        .link-text {
+            font-size: 12px;
+            color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            user-select: text;
+        }
+
+        .btn-sm-copy {
+            background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
+            color: #ffffff;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-action-primary {
+            background: linear-gradient(135deg, #db2777 0%, #ff5e36 100%);
+            color: #ffffff;
+            font-weight: 700;
+            width: 100%;
+            padding: 14px;
+            border-radius: 35px;
+            border: none;
+            box-shadow: 0 8px 20px rgba(255, 94, 54, 0.3);
+            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* Inbox Scrollable Area */
+        .messages-scroll-area {
+            height: 100%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding-right: 4px;
+        }
+
+        .messages-scroll-area::-webkit-scrollbar {
+            width: 4px;
+        }
+        .messages-scroll-area::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .message-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .msg-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: #f8fafc;
+            line-height: 1.4;
+            word-break: break-word;
+            user-select: text;
+        }
+
+        .msg-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-reply {
+            background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .empty-inbox {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: #64748b;
+            gap: 10px;
+        }
+
+        .empty-inbox i {
+            font-size: 48px;
+            color: #334155;
+            margin-bottom: 4px;
+        }
+
+        /* Settings View Card */
+        .settings-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            border-radius: 28px;
+            padding: 20px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .settings-card::-webkit-scrollbar {
+            width: 4px;
+        }
+        .settings-card::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .settings-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        .setting-item {
+            background: #020617;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            color: #f8fafc;
+            transition: all 0.2s ease;
+        }
+        .setting-item:active {
+            transform: scale(0.98);
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            font-weight: 700;
+            width: 100%;
+            padding: 13px;
+            border-radius: 35px;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Alert Modal -->
+    <div id="customAlertModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000;">
+        <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); padding: 30px; border-radius: 24px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.8); max-width: 280px; width: 90%;">
+            <div style="font-size: 32px; margin-bottom: 12px; color: #ec4899;"><i class="fas fa-info-circle"></i></div>
+            <h3 style="color: #f8fafc; font-size: 16px; font-weight: 700; margin-bottom: 6px;">Notification</h3>
+            <p id="customAlertText" style="color: #94a3b8; font-size: 12px; margin-bottom: 20px; line-height: 1.4;">Action successful!</p>
+            <button id="customAlertOkBtn" style="background: linear-gradient(135deg, #db2777, #7c3aed); color: #ffffff; border: none; width: 100%; padding: 12px; border-radius: 30px; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 5px 15px rgba(219,39,119,0.4);">OK</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        
+        <!-- Top Navigation Bar -->
+        <div class="top-nav">
+            <button id="themeToggleBtn" class="icon-btn" type="button">
+                <i id="themeIcon" class="fas fa-moon" style="font-size: 14px;"></i>
+            </button>
             
-            if (profileLinkText) profileLinkText.innerText = profileUrl;
-            if (platformLabel) platformLabel.innerText = data.platform || 'Instagram';
-            if (data.avatarUrl && userAvatarImg) {
-                userAvatarImg.src = data.avatarUrl;
-            }
-        } else {
-            const username = localStorage.getItem('ngl_username') || 'user';
-            profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
-            if (profileLinkText) profileLinkText.innerText = profileUrl;
-        }
-    } catch (error) {
-        console.error("Error loading profile:", error);
-        const username = localStorage.getItem('ngl_username') || 'user';
-        profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
-        if (profileLinkText) profileLinkText.innerText = profileUrl;
-    }
+            <div class="nav-tabs">
+                <button id="navHomeBtn" class="nav-tab active" type="button">HOME</button>
+                <button id="navInboxBtn" class="nav-tab" type="button">INBOX</button>
+            </div>
 
-    // Copy Link Action
-    if (copyLinkBtn) {
-        copyLinkBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(profileUrl).then(() => {
-                showCustomAlert("Link copied to clipboard! 📋");
-            }).catch(() => {
-                showCustomAlert("Failed to copy link.");
-            });
-        });
-    }
+            <button id="settingsBtn" class="icon-btn" type="button" title="Settings">
+                <i class="fas fa-cog" style="font-size: 14px;"></i>
+            </button>
+        </div>
 
-    // Share Story Action
-    if (shareStoryBtn) {
-        shareStoryBtn.addEventListener('click', () => {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Nostelgic NGL',
-                    text: 'Send me anonymous messages!',
-                    url: profileUrl,
-                }).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(profileUrl);
-                showCustomAlert("Link copied! Share it on your story 🚀");
-            }
-        });
-    }
+        <!-- ================= 1. HOME VIEW ================= -->
+        <div id="homeView" class="app-view">
+            <div class="single-unified-card">
+                <div>
+                    <div class="avatar-circle">
+                        <img id="userAvatarImg" src="Default-User.png" alt="Avatar">
+                    </div>
+                    <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">send me anonymous messages!</h3>
+                    <p id="platformLabel" style="font-size: 12px; color: #94a3b8; text-transform: capitalize;">Instagram</p>
+                </div>
 
-    // Load Inbox Messages Function
-    async function loadInboxMessages() {
-        try {
-            const dbRef = ref(rtdb);
-            const snapshot = await get(child(dbRef, `messages/${uid}`));
-            
-            if (snapshot.exists()) {
-                const messagesData = snapshot.val();
-                messagesContainer.innerHTML = '';
-                emptyState.classList.add('hidden');
+                <div style="height: 1px; background: rgba(100, 116, 139, 0.2); width: 100%;"></div>
+
+                <div class="step-section">
+                    <p class="step-title">Step 1: Copy your link</p>
+                    <div class="link-row">
+                        <span id="profileLinkText" class="link-text">https://loading...</span>
+                        <button id="copyLinkBtn" class="btn-sm-copy" type="button">copy link</button>
+                    </div>
+                </div>
+
+                <div style="height: 1px; background: rgba(100, 116, 139, 0.2); width: 100%;"></div>
+
+                <div class="step-section">
+                    <p class="step-title">Step 2: Share link on your story</p>
+                    <button id="shareStoryBtn" class="btn-action-primary" type="button">
+                        Share!
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 2. INBOX VIEW ================= -->
+        <div id="inboxView" class="app-view hidden">
+            <div id="messagesContainer" class="messages-scroll-area">
+                <!-- Messages load here -->
+            </div>
+            <div id="emptyState" class="empty-inbox hidden">
+                <i class="far fa-envelope-open"></i>
+                <p style="font-size: 14px; font-weight: 700;">No messages yet!</p>
+                <p style="font-size: 11px;">Share your link to start receiving anonymous messages.</p>
+            </div>
+        </div>
+
+        <!-- ================= 3. SETTINGS VIEW ================= -->
+        <div id="settingsView" class="app-view hidden">
+            <div class="settings-card">
+                <h2 class="settings-title"><i class="fas fa-cog"></i> Settings</h2>
                 
-                const messageKeys = Object.keys(messagesData).reverse();
+                <div class="setting-item" id="pauseLinkOption">
+                    <span><i class="fas fa-pause-circle" style="color: #ec4899; margin-right: 8px;"></i> Pause my link</span>
+                    <i class="fas fa-chevron-right" style="font-size: 11px; color: #64748b;"></i>
+                </div>
+
+                <div class="setting-item" id="supportOption">
+                    <span><i class="fas fa-headset" style="color: #3b82f6; margin-right: 8px;"></i> Support</span>
+                    <i class="fas fa-chevron-right" style="font-size: 11px; color: #64748b;"></i>
+                </div>
+
+                <div class="setting-item" id="feedbackOption">
+                    <span><i class="fas fa-comment-dots" style="color: #8b5cf6; margin-right: 8px;"></i> Feedback</span>
+                    <i class="fas fa-chevron-right" style="font-size: 11px; color: #64748b;"></i>
+                </div>
+
+                <div class="setting-item" id="followDevOption">
+                    <span><i class="fab fa-instagram" style="color: #f43f5e; margin-right: 8px;"></i> Follow the developer</span>
+                    <i class="fas fa-external-link-alt" style="font-size: 11px; color: #64748b;"></i>
+                </div>
+
+                <div class="setting-item" id="deleteAccountOption" style="border-color: rgba(239, 68, 68, 0.3);">
+                    <span style="color: #ef4444;"><i class="fas fa-user-slash" style="margin-right: 8px;"></i> Delete account</span>
+                    <i class="fas fa-chevron-right" style="font-size: 11px; color: #ef4444;"></i>
+                </div>
+
+                <div style="height: 1px; background: rgba(100, 116, 139, 0.2); width: 100%; margin: 2px 0;"></div>
                 
-                messageKeys.forEach(msgId => {
-                    const msg = messagesData[msgId];
-                    const card = document.createElement('div');
-                    card.className = 'message-card';
-                    
-                    const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'Just now';
+                <button id="logoutBtn" class="btn-logout" type="button">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </button>
+            </div>
+        </div>
 
-                    card.innerHTML = `
-                        <div class="msg-header">
-                            <span>Anonymous</span>
-                            <span>${dateString}</span>
-                        </div>
-                        <div class="msg-text">${escapeHtml(msg.text)}</div>
-                        <div class="msg-actions">
-                            <button class="btn-delete" data-id="${msgId}"><i class="fas fa-trash"></i> Delete</button>
-                            <button class="btn-reply" data-text="${encodeURIComponent(msg.text)}"><i class="fas fa-share"></i> Share Reply</button>
-                        </div>
-                    `;
+        <!-- Bottom Spacer -->
+        <div></div>
 
-                    // Delete Button
-                    card.querySelector('.btn-delete').addEventListener('click', async () => {
-                        try {
-                            await remove(ref(rtdb, `messages/${uid}/${msgId}`));
-                            card.remove();
-                            if (messagesContainer.children.length === 0) {
-                                emptyState.classList.remove('hidden');
-                            }
-                            showCustomAlert("Message deleted.");
-                        } catch (err) {
-                            showCustomAlert("Failed to delete message.");
-                        }
-                    });
+    </div>
 
-                    // Share Reply
-                    card.querySelector('.btn-reply').addEventListener('click', (e) => {
-                        const replyBtn = e.currentTarget;
-                        const text = decodeURIComponent(replyBtn.getAttribute('data-text'));
-                        if (navigator.share) {
-                            navigator.share({
-                                title: 'Nostelgic NGL Reply',
-                                text: `"${text}" - answered on my NGL!`,
-                            }).catch(() => {});
-                        } else {
-                            navigator.clipboard.writeText(text);
-                            showCustomAlert("Message copied to share on your story! 🚀");
-                        }
-                    });
-
-                    messagesContainer.appendChild(card);
-                });
-            } else {
-                messagesContainer.innerHTML = '';
-                emptyState.classList.remove('hidden');
-            }
-        } catch (error) {
-            console.error("Error loading messages:", error);
-            messagesContainer.innerHTML = '';
-            emptyState.classList.remove('hidden');
-        }
-    }
-
-    // Logout Action
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            localStorage.clear();
-            window.location.replace("login.html");
-        });
-    }
-});
-
-// Helper to prevent XSS injection
-function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-}
+    <script type="module" src="index.js"></script>
+</body>
+</html>
