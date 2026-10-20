@@ -76,10 +76,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (step2BackBtn) step2BackBtn.addEventListener('click', handleBack);
     if (step3BackBtn) step3BackBtn.addEventListener('click', handleBack);
 
-    // Platform Selection Logic
+    // Platform Selection Logic with Snapchat Alert
     platformCards.forEach(card => {
+        const platform = card.getAttribute('data-platform');
+
         const selectAction = (e) => {
             if (e) e.preventDefault();
+
+            if (platform === 'snapchat') {
+                alert("Feature Coming Soon In Next Update 🚀");
+                return;
+            }
+
             platformCards.forEach(c => {
                 c.classList.remove('selected');
                 const indicator = c.querySelector('.radio-indicator');
@@ -88,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             card.classList.add('selected');
-            userData.platform = card.getAttribute('data-platform');
+            userData.platform = platform;
             const activeIndicator = card.querySelector('.radio-indicator');
             if (activeIndicator) {
                 activeIndicator.innerHTML = '<div style="width: 20px; height: 20px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #030712;"></div></div>';
