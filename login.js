@@ -3,7 +3,7 @@ import { signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/fir
 import { ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 let userData = {
-    platform: '',
+    platform: 'instagram',
     username: '',
     avatarBase64: 'Default-User.png'
 };
@@ -15,32 +15,125 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    const welcomeScreen = document.getElementById('welcomeScreen');
     const getStartedBtn = document.getElementById('getStartedBtn');
-    const instaBtn = document.getElementById('instaBtn');
-    const snapBtn = document.getElementById('snapBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const backBtn = document.getElementById('backBtn');
-    const completeBtn = document.getElementById('completeBtn');
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    
+    const step1BackBtn = document.getElementById('step1BackBtn');
+    const step2BackBtn = document.getElementById('step2BackBtn');
+    const step3BackBtn = document.getElementById('step3BackBtn');
     const skipBtn = document.getElementById('skipBtn');
-    const avatarFileInput = document.getElementById('avatarFileInput');
-    const uploadBtnTrigger = document.getElementById('uploadBtnTrigger');
+    
+    const platformCards = document.querySelectorAll('.platform-card-ngl');
+    const platformNextBtn = document.getElementById('platformNextBtn');
+    const usernameInput = document.getElementById('usernameInput');
+    const usernameNextBtn = document.getElementById('usernameNextBtn');
+    
     const avatarPreviewContainer = document.getElementById('avatarPreviewContainer');
+    const avatarFileInput = document.getElementById('avatarFileInput');
+    const completeBtn = document.getElementById('completeBtn');
 
-    const triggerFilePicker = (e) => {
-        e.preventDefault();
-        if (avatarFileInput) {
-            avatarFileInput.click();
+    let currentStep = 0;
+
+    function updateStepView() {
+        welcomeScreen.classList.add('hidden');
+        step1.classList.add('hidden');
+        step2.classList.add('hidden');
+        step3.classList.add('hidden');
+
+        if (currentStep === 1) {
+            step1.classList.remove('hidden');
+        } else if (currentStep === 2) {
+            step2.classList.remove('hidden');
+        } else if (currentStep === 3) {
+            step3.classList.remove('hidden');
+        }
+    }
+
+    if (getStartedBtn) {
+        getStartedBtn.addEventListener('click', () => {
+            currentStep = 1;
+            updateStepView();
+        });
+    }
+
+    const handleBack = () => {
+        if (currentStep > 1) {
+            currentStep--;
+            updateStepView();
+        } else {
+            currentStep = 0;
+            welcomeScreen.classList.remove('hidden');
+            step1.classList.add('hidden');
         }
     };
 
-    if (uploadBtnTrigger) {
-        uploadBtnTrigger.addEventListener('click', triggerFilePicker);
-        uploadBtnTrigger.addEventListener('touchend', triggerFilePicker);
+    if (step1BackBtn) step1BackBtn.addEventListener('click', handleBack);
+    if (step2BackBtn) step2BackBtn.addEventListener('click', handleBack);
+    if (step3BackBtn) step3BackBtn.addEventListener('click', handleBack);
+
+    // Platform Card Selection Logic
+    platformCards.forEach(card => {
+        const selectAction = () => {
+            platformCards.forEach(c => {
+                c.classList.remove('selected');
+                c.querySelector('.radio-indicator').innerHTML = '<div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #475569;"></div>';
+            });
+            card.classList.add('selected');
+            userData.platform = card.getAttribute('data-platform');
+            card.querySelector('.radio-indicator').innerHTML = '<div style="width: 20px; height: 20px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #030712;"></div></div>';
+        };
+
+        card.addEventListener('click', selectAction);
+        card.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            selectAction();
+        });
+    });
+
+    if (platformNextBtn) {
+        platformNextBtn.addEventListener('click', () => {
+            currentStep = 2;
+            updateStepView();
+            if (usernameInput) usernameInput.focus();
+        });
     }
 
+    if (usernameNextBtn) {
+        usernameNextBtn.addEventListener('click', async () => {
+            const username = usernameInput.value.trim().toLowerCase().replace('@', '');
+            if (!username || username.length < 3) {
+                alert("Username must be at least 3 characters long.");
+                return;
+            }
+
+            try {
+                const dbRef = ref(rtdb);
+                const snapshot = await get(child(dbRef, `usernames/${username}`));
+                if (snapshot.exists()) {
+                    alert("This username is already taken. Try another one.");
+                    return;
+                }
+                userData.username = username;
+                currentStep = 3;
+                updateStepView();
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        });
+    }
+
+    // Profile Photo Upload Trigger
+    const triggerGallery = (e) => {
+        e.preventDefault();
+        if (avatarFileInput) avatarFileInput.click();
+    };
+
     if (avatarPreviewContainer) {
-        avatarPreviewContainer.addEventListener('click', triggerFilePicker);
-        avatarPreviewContainer.addEventListener('touchend', triggerFilePicker);
+        avatarPreviewContainer.addEventListener('click', triggerGallery);
+        avatarPreviewContainer.addEventListener('touchend', triggerGallery);
     }
 
     if (avatarFileInput) {
@@ -51,129 +144,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 reader.onload = function(e) {
                     userData.avatarBase64 = e.target.result;
                     const previewImg = document.getElementById('previewImg');
-                    const cameraIcon = document.getElementById('cameraIcon');
+                    const defaultUserIcon = document.getElementById('defaultUserIcon');
                     
-                    previewImg.src = userData.avatarBase64;
-                    previewImg.classList.remove('hidden');
-                    cameraIcon.classList.add('hidden');
+                    if (previewImg && defaultUserIcon) {
+                        previewImg.src = userData.avatarBase64;
+                        previewImg.classList.remove('hidden');
+                        defaultUserIcon.classList.add('hidden');
+                        completeBtn.innerText = "Create Account 🚀";
+                    }
                 };
                 reader.readAsDataURL(file);
             }
         });
     }
 
-    if (getStartedBtn) {
-        getStartedBtn.addEventListener('click', () => {
-            document.getElementById('welcomeScreen').classList.add('hidden');
-            document.getElementById('step1').classList.remove('hidden');
-            document.getElementById('stepIndicator').innerText = "Step 1 of 3: Select Platform";
-        });
-    }
+    const finishSetup = async () => {
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
-    if (instaBtn) {
-        instaBtn.addEventListener('click', () => selectPlatform('instagram'));
-    }
+        try {
+            const userCredential = await signInAnonymously(auth);
+            const user = userCredential.user;
 
-    if (snapBtn) {
-        snapBtn.addEventListener('click', () => selectPlatform('snapchat'));
-    }
+            await set(ref(rtdb, 'users/' + user.uid), {
+                uid: user.uid,
+                username: userData.username,
+                platform: userData.platform,
+                avatarUrl: userData.avatarBase64,
+                createdAt: new Date().toISOString()
+            });
 
-    if (nextBtn) {
-        nextBtn.addEventListener('click', nextToStep3);
-    }
+            await set(ref(rtdb, 'usernames/' + userData.username), {
+                uid: user.uid
+            });
 
-    if (backBtn) {
-        backBtn.addEventListener('click', () => {
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('step1').classList.remove('hidden');
-            document.getElementById('stepIndicator').innerText = "Step 1 of 3: Select Platform";
-        });
-    }
+            localStorage.setItem('ngl_uid', user.uid);
+            localStorage.setItem('ngl_username', userData.username);
 
-    if (completeBtn) {
-        completeBtn.addEventListener('click', async () => {
-            await saveUserDataToDatabase();
-        });
-    }
+            if (loadingOverlay) loadingOverlay.classList.add('hidden');
+            window.location.href = "index.html";
 
+        } catch (error) {
+            if (loadingOverlay) loadingOverlay.classList.add('hidden');
+            alert("Setup failed: " + error.message);
+        }
+    };
+
+    if (completeBtn) completeBtn.addEventListener('click', finishSetup);
     if (skipBtn) {
-        skipBtn.addEventListener('click', async () => {
+        skipBtn.addEventListener('click', () => {
             userData.avatarBase64 = 'Default-User.png';
-            await saveUserDataToDatabase();
+            finishSetup();
         });
     }
 });
-
-function selectPlatform(platform) {
-    userData.platform = platform;
-    document.getElementById('step1').classList.add('hidden');
-    document.getElementById('step2').classList.remove('hidden');
-    document.getElementById('stepIndicator').innerText = "Step 2 of 3: Choose Username";
-}
-
-async function nextToStep3() {
-    const username = document.getElementById('usernameInput').value.trim().toLowerCase();
-    const errorMsg = document.getElementById('errorMessage');
-    
-    errorMsg.classList.add('hidden');
-
-    if (!username || username.length < 3) {
-        errorMsg.innerText = "Username must be at least 3 characters long.";
-        errorMsg.classList.remove('hidden');
-        return;
-    }
-
-    try {
-        const dbRef = ref(rtdb);
-        const snapshot = await get(child(dbRef, `usernames/${username}`));
-
-        if (snapshot.exists()) {
-            errorMsg.innerText = "This username is already taken. Try another one.";
-            errorMsg.classList.remove('hidden');
-            return;
-        }
-
-        userData.username = username;
-        document.getElementById('step2').classList.add('hidden');
-        document.getElementById('step3').classList.remove('hidden');
-        document.getElementById('stepIndicator').innerText = "Step 3 of 3: Profile Photo";
-    } catch (error) {
-        errorMsg.innerText = "Error: " + error.message;
-        errorMsg.classList.remove('hidden');
-    }
-}
-
-async function saveUserDataToDatabase() {
-    const errorMsg = document.getElementById('errorMessage');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    
-    loadingOverlay.classList.remove('hidden');
-
-    try {
-        const userCredential = await signInAnonymously(auth);
-        const user = userCredential.user;
-
-        await set(ref(rtdb, 'users/' + user.uid), {
-            uid: user.uid,
-            username: userData.username,
-            platform: userData.platform,
-            avatarUrl: userData.avatarBase64,
-            createdAt: new Date().toISOString()
-        });
-
-        await set(ref(rtdb, 'usernames/' + userData.username), {
-            uid: user.uid
-        });
-
-        localStorage.setItem('ngl_uid', user.uid);
-        localStorage.setItem('ngl_username', userData.username);
-
-        loadingOverlay.classList.add('hidden');
-        window.location.href = "index.html";
-
-    } catch (error) {
-        loadingOverlay.classList.add('hidden');
-        errorMsg.innerText = "Setup failed: " + error.message;
-        errorMsg.classList.remove('hidden');
-    }
-}
