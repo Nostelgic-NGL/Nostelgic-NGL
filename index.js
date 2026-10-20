@@ -175,18 +175,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // Support Email Link
     if (supportOption) {
         supportOption.addEventListener('click', () => {
-            showCustomAlert("For support, contact us directly via Instagram @Jitu_Gurjar_99");
+            window.location.href = "mailto:Nostelgic.NGL@Gmail.com?subject=Support%20Request%20-%20Nostelgic%20NGL";
         });
     }
 
+    // Feedback Email Link
     if (feedbackOption) {
         feedbackOption.addEventListener('click', () => {
-            showCustomAlert("Thank you for using Nostelgic NGL! Send your feedback to @Jitu_Gurjar_99");
+            window.location.href = "mailto:Nostelgic.NGL@Gmail.com?subject=Feedback%20-%20Nostelgic%20NGL";
         });
     }
 
+    // Follow Developer Instagram Direct Link
     if (followDevOption) {
         followDevOption.addEventListener('click', () => {
             window.open("https://instagram.com/Jitu_Gurjar_99", "_blank");
