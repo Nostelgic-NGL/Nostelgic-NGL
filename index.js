@@ -175,17 +175,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Support Email Link
+    // Support Gmail Link
     if (supportOption) {
         supportOption.addEventListener('click', () => {
-            window.location.href = "mailto:Nostelgic.NGL@Gmail.com?subject=Support%20Request%20-%20Nostelgic%20NGL";
+            window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Support%20Request%20-%20Nostelgic%20NGL";
         });
     }
 
-    // Feedback Email Link
+    // Feedback Gmail Link
     if (feedbackOption) {
         feedbackOption.addEventListener('click', () => {
-            window.location.href = "mailto:Nostelgic.NGL@Gmail.com?subject=Feedback%20-%20Nostelgic%20NGL";
+            window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Feedback%20-%20Nostelgic%20NGL";
         });
     }
 
