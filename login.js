@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Gallery Trigger
+    // Gallery / Google Photos Picker Trigger
     const openGallery = (e) => {
         if (e) e.preventDefault();
         if (avatarFileInput) avatarFileInput.click();
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         previewImg.classList.remove('hidden');
                         defaultUserIcon.classList.add('hidden');
                         
-                        // Photo select hone ke baad "Choose photo" button hide ho jayega aur "Create Account" button dikhega
+                        // "Choose photo" button hide ho jayega, "Create Account" button dikhega
                         if (choosePhotoBtn) choosePhotoBtn.classList.add('hidden');
                         if (createAccountBtn) createAccountBtn.classList.remove('hidden');
                     }
