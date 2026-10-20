@@ -44,8 +44,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const completeBtn = document.getElementById('completeBtn');
     const skipBtn = document.getElementById('skipBtn');
     const avatarFileInput = document.getElementById('avatarFileInput');
+    const avatarPreviewContainer = document.getElementById('avatarPreviewContainer');
 
-    if (avatarFileInput) {
+    // Fixed Image Click Trigger for Mobile
+    if (avatarPreviewContainer && avatarFileInput) {
+        avatarPreviewContainer.addEventListener('click', () => {
+            avatarFileInput.click();
+        });
+
         avatarFileInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
@@ -271,17 +277,17 @@ async function loadDashboard(uid) {
             container.innerHTML = '';
 
             if (!snapshot.exists()) {
-                container.innerHTML = `<div style="background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 10px; text-align: center; color: #64748b; font-size: 11px;">No messages yet. Share your link to get confessions!</div>`;
+                container.innerHTML = `<div style="background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 12px; text-align: center; color: #64748b; font-size: 12px;">No messages yet. Share your link to get confessions!</div>`;
                 return;
             }
 
             snapshot.forEach((childSnap) => {
                 const msgData = childSnap.val();
                 const msgCard = document.createElement('div');
-                msgCard.style = "background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 10px; color: #f8fafc; font-size: 12px; word-break: break-word;";
+                msgCard.style = "background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 12px; color: #f8fafc; font-size: 13px; word-break: break-word;";
                 msgCard.innerHTML = `
-                    <p style="margin-bottom: 4px;">${msgData.message}</p>
-                    <span style="font-size: 9px; color: #64748b;">${new Date(msgData.timestamp).toLocaleString()}</span>
+                    <p style="margin-bottom: 6px;">${msgData.message}</p>
+                    <span style="font-size: 10px; color: #64748b;">${new Date(msgData.timestamp).toLocaleString()}</span>
                 `;
                 container.appendChild(msgCard);
             });

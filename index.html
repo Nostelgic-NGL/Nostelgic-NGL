@@ -2,12 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nostelgic NGL - Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Mobile Frame Styling */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         body {
             background-color: var(--bg-color, #030712);
             color: var(--text-color, #f8fafc);
@@ -15,21 +19,33 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
+            width: 100vw;
+            overflow-x: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: background 0.3s ease, color 0.3s ease;
         }
 
         .phone-container {
             width: 100%;
-            max-width: 380px;
-            background: var(--card-bg, rgba(15, 23, 42, 0.85));
-            border: 1px solid var(--card-border, rgba(255, 255, 255, 0.08));
-            border-radius: 28px;
-            padding: 16px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(12px);
+            max-width: 420px;
+            min-height: 100vh;
+            background: var(--card-bg, rgba(15, 23, 42, 0.95));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
             box-sizing: border-box;
+        }
+
+        @media (min-width: 480px) {
+            .phone-container {
+                min-height: auto;
+                border-radius: 28px;
+                border: 1px solid var(--card-border, rgba(255, 255, 255, 0.08));
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(12px);
+                margin: 20px;
+            }
         }
 
         .tab-btn {
@@ -39,7 +55,7 @@
             font-size: 11px;
             font-weight: 700;
             cursor: pointer;
-            padding: 6px 14px;
+            padding: 6px 16px;
             border-radius: 10px;
             transition: all 0.3s ease;
         }
@@ -48,11 +64,10 @@
             color: #ffffff;
         }
 
-        /* Light Theme Variables */
         body.light-theme {
             --bg-color: #f1f5f9;
             --text-color: #0f172a;
-            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.95);
             --card-border: rgba(0, 0, 0, 0.1);
             --tab-text: #64748b;
         }
@@ -73,137 +88,135 @@
     <div class="phone-container">
         
         <!-- Header Logo (Onboarding) -->
-        <div id="headerLogoArea" class="text-center" style="margin-bottom: 16px;">
-            <div style="display: flex; justify-content: center; margin-bottom: 6px;">
-                <img src="Nostelgic-NGL.png" alt="Logo" style="width: 40px; height: 40px; object-fit: contain; border-radius: 10px;">
+        <div id="headerLogoArea" class="text-center" style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+                <img src="Nostelgic-NGL.png" alt="Logo" style="width: 45px; height: 45px; object-fit: contain; border-radius: 12px;">
             </div>
-            <h1 class="gradient-text" style="font-size: 22px; font-weight: 800; letter-spacing: 0.5px;">
+            <h1 class="gradient-text" style="font-size: 24px; font-weight: 800; letter-spacing: 0.5px;">
                 Nostelgic NGL
             </h1>
-            <p id="stepIndicator" style="color: #94a3b8; font-size: 11px; margin-top: 2px;">Secure Anonymous Messaging Platform</p>
+            <p id="stepIndicator" style="color: #94a3b8; font-size: 12px; margin-top: 4px;">Secure Anonymous Messaging Platform</p>
         </div>
 
         <!-- WELCOME / GET STARTED SCREEN -->
-        <div id="welcomeScreen" class="text-center" style="display: flex; flex-direction: column; gap: 12px;">
-            <p style="color: var(--text-color); font-size: 12px; line-height: 1.4; opacity: 0.9;">
+        <div id="welcomeScreen" class="text-center" style="display: flex; flex-direction: column; gap: 14px;">
+            <p style="color: var(--text-color); font-size: 13px; line-height: 1.5; opacity: 0.9;">
                 Generate your personalized link to receive secure, anonymous messages and confessions from your peers.
             </p>
-            <button id="getStartedBtn" class="btn-primary" style="margin-top: 4px;">
-                Get Started <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
+            <button id="getStartedBtn" class="btn-primary" style="margin-top: 6px;">
+                Get Started <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
             </button>
         </div>
 
         <!-- STEP 1: Choose Platform -->
-        <div id="step1" class="hidden" style="display: flex; flex-direction: column; gap: 10px;">
-            <p style="font-size: 12px; color: var(--text-color); text-align: center; margin-bottom: 4px;">Where will you share your link?</p>
+        <div id="step1" class="hidden" style="display: flex; flex-direction: column; gap: 12px;">
+            <p style="font-size: 13px; color: var(--text-color); text-align: center; margin-bottom: 6px;">Where will you share your link?</p>
             
-            <button id="instaBtn" class="btn-secondary" style="justify-content: flex-start; padding: 10px 14px; gap: 12px;">
-                <img src="Insta_Logo.png" alt="Instagram" style="width: 20px; height: 20px; object-fit: contain;">
-                <span style="font-weight: 600; font-size: 13px;">Instagram Profile</span>
+            <button id="instaBtn" class="btn-secondary" style="justify-content: flex-start; padding: 12px 16px; gap: 14px;">
+                <img src="Insta_Logo.png" alt="Instagram" style="width: 22px; height: 22px; object-fit: contain;">
+                <span style="font-weight: 600; font-size: 14px;">Instagram Profile</span>
             </button>
 
-            <button id="snapBtn" class="btn-secondary" style="justify-content: flex-start; padding: 10px 14px; gap: 12px;">
-                <img src="Snap_Logo.png" alt="Snapchat" style="width: 20px; height: 20px; object-fit: contain;">
-                <span style="font-weight: 600; font-size: 13px;">Snapchat Story</span>
+            <button id="snapBtn" class="btn-secondary" style="justify-content: flex-start; padding: 12px 16px; gap: 14px;">
+                <img src="Snap_Logo.png" alt="Snapchat" style="width: 22px; height: 22px; object-fit: contain;">
+                <span style="font-weight: 600; font-size: 14px;">Snapchat Story</span>
             </button>
         </div>
 
         <!-- STEP 2: Choose Username -->
-        <div id="step2" class="hidden" style="display: flex; flex-direction: column; gap: 12px;">
+        <div id="step2" class="hidden" style="display: flex; flex-direction: column; gap: 14px;">
             <div>
-                <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 4px;">Choose Unique Username</label>
-                <div style="display: flex; align-items: center; background: rgba(2, 6, 23, 0.6); border: 1px solid #1e293b; border-radius: 12px; padding: 4px 12px;">
-                    <span style="color: #64748b; font-size: 13px; margin-right: 4px;">@</span>
-                    <input type="text" id="usernameInput" placeholder="your_username" class="input-box" style="border: none; padding: 8px 0; background: transparent; color: inherit;">
+                <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">Choose Unique Username</label>
+                <div style="display: flex; align-items: center; background: rgba(2, 6, 23, 0.6); border: 1px solid #1e293b; border-radius: 14px; padding: 4px 14px;">
+                    <span style="color: #64748b; font-size: 14px; margin-right: 4px;">@</span>
+                    <input type="text" id="usernameInput" placeholder="your_username" class="input-box" style="border: none; padding: 10px 0; background: transparent; color: inherit; width: 100%;">
                 </div>
             </div>
             <button id="nextBtn" class="btn-primary">
                 Continue <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
             </button>
-            <button id="backBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 11px; cursor: pointer; padding: 2px;">Back</button>
+            <button id="backBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 12px; cursor: pointer; padding: 4px;">Back</button>
         </div>
 
-        <!-- STEP 3: Profile Photo Upload -->
-        <div id="step3" class="hidden text-center" style="display: flex; flex-direction: column; gap: 12px;">
-            <p style="font-size: 12px; color: var(--text-color);">Upload Profile Photo (Optional)</p>
+        <!-- STEP 3: Profile Photo Upload (Fixed Clickable Area) -->
+        <div id="step3" class="hidden text-center" style="display: flex; flex-direction: column; gap: 14px;">
+            <p style="font-size: 13px; color: var(--text-color);">Upload Profile Photo (Optional)</p>
             
-            <div style="display: flex; justify-content: center; margin: 2px 0;">
-                <label for="avatarFileInput" style="cursor: pointer;">
-                    <div id="avatarPreviewContainer" style="width: 65px; height: 65px; background: rgba(2, 6, 23, 0.6); border: 2px dashed #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; overflow: hidden; position: relative;">
-                        <i class="fas fa-camera" id="cameraIcon" style="font-size: 18px;"></i>
-                        <img id="previewImg" class="hidden" style="width: 100%; height: 100%; object-fit: cover;" />
-                    </div>
-                </label>
-                <input type="file" id="avatarFileInput" accept="image/*" class="hidden">
+            <div style="display: flex; justify-content: center; margin: 6px 0;">
+                <div id="avatarPreviewContainer" style="width: 75px; height: 75px; background: rgba(2, 6, 23, 0.6); border: 2px dashed #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; overflow: hidden; position: relative; cursor: pointer;">
+                    <i class="fas fa-camera" id="cameraIcon" style="font-size: 22px;"></i>
+                    <img id="previewImg" class="hidden" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;" />
+                </div>
+                <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
             </div>
 
             <button id="completeBtn" class="btn-primary">
                 Create Account 🚀
             </button>
-            <button id="skipBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 11px; cursor: pointer; padding: 2px;">Skip for now</button>
+            <button id="skipBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 12px; cursor: pointer; padding: 4px;">Skip for now</button>
         </div>
 
         <!-- ========================================== -->
         <!-- DASHBOARD VIEW                            -->
         <!-- ========================================== -->
-        <div id="dashboardView" class="hidden" style="display: flex; flex-direction: column; gap: 12px;">
+        <div id="dashboardView" class="hidden" style="display: flex; flex-direction: column; gap: 14px;">
             
-            <!-- Top Navigation Bar: Theme Toggle (Left) + Centered Tabs (Home/Inbox) + Logout (Right) -->
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 8px;">
+            <!-- Top Navigation Bar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px;">
                 
                 <!-- Dark/Light Theme Switch Button -->
-                <button id="themeToggleBtn" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #f59e0b; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px;">
+                <button id="themeToggleBtn" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #f59e0b; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px;">
                     <i class="fas fa-moon" id="themeIcon"></i>
                 </button>
 
                 <!-- Centered HOME & INBOX Tabs -->
-                <div style="display: flex; gap: 4px; background: rgba(2, 6, 23, 0.4); padding: 3px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05);">
+                <div style="display: flex; gap: 4px; background: rgba(2, 6, 23, 0.5); padding: 3px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.06);">
                     <button id="homeTab" class="tab-btn active">HOME</button>
                     <button id="inboxTab" class="tab-btn">INBOX</button>
                 </div>
 
                 <!-- Logout Button -->
-                <button id="logoutBtn" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px;">
+                <button id="logoutBtn" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px;">
                     <i class="fas fa-sign-out-alt"></i>
                 </button>
             </div>
 
             <!-- HOME SECTION (3 Cards) -->
-            <div id="homeSection" style="display: flex; flex-direction: column; gap: 12px;">
+            <div id="homeSection" style="display: flex; flex-direction: column; gap: 14px;">
                 <!-- CARD 1: Profile Preview Card -->
-                <div style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8)); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 18px; padding: 16px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+                <div style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8)); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 20px; padding: 18px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.4);">
                     <div style="display: flex; justify-content: center; margin-bottom: 10px;">
-                        <img id="dashAvatar" src="Default-User.png" alt="Avatar" style="width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid #ec4899; box-shadow: 0 0 12px rgba(236, 72, 153, 0.4);">
+                        <img id="dashAvatar" src="Default-User.png" alt="Avatar" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #ec4899; box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);">
                     </div>
-                    <h3 style="font-size: 14px; font-weight: 800; color: #ffffff; letter-spacing: 0.3px;">send me anonymous messages!</h3>
-                    <p id="dashPlatform" style="font-size: 10px; color: #94a3b8; margin-top: 3px; text-transform: capitalize;">Instagram</p>
+                    <h3 style="font-size: 15px; font-weight: 800; color: #ffffff; letter-spacing: 0.3px;">send me anonymous messages!</h3>
+                    <p id="dashPlatform" style="font-size: 11px; color: #94a3b8; margin-top: 4px; text-transform: capitalize;">Instagram</p>
                 </div>
 
                 <!-- CARD 2: Copy Link Card -->
-                <div style="background: rgba(2, 6, 23, 0.5); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 18px; padding: 14px; text-align: center;">
-                    <h4 style="font-size: 12px; font-weight: 700; color: var(--text-color); margin-bottom: 8px;">Step 1: Copy your link</h4>
-                    <input type="text" id="shareLinkInput" readonly style="width: 100%; background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 8px; color: #94a3b8; font-size: 10px; text-align: center; margin-bottom: 10px; outline: none;" />
-                    <button id="copyLinkBtn" style="background: linear-gradient(135deg, #ef4444, #ec4899); color: #ffffff; font-weight: 700; width: 100%; padding: 10px; border-radius: 24px; border: none; font-size: 12px; cursor: pointer; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);">
+                <div style="background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; padding: 16px; text-align: center;">
+                    <h4 style="font-size: 13px; font-weight: 700; color: var(--text-color); margin-bottom: 8px;">Step 1: Copy your link</h4>
+                    <input type="text" id="shareLinkInput" readonly style="width: 100%; background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 10px; color: #94a3b8; font-size: 11px; text-align: center; margin-bottom: 10px; outline: none;" />
+                    <button id="copyLinkBtn" style="background: linear-gradient(135deg, #ef4444, #ec4899); color: #ffffff; font-weight: 700; width: 100%; padding: 12px; border-radius: 30px; border: none; font-size: 13px; cursor: pointer; box-shadow: 0 5px 20px rgba(236, 72, 153, 0.4);">
                         copy link
                     </button>
                 </div>
 
                 <!-- CARD 3: Share Story Card -->
-                <div style="background: rgba(2, 6, 23, 0.5); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 18px; padding: 14px; text-align: center;">
-                    <h4 style="font-size: 12px; font-weight: 700; color: var(--text-color); margin-bottom: 10px;">Step 2: Share link on your story</h4>
-                    <button id="shareStoryBtn" style="background: linear-gradient(135deg, #ec4899 0%, #f97316 100%); color: #ffffff; font-weight: 700; width: 100%; padding: 10px; border-radius: 24px; border: none; font-size: 12px; cursor: pointer; box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);">
+                <div style="background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; padding: 16px; text-align: center;">
+                    <h4 style="font-size: 13px; font-weight: 700; color: var(--text-color); margin-bottom: 10px;">Step 2: Share link on your story</h4>
+                    <button id="shareStoryBtn" style="background: linear-gradient(135deg, #ec4899 0%, #f97316 100%); color: #ffffff; font-weight: 700; width: 100%; padding: 12px; border-radius: 30px; border: none; font-size: 13px; cursor: pointer; box-shadow: 0 5px 20px rgba(249, 115, 22, 0.4);">
                         Share!
                     </button>
                 </div>
             </div>
 
             <!-- INBOX SECTION (Shown when INBOX tab clicked) -->
-            <div id="inboxSection" class="hidden" style="background: rgba(2, 6, 23, 0.5); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 18px; padding: 14px;">
-                <h4 style="font-size: 13px; font-weight: 700; color: var(--text-color); margin-bottom: 10px;">
+            <div id="inboxSection" class="hidden" style="background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; padding: 16px;">
+                <h4 style="font-size: 14px; font-weight: 700; color: var(--text-color); margin-bottom: 12px;">
                     <i class="fas fa-inbox" style="color: #ec4899; margin-right: 6px;"></i> Inbox Messages
                 </h4>
-                <div id="messagesContainer" style="display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; padding-right: 2px;">
-                    <div style="background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 10px; text-align: center; color: #64748b; font-size: 11px;">
+                <div id="messagesContainer" style="display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; padding-right: 2px;">
+                    <div style="background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 12px; text-align: center; color: #64748b; font-size: 12px;">
                         No messages yet. Share your link to get confessions!
                     </div>
                 </div>
@@ -211,7 +224,7 @@
 
         </div>
 
-        <p id="errorMessage" style="color: #f87171; font-size: 11px; text-align: center; margin-top: 8px;" class="hidden"></p>
+        <p id="errorMessage" style="color: #f87171; font-size: 11px; text-align: center; margin-top: 10px;" class="hidden"></p>
     </div>
 
     <!-- Spinner Animation Style -->
