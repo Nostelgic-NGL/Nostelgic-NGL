@@ -24,33 +24,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Views
     const homeView = document.getElementById('homeView');
     const inboxView = document.getElementById('inboxView');
     const settingsView = document.getElementById('settingsView');
 
+    // Nav Buttons
     const navHomeBtn = document.getElementById('navHomeBtn');
     const navInboxBtn = document.getElementById('navInboxBtn');
     const settingsBtn = document.getElementById('settingsBtn');
 
+    // Home Elements
     const profileLinkText = document.getElementById('profileLinkText');
     const userAvatarImg = document.getElementById('userAvatarImg');
     const platformLabel = document.getElementById('platformLabel');
     const copyLinkBtn = document.getElementById('copyLinkBtn');
     const shareStoryBtn = document.getElementById('shareStoryBtn');
 
+    // Inbox Elements
     const messagesContainer = document.getElementById('messagesContainer');
     const emptyState = document.getElementById('emptyState');
 
+    // Settings Options
     const pauseLinkOption = document.getElementById('pauseLinkOption');
-    const supportOption = document.getElementById('supportOption');
-    const feedbackOption = document.getElementById('feedbackOption');
-    const followDevOption = document.getElementById('followDevOption');
     const deleteAccountOption = document.getElementById('deleteAccountOption');
     const logoutBtn = document.getElementById('logoutBtn');
 
+    // Theme Elements
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
 
+    // Theme Toggle Handler
     const savedTheme = localStorage.getItem('ngl_theme') || 'dark';
     if (savedTheme === 'light') {
         document.body.classList.add('light-mode');
@@ -68,6 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // Switch View Function
     function switchView(viewName) {
         homeView.classList.add('hidden');
         inboxView.classList.add('hidden');
@@ -92,6 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (navInboxBtn) navInboxBtn.addEventListener('click', () => switchView('inbox'));
     if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
 
+    // Load Profile & Generate Link
     const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
 
@@ -117,27 +123,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error("Error loading profile:", error);
     }
 
+    // Copy Link Action
     if (copyLinkBtn) {
         copyLinkBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(profileUrl).then(() => {
-                showCustomAlert("Link copied to clipboard! 📋");
+                showCustomAlert("Link copied to clipboard! 📋 Share it on your Instagram story!");
             }).catch(() => {
                 showCustomAlert("Failed to copy link.");
             });
         });
     }
 
+    // Share Story Action (Home)
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', () => {
             if (navigator.share) {
                 navigator.share({
                     title: 'Nostelgic NGL',
-                    text: 'Send me anonymous messages!',
+                    text: 'Send me anonymous messages! 💬',
                     url: profileUrl,
                 }).catch(() => {});
             } else {
                 navigator.clipboard.writeText(profileUrl);
-                showCustomAlert("Link copied! Share it on your story 🚀");
+                showCustomAlert("Link copied! Paste it on your Instagram story 🚀");
             }
         });
     }
@@ -161,33 +169,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Support Email Action with Fallback Copy
-    if (supportOption) {
-        supportOption.addEventListener('click', () => {
-            window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Support%20Request%20-%20Nostelgic%20NGL";
-            setTimeout(() => {
-                navigator.clipboard.writeText("Nostelgic.NGL@gmail.com");
-            }, 500);
-        });
-    }
-
-    // Feedback Email Action with Fallback Copy
-    if (feedbackOption) {
-        feedbackOption.addEventListener('click', () => {
-            window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Feedback%20-%20Nostelgic%20NGL";
-            setTimeout(() => {
-                navigator.clipboard.writeText("Nostelgic.NGL@gmail.com");
-            }, 500);
-        });
-    }
-
-    // Follow Developer Instagram Link
-    if (followDevOption) {
-        followDevOption.addEventListener('click', () => {
-            window.open("https://instagram.com/Jitu_Gurjar_99", "_blank");
-        });
-    }
-
     if (deleteAccountOption) {
         deleteAccountOption.addEventListener('click', async () => {
             if (confirm("Are you sure you want to delete your account? All messages and data will be permanently removed.")) {
@@ -203,6 +184,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // Load Inbox Messages Function
     async function loadInboxMessages() {
         try {
             const dbRef = ref(rtdb);
@@ -234,6 +216,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </div>
                     `;
 
+                    // Delete Button
                     card.querySelector('.btn-delete').addEventListener('click', async () => {
                         try {
                             await remove(ref(rtdb, `messages/${uid}/${msgId}`));
@@ -247,17 +230,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                         }
                     });
 
+                    // Share Reply with Link
                     card.querySelector('.btn-reply').addEventListener('click', (e) => {
                         const replyBtn = e.currentTarget;
                         const text = decodeURIComponent(replyBtn.getAttribute('data-text'));
+                        const shareText = `"${text}"\n\nAnswered on my Nostelgic NGL! Ask me anything 👇\n${profileUrl}`;
+
                         if (navigator.share) {
                             navigator.share({
                                 title: 'Nostelgic NGL Reply',
-                                text: `"${text}" - answered on my NGL!`,
+                                text: shareText,
                             }).catch(() => {});
                         } else {
-                            navigator.clipboard.writeText(text);
-                            showCustomAlert("Message copied to share on your story! 🚀");
+                            navigator.clipboard.writeText(shareText);
+                            showCustomAlert("Reply & link copied! Paste it on your story 🚀");
                         }
                     });
 
