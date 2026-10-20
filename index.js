@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const copyLinkBtn = document.getElementById('copyLinkBtn');
     const shareStoryBtn = document.getElementById('shareStoryBtn');
     const toInboxBtn = document.getElementById('toInboxBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
 
@@ -115,11 +115,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Logout Action
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            localStorage.clear();
-            window.location.href = "login.html";
+    // Navigation to Settings Page
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', () => {
+            window.location.href = "settings.html";
         });
     }
 });
