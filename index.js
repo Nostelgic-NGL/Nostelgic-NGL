@@ -20,7 +20,7 @@ function showCustomAlert(message) {
 document.addEventListener('DOMContentLoaded', async () => {
     const uid = localStorage.getItem('ngl_uid');
     if (!uid) {
-        window.location.href = "login.html";
+        window.location.replace("login.html");
         return;
     }
 
@@ -108,17 +108,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Navigation to Inbox
+    // Instant Navigation to Inbox
     if (toInboxBtn) {
         toInboxBtn.addEventListener('click', () => {
-            window.location.href = "inbox.html";
+            window.location.replace("inbox.html");
         });
     }
 
-    // Navigation to Settings Page
+    // Instant Navigation to Settings Page
     if (settingsBtn) {
         settingsBtn.addEventListener('click', () => {
-            window.location.href = "settings.html";
+            window.location.replace("settings.html");
         });
     }
 });
