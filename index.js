@@ -31,6 +31,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     const shareStoryBtn = document.getElementById('shareStoryBtn');
     const toInboxBtn = document.getElementById('toInboxBtn');
     const logoutBtn = document.getElementById('logoutBtn');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+
+    // Theme Toggle Logic
+    const savedTheme = localStorage.getItem('ngl_theme') || 'dark';
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+        if (themeIcon) themeIcon.className = "fas fa-sun";
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('ngl_theme', isLight ? 'light' : 'dark');
+            if (themeIcon) {
+                themeIcon.className = isLight ? "fas fa-sun" : "fas fa-moon";
+            }
+        });
+    }
 
     // Generate Shareable Link
     const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
