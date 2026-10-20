@@ -2,7 +2,7 @@ import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 // Custom Alert Function
-function showCustomAlert(message) {
+function showCustomAlert(message, callback) {
     const alertModal = document.getElementById('customAlertModal');
     const alertText = document.getElementById('customAlertText');
     const okBtn = document.getElementById('customAlertOkBtn');
@@ -13,6 +13,7 @@ function showCustomAlert(message) {
     if (okBtn) {
         okBtn.onclick = () => {
             if (alertModal) alertModal.classList.add('hidden');
+            if (callback) callback();
         };
     }
 }
@@ -45,8 +46,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const messagesContainer = document.getElementById('messagesContainer');
     const emptyState = document.getElementById('emptyState');
 
-    // Settings & Theme
+    // Settings Options
+    const pauseLinkOption = document.getElementById('pauseLinkOption');
+    const supportOption = document.getElementById('supportOption');
+    const feedbackOption = document.getElementById('feedbackOption');
+    const followDevOption = document.getElementById('followDevOption');
+    const deleteAccountOption = document.getElementById('deleteAccountOption');
     const logoutBtn = document.getElementById('logoutBtn');
+
+    // Theme Elements
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
 
@@ -68,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Switch View Function (Instant & Zero Delay)
+    // Switch View Function
     function switchView(viewName) {
         homeView.classList.add('hidden');
         inboxView.classList.add('hidden');
@@ -83,7 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else if (viewName === 'inbox') {
             inboxView.classList.remove('hidden');
             navInboxBtn.classList.add('active');
-            loadInboxMessages(); // Fetch messages instantly on tab click
+            loadInboxMessages();
         } else if (viewName === 'settings') {
             settingsView.classList.remove('hidden');
         }
@@ -145,6 +153,63 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 navigator.clipboard.writeText(profileUrl);
                 showCustomAlert("Link copied! Share it on your story 🚀");
+            }
+        });
+    }
+
+    // ================= SETTINGS ACTIONS =================
+    
+    // 1. Pause My Link
+    let isLinkPaused = localStorage.getItem('ngl_paused') === 'true';
+    if (pauseLinkOption) {
+        if (isLinkPaused) pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-play-circle" style="color: #22c55e; margin-right: 8px;"></i> Resume my link';
+        
+        pauseLinkOption.addEventListener('click', () => {
+            isLinkPaused = !isLinkPaused;
+            localStorage.setItem('ngl_paused', isLinkPaused);
+            if (isLinkPaused) {
+                pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-play-circle" style="color: #22c55e; margin-right: 8px;"></i> Resume my link';
+                showCustomAlert("Your link has been paused. Nobody can send messages right now.");
+            } else {
+                pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-pause-circle" style="color: #ec4899; margin-right: 8px;"></i> Pause my link';
+                showCustomAlert("Your link is now active again! 🚀");
+            }
+        });
+    }
+
+    // 2. Support
+    if (supportOption) {
+        supportOption.addEventListener('click', () => {
+            showCustomAlert("For support, contact us directly via Instagram @Jitu_Gurjar_99");
+        });
+    }
+
+    // 3. Feedback
+    if (feedbackOption) {
+        feedbackOption.addEventListener('click', () => {
+            showCustomAlert("Thank you for using Nostelgic NGL! Send your feedback to @Jitu_Gurjar_99");
+        });
+    }
+
+    // 4. Follow Developer (@Jitu_Gurjar_99)
+    if (followDevOption) {
+        followDevOption.addEventListener('click', () => {
+            window.open("https://instagram.com/Jitu_Gurjar_99", "_blank");
+        });
+    }
+
+    // 5. Delete Account
+    if (deleteAccountOption) {
+        deleteAccountOption.addEventListener('click', async () => {
+            if (confirm("Are you sure you want to delete your account? All messages and data will be permanently removed.")) {
+                try {
+                    await remove(ref(rtdb, `users/${uid}`));
+                    await remove(ref(rtdb, `messages/${uid}`));
+                    localStorage.clear();
+                    window.location.replace("login.html");
+                } catch (err) {
+                    showCustomAlert("Failed to delete account. Try again.");
+                }
             }
         });
     }
