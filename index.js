@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Nav Buttons
     const navHomeBtn = document.getElementById('navHomeBtn');
     const navInboxBtn = document.getElementById('navInboxBtn');
-    const navSettingsBtn = document.getElementById('navSettingsBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
 
     // Home Elements
     const profileLinkText = document.getElementById('profileLinkText');
@@ -89,9 +89,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    navHomeBtn.addEventListener('click', () => switchView('home'));
-    navInboxBtn.addEventListener('click', () => switchView('inbox'));
-    navSettingsBtn.addEventListener('click', () => switchView('settings'));
+    if (navHomeBtn) navHomeBtn.addEventListener('click', () => switchView('home'));
+    if (navInboxBtn) navInboxBtn.addEventListener('click', () => switchView('inbox'));
+    if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
 
     // Load Profile & Generate Link
     const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
