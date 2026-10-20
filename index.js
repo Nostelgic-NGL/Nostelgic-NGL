@@ -2,7 +2,7 @@ import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 // Custom Alert Function
-function showCustomAlert(message, callback) {
+function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
     const alertText = document.getElementById('customAlertText');
     const okBtn = document.getElementById('customAlertOkBtn');
@@ -13,7 +13,6 @@ function showCustomAlert(message, callback) {
     if (okBtn) {
         okBtn.onclick = () => {
             if (alertModal) alertModal.classList.add('hidden');
-            if (callback) callback();
         };
     }
 }
@@ -159,7 +158,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ================= SETTINGS ACTIONS =================
     
-    // 1. Pause My Link
     let isLinkPaused = localStorage.getItem('ngl_paused') === 'true';
     if (pauseLinkOption) {
         if (isLinkPaused) pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-play-circle" style="color: #22c55e; margin-right: 8px;"></i> Resume my link';
@@ -177,28 +175,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 2. Support
     if (supportOption) {
         supportOption.addEventListener('click', () => {
             showCustomAlert("For support, contact us directly via Instagram @Jitu_Gurjar_99");
         });
     }
 
-    // 3. Feedback
     if (feedbackOption) {
         feedbackOption.addEventListener('click', () => {
             showCustomAlert("Thank you for using Nostelgic NGL! Send your feedback to @Jitu_Gurjar_99");
         });
     }
 
-    // 4. Follow Developer (@Jitu_Gurjar_99)
     if (followDevOption) {
         followDevOption.addEventListener('click', () => {
             window.open("https://instagram.com/Jitu_Gurjar_99", "_blank");
         });
     }
 
-    // 5. Delete Account
     if (deleteAccountOption) {
         deleteAccountOption.addEventListener('click', async () => {
             if (confirm("Are you sure you want to delete your account? All messages and data will be permanently removed.")) {
@@ -246,7 +240,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </div>
                     `;
 
-                    // Delete Button
                     card.querySelector('.btn-delete').addEventListener('click', async () => {
                         try {
                             await remove(ref(rtdb, `messages/${uid}/${msgId}`));
@@ -260,7 +253,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         }
                     });
 
-                    // Share Reply
                     card.querySelector('.btn-reply').addEventListener('click', (e) => {
                         const replyBtn = e.currentTarget;
                         const text = decodeURIComponent(replyBtn.getAttribute('data-text'));
@@ -288,7 +280,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Logout Action
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             localStorage.clear();
@@ -297,7 +288,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Helper to prevent XSS injection
 function escapeHtml(text) {
     const map = {
         '&': '&amp;',
