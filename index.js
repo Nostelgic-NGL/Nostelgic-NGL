@@ -44,19 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const completeBtn = document.getElementById('completeBtn');
     const skipBtn = document.getElementById('skipBtn');
     const avatarFileInput = document.getElementById('avatarFileInput');
-    const avatarPreviewContainer = document.getElementById('avatarPreviewContainer');
 
-    // Bulletproof Mobile + PC File Picker Trigger
-    if (avatarPreviewContainer && avatarFileInput) {
-        const triggerFileInput = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            avatarFileInput.click();
-        };
-
-        avatarPreviewContainer.addEventListener('click', triggerFileInput);
-        avatarPreviewContainer.addEventListener('touchend', triggerFileInput);
-
+    if (avatarFileInput) {
         avatarFileInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
