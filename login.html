@@ -158,7 +158,7 @@
         </div>
     </div>
 
-    <!-- Custom Alert Modal (Only for Snapchat Coming Soon) -->
+    <!-- Custom Alert Modal -->
     <div id="customAlertModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000;">
         <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); padding: 30px; border-radius: 24px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.8); max-width: 280px; width: 90%;">
             <div style="font-size: 30px; margin-bottom: 12px; color: #ec4899;"><i class="fas fa-info-circle"></i></div>
@@ -238,7 +238,6 @@
             
             <div style="margin: auto 0; text-align: center;">
                 <input type="text" id="usernameInput" placeholder="@username" class="ngl-input" />
-                <!-- Inline Red Error Message -->
                 <p id="usernameErrorText" style="color: #ef4444; font-size: 12px; line-height: 1.4; padding: 0 10px;" class="hidden"></p>
             </div>
 
@@ -272,7 +271,8 @@
             </div>
 
             <div style="padding-bottom: 10px;">
-                <button id="completeBtn" class="btn-pill-white" type="button">Choose photo</button>
+                <!-- Main button separated: starts as "Choose photo" then becomes "Create Account 🚀" -->
+                <button id="actionBtn" class="btn-pill-white" type="button">Choose photo</button>
             </div>
         </div>
 
