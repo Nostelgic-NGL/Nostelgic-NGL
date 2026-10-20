@@ -44,14 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const completeBtn = document.getElementById('completeBtn');
     const skipBtn = document.getElementById('skipBtn');
     const avatarFileInput = document.getElementById('avatarFileInput');
-    const avatarPreviewContainer = document.getElementById('avatarPreviewContainer');
 
-    // Fixed Image Click Trigger for Mobile
-    if (avatarPreviewContainer && avatarFileInput) {
-        avatarPreviewContainer.addEventListener('click', () => {
-            avatarFileInput.click();
-        });
-
+    // Bulletproof File Change Listener
+    if (avatarFileInput) {
         avatarFileInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
@@ -277,7 +272,7 @@ async function loadDashboard(uid) {
             container.innerHTML = '';
 
             if (!snapshot.exists()) {
-                container.innerHTML = `<div style="background: #020617; border: 1px solid #1e293b; border-radius: 10px; padding: 12px; text-align: center; color: #64748b; font-size: 12px;">No messages yet. Share your link to get confessions!</div>`;
+                container.innerHTML = `<div style="background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 12px; text-align: center; color: #64748b; font-size: 12px;">No messages yet. Share your link to get confessions!</div>`;
                 return;
             }
 

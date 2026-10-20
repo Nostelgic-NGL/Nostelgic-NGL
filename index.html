@@ -11,6 +11,8 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent; /* Removes mobile blue touch highlight */
+            outline: none;
         }
         body {
             background-color: var(--bg-color, #030712);
@@ -46,6 +48,12 @@
                 backdrop-filter: blur(12px);
                 margin: 20px;
             }
+        }
+
+        button, input, label {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .tab-btn {
@@ -138,16 +146,18 @@
             <button id="backBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 12px; cursor: pointer; padding: 4px;">Back</button>
         </div>
 
-        <!-- STEP 3: Profile Photo Upload (Fixed Clickable Area) -->
+        <!-- STEP 3: Profile Photo Upload (Directly Wrapped Label for Mobile Compatibility) -->
         <div id="step3" class="hidden text-center" style="display: flex; flex-direction: column; gap: 14px;">
             <p style="font-size: 13px; color: var(--text-color);">Upload Profile Photo (Optional)</p>
             
             <div style="display: flex; justify-content: center; margin: 6px 0;">
-                <div id="avatarPreviewContainer" style="width: 75px; height: 75px; background: rgba(2, 6, 23, 0.6); border: 2px dashed #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; overflow: hidden; position: relative; cursor: pointer;">
-                    <i class="fas fa-camera" id="cameraIcon" style="font-size: 22px;"></i>
-                    <img id="previewImg" class="hidden" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;" />
-                </div>
-                <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
+                <label for="avatarFileInput" style="cursor: pointer; display: inline-block;">
+                    <div id="avatarPreviewContainer" style="width: 75px; height: 75px; background: rgba(2, 6, 23, 0.6); border: 2px dashed #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; overflow: hidden; position: relative;">
+                        <i class="fas fa-camera" id="cameraIcon" style="font-size: 22px;"></i>
+                        <img id="previewImg" class="hidden" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;" />
+                    </div>
+                    <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
+                </label>
             </div>
 
             <button id="completeBtn" class="btn-primary">
