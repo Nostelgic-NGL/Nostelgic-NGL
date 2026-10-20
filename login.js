@@ -49,9 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const avatarPreviewContainer = document.getElementById('avatarPreviewContainer');
     const avatarFileInput = document.getElementById('avatarFileInput');
-    const completeBtn = document.getElementById('completeBtn');
+    const actionBtn = document.getElementById('actionBtn');
 
     let currentStep = 0;
+    let hasSelectedPhoto = false;
 
     function updateStepView() {
         if (welcomeScreen) welcomeScreen.classList.add('hidden');
@@ -175,6 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Gallery Trigger Functions
     const triggerGallery = (e) => {
         if (e) e.preventDefault();
         if (avatarFileInput) avatarFileInput.click();
@@ -199,7 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         previewImg.src = userData.avatarBase64;
                         previewImg.classList.remove('hidden');
                         defaultUserIcon.classList.add('hidden');
-                        if (completeBtn) completeBtn.innerText = "Create Account 🚀";
+                        hasSelectedPhoto = true;
+                        if (actionBtn) actionBtn.innerText = "Create Account 🚀";
                     }
                 };
                 reader.readAsDataURL(file);
@@ -240,12 +243,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    if (completeBtn) completeBtn.addEventListener('click', finishSetup);
+    // Main action button: Agar photo select nahi ki toh gallery kholega, aur agar select kar li toh account create karega!
+    if (actionBtn) {
+        actionBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!hasSelectedPhoto) {
+                if (avatarFileInput) avatarFileInput.click();
+            } else {
+                finishSetup(e);
+            }
+        });
+    }
+
     if (skipBtn) {
         skipBtn.addEventListener('click', (e) => {
             e.preventDefault();
             userData.avatarBase64 = 'Default-User.png';
-            finishSetup();
+            finishSetup(e);
         });
     }
 });
