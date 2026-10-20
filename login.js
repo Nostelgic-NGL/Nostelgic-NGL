@@ -126,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Username submit karte hi account create ho jayega
     if (usernameNextBtn) {
         usernameNextBtn.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -154,7 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 userData.username = username;
 
-                // Account Creation Process
                 const loadingOverlay = document.getElementById('loadingOverlay');
                 if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
