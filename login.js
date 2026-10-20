@@ -5,10 +5,16 @@ import { ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/
 let userData = {
     platform: '',
     username: '',
-    avatarBase64: 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
+    avatarBase64: 'Default-User.png'
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    const savedUid = localStorage.getItem('ngl_uid');
+    if (savedUid) {
+        window.location.href = "index.html";
+        return;
+    }
+
     const getStartedBtn = document.getElementById('getStartedBtn');
     const instaBtn = document.getElementById('instaBtn');
     const snapBtn = document.getElementById('snapBtn');
@@ -17,6 +23,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const completeBtn = document.getElementById('completeBtn');
     const skipBtn = document.getElementById('skipBtn');
     const avatarFileInput = document.getElementById('avatarFileInput');
+    const uploadBtnTrigger = document.getElementById('uploadBtnTrigger');
+    const avatarPreviewContainer = document.getElementById('avatarPreviewContainer');
+
+    const triggerFilePicker = (e) => {
+        e.preventDefault();
+        if (avatarFileInput) {
+            avatarFileInput.click();
+        }
+    };
+
+    if (uploadBtnTrigger) {
+        uploadBtnTrigger.addEventListener('click', triggerFilePicker);
+        uploadBtnTrigger.addEventListener('touchend', triggerFilePicker);
+    }
+
+    if (avatarPreviewContainer) {
+        avatarPreviewContainer.addEventListener('click', triggerFilePicker);
+        avatarPreviewContainer.addEventListener('touchend', triggerFilePicker);
+    }
 
     if (avatarFileInput) {
         avatarFileInput.addEventListener('change', (event) => {
@@ -73,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (skipBtn) {
         skipBtn.addEventListener('click', async () => {
-            userData.avatarBase64 = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+            userData.avatarBase64 = 'Default-User.png';
             await saveUserDataToDatabase();
         });
     }
@@ -122,7 +147,6 @@ async function saveUserDataToDatabase() {
     const errorMsg = document.getElementById('errorMessage');
     const loadingOverlay = document.getElementById('loadingOverlay');
     
-    // Show professional center loading overlay
     loadingOverlay.classList.remove('hidden');
 
     try {
@@ -144,6 +168,7 @@ async function saveUserDataToDatabase() {
         localStorage.setItem('ngl_uid', user.uid);
         localStorage.setItem('ngl_username', userData.username);
 
+        loadingOverlay.classList.add('hidden');
         window.location.href = "index.html";
 
     } catch (error) {

@@ -77,96 +77,10 @@
 </head>
 <body>
 
-    <!-- Professional Loading Overlay -->
-    <div id="loadingOverlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;">
-        <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.6); max-width: 260px; width: 90%;">
-            <div style="width: 35px; height: 35px; border: 4px solid #1e293b; border-top: 4px solid #ec4899; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 14px auto;"></div>
-            <h3 style="color: #f8fafc; font-size: 15px; font-weight: 700; margin-bottom: 4px;">Creating Account</h3>
-            <p style="color: #94a3b8; font-size: 11px;">Please wait while we set up your secure profile...</p>
-        </div>
-    </div>
-
-    <!-- Phone Display Container -->
+    <!-- Phone Display Container (Dashboard View) -->
     <div class="phone-container">
         
-        <!-- Header Logo (Onboarding) -->
-        <div id="headerLogoArea" class="text-center" style="margin-bottom: 20px;">
-            <div style="display: flex; justify-content: center; margin-bottom: 8px;">
-                <img src="Nostelgic-NGL.png" alt="Logo" style="width: 45px; height: 45px; object-fit: contain; border-radius: 12px;">
-            </div>
-            <h1 class="gradient-text" style="font-size: 24px; font-weight: 800; letter-spacing: 0.5px;">
-                Nostelgic NGL
-            </h1>
-            <p id="stepIndicator" style="color: #94a3b8; font-size: 12px; margin-top: 4px;">Secure Anonymous Messaging Platform</p>
-        </div>
-
-        <!-- WELCOME / GET STARTED SCREEN -->
-        <div id="welcomeScreen" class="text-center" style="display: flex; flex-direction: column; gap: 14px;">
-            <p style="color: var(--text-color); font-size: 13px; line-height: 1.5; opacity: 0.9;">
-                Generate your personalized link to receive secure, anonymous messages and confessions from your peers.
-            </p>
-            <button id="getStartedBtn" class="btn-primary" style="margin-top: 6px;">
-                Get Started <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
-            </button>
-        </div>
-
-        <!-- STEP 1: Choose Platform -->
-        <div id="step1" class="hidden" style="display: flex; flex-direction: column; gap: 12px;">
-            <p style="font-size: 13px; color: var(--text-color); text-align: center; margin-bottom: 6px;">Where will you share your link?</p>
-            
-            <button id="instaBtn" class="btn-secondary" style="justify-content: flex-start; padding: 12px 16px; gap: 14px;">
-                <img src="Insta_Logo.png" alt="Instagram" style="width: 22px; height: 22px; object-fit: contain;">
-                <span style="font-weight: 600; font-size: 14px;">Instagram Profile</span>
-            </button>
-
-            <button id="snapBtn" class="btn-secondary" style="justify-content: flex-start; padding: 12px 16px; gap: 14px;">
-                <img src="Snap_Logo.png" alt="Snapchat" style="width: 22px; height: 22px; object-fit: contain;">
-                <span style="font-weight: 600; font-size: 14px;">Snapchat Story</span>
-            </button>
-        </div>
-
-        <!-- STEP 2: Choose Username -->
-        <div id="step2" class="hidden" style="display: flex; flex-direction: column; gap: 14px;">
-            <div>
-                <label style="display: block; font-size: 11px; color: #94a3b8; margin-bottom: 6px;">Choose Unique Username</label>
-                <div style="display: flex; align-items: center; background: rgba(2, 6, 23, 0.6); border: 1px solid #1e293b; border-radius: 14px; padding: 4px 14px;">
-                    <span style="color: #64748b; font-size: 14px; margin-right: 4px;">@</span>
-                    <input type="text" id="usernameInput" placeholder="your_username" class="input-box" style="border: none; padding: 10px 0; background: transparent; color: inherit; width: 100%;">
-                </div>
-            </div>
-            <button id="nextBtn" class="btn-primary">
-                Continue <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
-            </button>
-            <button id="backBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 12px; cursor: pointer; padding: 4px;">Back</button>
-        </div>
-
-        <!-- STEP 3: Profile Photo Upload -->
-        <div id="step3" class="hidden text-center" style="display: flex; flex-direction: column; gap: 14px;">
-            <p style="font-size: 13px; color: var(--text-color);">Upload Profile Photo (Optional)</p>
-            
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 4px 0;">
-                <div id="avatarPreviewContainer" style="width: 70px; height: 70px; background: rgba(2, 6, 23, 0.6); border: 2px dashed #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; overflow: hidden; position: relative; cursor: pointer;">
-                    <i class="fas fa-camera" id="cameraIcon" style="font-size: 20px;"></i>
-                    <img id="previewImg" class="hidden" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;" />
-                </div>
-                
-                <button type="button" id="uploadBtnTrigger" style="background: rgba(236, 72, 153, 0.15); border: 1px solid #ec4899; color: #f472b6; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer;">
-                    <i class="fas fa-image" style="margin-right: 6px;"></i> Choose from Gallery
-                </button>
-
-                <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
-            </div>
-
-            <button id="completeBtn" class="btn-primary" style="margin-top: 6px;">
-                Create Account 🚀
-            </button>
-            <button id="skipBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 12px; cursor: pointer; padding: 4px;">Skip for now</button>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- DASHBOARD VIEW                            -->
-        <!-- ========================================== -->
-        <div id="dashboardView" class="hidden" style="display: flex; flex-direction: column; gap: 14px;">
+        <div id="dashboardView" style="display: flex; flex-direction: column; gap: 14px;">
             
             <!-- Top Navigation Bar -->
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px;">
@@ -231,16 +145,7 @@
 
         </div>
 
-        <p id="errorMessage" style="color: #f87171; font-size: 11px; text-align: center; margin-top: 10px;" class="hidden"></p>
     </div>
-
-    <!-- Spinner Animation Style -->
-    <style>
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
 
     <script type="module" src="index.js"></script>
 </body>
