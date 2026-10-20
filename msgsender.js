@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const anonymousMessageInput = document.getElementById('anonymousMessageInput');
     const sendMessageBtn = document.getElementById('sendMessageBtn');
     
-    // Sections
     const formSection = document.getElementById('formSection');
     const successSection = document.getElementById('successSection');
     const sendAnotherBtn = document.getElementById('sendAnotherBtn');
@@ -36,7 +35,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
 
-    // Theme Toggle Handler
     const savedTheme = localStorage.getItem('ngl_theme') || 'dark';
     if (savedTheme === 'light') {
         document.body.classList.add('light-mode');
@@ -73,7 +71,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (userSnapshot.exists()) {
                 const userData = userSnapshot.val();
                 if (headerUsernameTitle) headerUsernameTitle.innerText = `@${userData.username}`;
-                if (profileTitleText) profileTitleText.innerText = `send me anonymous messages!`;
+                
+                // Yahan par text update kar diya hai jo user ka naam/username show karega
+                if (profileTitleText) {
+                    profileTitleText.innerText = `Send anonymous msg to @${userData.username}`;
+                }
+
                 if (senderPlatformLabel) senderPlatformLabel.innerText = userData.platform || 'Instagram';
                 if (userData.avatarUrl && senderAvatarImg) {
                     senderAvatarImg.src = userData.avatarUrl;
@@ -89,7 +92,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error("Error fetching target user:", error);
     }
 
-    // Send Message Action -> Switch to Success Step
     if (sendMessageBtn) {
         sendMessageBtn.addEventListener('click', async () => {
             const messageText = anonymousMessageInput.value.trim();
@@ -111,8 +113,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
 
                 anonymousMessageInput.value = '';
-                
-                // Switch to 2nd Step (Success & Options View)
                 formSection.classList.add('hidden');
                 successSection.classList.remove('hidden');
 
@@ -123,7 +123,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Send Another Message Button Click -> Switch back to Form Step
     if (sendAnotherBtn) {
         sendAnotherBtn.addEventListener('click', () => {
             successSection.classList.add('hidden');
