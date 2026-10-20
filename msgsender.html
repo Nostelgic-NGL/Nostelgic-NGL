@@ -45,7 +45,6 @@
             border: 1px solid #cbd5e1 !important;
             color: #0f172a !important;
         }
-        body.light-mode .step-title,
         body.light-mode h3 {
             color: #0f172a !important;
         }
@@ -173,6 +172,28 @@
             transform: scale(0.97);
         }
 
+        .btn-action-secondary {
+            background: rgba(15, 23, 42, 0.9);
+            color: #f8fafc;
+            font-weight: 700;
+            width: 100%;
+            padding: 14px;
+            border-radius: 35px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .btn-action-secondary:active {
+            transform: scale(0.97);
+        }
+
         .hidden { display: none !important; }
     </style>
 </head>
@@ -196,27 +217,53 @@
                 <i id="themeIcon" class="fas fa-moon" style="font-size: 14px;"></i>
             </button>
             <h2 id="headerUsernameTitle" style="font-size: 14px; font-weight: 800; color: #cbd5e1;">Nostelgic NGL</h2>
-            <div style="width: 42px;"></div> <!-- Spacer for alignment -->
+            <div style="width: 42px;"></div>
         </div>
 
         <!-- Single Unified Card -->
         <div class="single-unified-card">
             
-            <!-- Profile Info -->
-            <div>
-                <div class="avatar-circle">
-                    <img id="senderAvatarImg" src="Default-User.png" alt="Avatar">
+            <!-- Step 1: Input Form View -->
+            <div id="formSection">
+                <div>
+                    <div class="avatar-circle">
+                        <img id="senderAvatarImg" src="Default-User.png" alt="Avatar">
+                    </div>
+                    <h3 id="profileTitleText" style="font-size: 16px; font-weight: 800; margin-bottom: 4px;">send me anonymous messages!</h3>
+                    <p id="senderPlatformLabel" style="font-size: 12px; color: #94a3b8; text-transform: capitalize;">Instagram</p>
                 </div>
-                <h3 id="profileTitleText" style="font-size: 16px; font-weight: 800; margin-bottom: 4px;">send me anonymous messages!</h3>
-                <p id="senderPlatformLabel" style="font-size: 12px; color: #94a3b8; text-transform: capitalize;">Instagram</p>
+
+                <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 16px;">
+                    <textarea id="anonymousMessageInput" class="message-input-box" placeholder="send me anonymous messages..."></textarea>
+                    <button id="sendMessageBtn" class="btn-action-primary" type="button">
+                        Send! 🚀
+                    </button>
+                </div>
             </div>
 
-            <!-- Message Input Form -->
-            <div style="display: flex; flex-direction: column; gap: 14px;">
-                <textarea id="anonymousMessageInput" class="message-input-box" placeholder="send me anonymous messages..."></textarea>
-                <button id="sendMessageBtn" class="btn-action-primary" type="button">
-                    Send! 🚀
-                </button>
+            <!-- Step 2: Success / Options View (Hidden by default) -->
+            <div id="successSection" class="hidden" style="display: flex; flex-direction: column; gap: 14px;">
+                <div>
+                    <div style="width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 12px auto; background: rgba(34, 197, 94, 0.15); border: 2px solid #22c55e; display: flex; align-items: center; justify-content: center; color: #22c55e; font-size: 28px;">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 4px;">Message Sent! 🚀</h3>
+                    <p style="font-size: 12px; color: #94a3b8;">Your anonymous message was delivered successfully.</p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 6px;">
+                    <button id="sendAnotherBtn" class="btn-action-primary" type="button">
+                        <i class="fas fa-paper-plane"></i> Send another message
+                    </button>
+                    
+                    <a href="index.html" class="btn-action-secondary">
+                        <i class="fas fa-user-plus" style="color: #ec4899;"></i> Setup your own
+                    </a>
+
+                    <a href="https://instagram.com/Jitu_Gurjar_99" target="_blank" class="btn-action-secondary">
+                        <i class="fab fa-instagram" style="color: #f43f5e;"></i> Follow the developer
+                    </a>
+                </div>
             </div>
 
         </div>
