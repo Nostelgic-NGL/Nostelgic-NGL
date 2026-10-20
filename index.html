@@ -7,15 +7,14 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Exact single screen compact layout matching reference */
         body {
             margin: 0;
-            padding: 8px 12px;
+            padding: 10px 14px;
             box-sizing: border-box;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             overflow: hidden;
             background-color: #030712;
@@ -25,19 +24,18 @@
             width: 100%;
             max-width: 400px;
             height: 100%;
-            max-height: 720px;
             display: flex;
             flex-direction: column;
-            justify-content: space-evenly;
+            gap: 12px;
         }
 
-        /* Top Navigation Bar */
+        /* Top Navigation Bar shifted to extreme top */
         .top-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            padding: 0 2px;
+            padding: 4px 2px 0 2px;
         }
 
         .nav-tabs {
@@ -50,7 +48,7 @@
         }
 
         .nav-tab {
-            padding: 7px 20px;
+            padding: 7px 18px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 700;
@@ -80,20 +78,20 @@
             cursor: pointer;
         }
 
-        /* Profile Preview Glass Card */
+        /* Profile Box */
         .profile-box {
             background: rgba(15, 23, 42, 0.75);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
             border-radius: 24px;
-            padding: 18px 20px;
+            padding: 16px 20px;
             text-align: center;
         }
 
         .avatar-circle {
-            width: 58px;
-            height: 58px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             margin: 0 auto 6px auto;
             border: 2px solid #ec4899;
@@ -111,14 +109,20 @@
             object-fit: cover;
         }
 
-        /* Step Cards */
-        .step-card {
+        /* Combined Single Card for Step 1 and Step 2 */
+        .unified-card {
             background: rgba(15, 23, 42, 0.75);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
             border-radius: 24px;
-            padding: 14px 18px;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .step-section {
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -136,8 +140,8 @@
             align-items: center;
             background: #020617;
             border: 1px solid #1e293b;
-            border-radius: 12px;
-            padding: 2px 4px 2px 12px;
+            border-radius: 16px;
+            padding: 4px 4px 4px 12px;
         }
 
         .link-text {
@@ -153,8 +157,8 @@
             background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
             color: #ffffff;
             border: none;
-            padding: 9px 14px;
-            border-radius: 10px;
+            padding: 10px 16px;
+            border-radius: 12px;
             font-size: 11px;
             font-weight: 700;
             cursor: pointer;
@@ -166,7 +170,7 @@
             color: #ffffff;
             font-weight: 700;
             width: 100%;
-            padding: 12px;
+            padding: 13px;
             border-radius: 35px;
             border: none;
             box-shadow: 0 8px 20px rgba(255, 94, 54, 0.3);
@@ -180,7 +184,7 @@
 
     <div class="main-container">
         
-        <!-- Top Navigation Bar (Fixed at top) -->
+        <!-- Top Navigation Bar (Shifted to top as marked green) -->
         <div class="top-nav">
             <button id="themeToggleBtn" class="icon-btn">
                 <i class="fas fa-moon" style="font-size: 13px;"></i>
@@ -205,21 +209,26 @@
             <p id="platformLabel" style="font-size: 11px; color: #94a3b8; text-transform: capitalize;">Instagram</p>
         </div>
 
-        <!-- Step 1: Copy Link -->
-        <div class="step-card">
-            <p class="step-title">Step 1: Copy your link</p>
-            <div class="link-row">
-                <span id="profileLinkText" class="link-text">https://loading...</span>
-                <button id="copyLinkBtn" class="btn-sm-copy">copy link</button>
+        <!-- Combined Single Card for Both Steps -->
+        <div class="unified-card">
+            <!-- Step 1 Section -->
+            <div class="step-section">
+                <p class="step-title">Step 1: Copy your link</p>
+                <div class="link-row">
+                    <span id="profileLinkText" class="link-text">https://loading...</span>
+                    <button id="copyLinkBtn" class="btn-sm-copy">copy link</button>
+                </div>
             </div>
-        </div>
 
-        <!-- Step 2: Share Link -->
-        <div class="step-card">
-            <p class="step-title">Step 2: Share link on your story</p>
-            <button id="shareStoryBtn" class="btn-action-primary">
-                Share!
-            </button>
+            <div style="height: 1px; background: rgba(255, 255, 255, 0.06); width: 100%;"></div>
+
+            <!-- Step 2 Section -->
+            <div class="step-section">
+                <p class="step-title">Step 2: Share link on your story</p>
+                <button id="shareStoryBtn" class="btn-action-primary">
+                    Share!
+                </button>
+            </div>
         </div>
 
     </div>
