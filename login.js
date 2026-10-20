@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const platformCards = document.querySelectorAll('.platform-card-ngl');
     const platformNextBtn = document.getElementById('platformNextBtn');
     const usernameInput = document.getElementById('usernameInput');
+    const usernameErrorText = document.getElementById('usernameErrorText');
     const usernameNextBtn = document.getElementById('usernameNextBtn');
     
     const avatarPreviewContainer = document.getElementById('avatarPreviewContainer');
@@ -131,12 +132,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (usernameInput) {
+        usernameInput.addEventListener('input', () => {
+            if (usernameErrorText) usernameErrorText.classList.add('hidden');
+        });
+    }
+
     if (usernameNextBtn) {
         usernameNextBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             const username = usernameInput.value.trim().toLowerCase().replace('@', '');
+            
+            if (usernameErrorText) usernameErrorText.classList.add('hidden');
+
             if (!username || username.length < 3) {
-                showCustomAlert("Username must be at least 3 characters long.");
+                if (usernameErrorText) {
+                    usernameErrorText.innerText = "Username must be at least 3 characters long.";
+                    usernameErrorText.classList.remove('hidden');
+                }
                 return;
             }
 
@@ -144,14 +157,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dbRef = ref(rtdb);
                 const snapshot = await get(child(dbRef, `usernames/${username}`));
                 if (snapshot.exists()) {
-                    showCustomAlert("This username is already taken. Try another one.");
+                    if (usernameErrorText) {
+                        usernameErrorText.innerText = "This username is not available. Please try a different one.";
+                        usernameErrorText.classList.remove('hidden');
+                    }
                     return;
                 }
                 userData.username = username;
                 currentStep = 3;
                 updateStepView();
             } catch (error) {
-                showCustomAlert("Error: " + error.message);
+                if (usernameErrorText) {
+                    usernameErrorText.innerText = "Error: " + error.message;
+                    usernameErrorText.classList.remove('hidden');
+                }
             }
         });
     }
