@@ -44,6 +44,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const completeBtn = document.getElementById('completeBtn');
     const skipBtn = document.getElementById('skipBtn');
     const avatarFileInput = document.getElementById('avatarFileInput');
+    const uploadBtnTrigger = document.getElementById('uploadBtnTrigger');
+    const avatarPreviewContainer = document.getElementById('avatarPreviewContainer');
+
+    const triggerFilePicker = (e) => {
+        e.preventDefault();
+        if (avatarFileInput) {
+            avatarFileInput.click();
+        }
+    };
+
+    if (uploadBtnTrigger) {
+        uploadBtnTrigger.addEventListener('click', triggerFilePicker);
+        uploadBtnTrigger.addEventListener('touchend', triggerFilePicker);
+    }
+
+    if (avatarPreviewContainer) {
+        avatarPreviewContainer.addEventListener('click', triggerFilePicker);
+        avatarPreviewContainer.addEventListener('touchend', triggerFilePicker);
+    }
 
     if (avatarFileInput) {
         avatarFileInput.addEventListener('change', (event) => {
