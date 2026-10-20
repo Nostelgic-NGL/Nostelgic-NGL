@@ -8,6 +8,22 @@ let userData = {
     avatarBase64: 'Default-User.png'
 };
 
+// Custom Alert Helper Function
+function showCustomAlert(message) {
+    const alertModal = document.getElementById('customAlertModal');
+    const alertText = document.getElementById('customAlertText');
+    const okBtn = document.getElementById('customAlertOkBtn');
+    
+    if (alertText) alertText.innerText = message;
+    if (alertModal) alertModal.classList.remove('hidden');
+
+    if (okBtn) {
+        okBtn.onclick = () => {
+            alertModal.classList.add('hidden');
+        };
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const savedUid = localStorage.getItem('ngl_uid');
     if (savedUid) {
@@ -76,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (step2BackBtn) step2BackBtn.addEventListener('click', handleBack);
     if (step3BackBtn) step3BackBtn.addEventListener('click', handleBack);
 
-    // Platform Selection Logic with Fixed e.currentTarget Binding
+    // Platform Selection Logic with Custom Alert for Snapchat
     platformCards.forEach(card => {
         const selectAction = (e) => {
             if (e) e.preventDefault();
@@ -84,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const platform = targetCard.getAttribute('data-platform');
 
             if (platform === 'snapchat') {
-                alert("Feature Coming Soon In Next Update 🚀");
+                showCustomAlert("Feature Coming Soon In Next Update");
                 return;
             }
 
@@ -122,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const username = usernameInput.value.trim().toLowerCase().replace('@', '');
             if (!username || username.length < 3) {
-                alert("Username must be at least 3 characters long.");
+                showCustomAlert("Username must be at least 3 characters long.");
                 return;
             }
 
@@ -130,14 +146,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dbRef = ref(rtdb);
                 const snapshot = await get(child(dbRef, `usernames/${username}`));
                 if (snapshot.exists()) {
-                    alert("This username is already taken. Try another one.");
+                    showCustomAlert("This username is already taken. Try another one.");
                     return;
                 }
                 userData.username = username;
                 currentStep = 3;
                 updateStepView();
             } catch (error) {
-                alert("Error: " + error.message);
+                showCustomAlert("Error: " + error.message);
             }
         });
     }
@@ -203,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             if (loadingOverlay) loadingOverlay.classList.add('hidden');
-            alert("Setup failed: " + error.message);
+            showCustomAlert("Setup failed: " + error.message);
         }
     };
 
