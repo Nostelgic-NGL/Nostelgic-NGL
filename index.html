@@ -7,18 +7,28 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Compact layout adjustments to fit perfectly without vertical scrolling */
+        /* Exact single screen compact layout matching reference */
         body {
-            padding: 12px;
+            margin: 0;
+            padding: 8px 12px;
             box-sizing: border-box;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-color: #030712;
         }
 
         .main-container {
             width: 100%;
             max-width: 400px;
+            height: 100%;
+            max-height: 720px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            justify-content: space-evenly;
         }
 
         /* Top Navigation Bar */
@@ -26,23 +36,23 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 4px;
+            width: 100%;
+            padding: 0 2px;
         }
 
         .nav-tabs {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 30px;
             display: flex;
-            padding: 4px;
+            padding: 3px;
             gap: 4px;
         }
 
         .nav-tab {
-            padding: 8px 20px;
+            padding: 7px 20px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             border: none;
@@ -58,37 +68,36 @@
         }
 
         .icon-btn {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #f8fafc;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
 
-        .icon-btn:active {
-            transform: scale(0.92);
-        }
-
-        /* Profile Preview Card */
+        /* Profile Preview Glass Card */
         .profile-box {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border-radius: 24px;
+            padding: 18px 20px;
             text-align: center;
-            padding: 16px 20px;
         }
 
         .avatar-circle {
-            width: 65px;
-            height: 65px;
+            width: 58px;
+            height: 58px;
             border-radius: 50%;
-            margin: 0 auto 8px auto;
+            margin: 0 auto 6px auto;
             border: 2px solid #ec4899;
-            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
             overflow: hidden;
             background: #020617;
             display: flex;
@@ -102,16 +111,21 @@
             object-fit: cover;
         }
 
-        /* Action Step Cards */
+        /* Step Cards */
         .step-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border-radius: 24px;
             padding: 14px 18px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .step-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             text-align: center;
             color: #cbd5e1;
@@ -127,7 +141,7 @@
         }
 
         .link-text {
-            font-size: 12px;
+            font-size: 11px;
             color: #94a3b8;
             white-space: nowrap;
             overflow: hidden;
@@ -139,12 +153,26 @@
             background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
             color: #ffffff;
             border: none;
-            padding: 10px 16px;
+            padding: 9px 14px;
             border-radius: 10px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             cursor: pointer;
             white-space: nowrap;
+        }
+
+        .btn-action-primary {
+            background: linear-gradient(135deg, #db2777 0%, #ff5e36 100%);
+            color: #ffffff;
+            font-weight: 700;
+            width: 100%;
+            padding: 12px;
+            border-radius: 35px;
+            border: none;
+            box-shadow: 0 8px 20px rgba(255, 94, 54, 0.3);
+            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
         }
     </style>
 </head>
@@ -152,10 +180,10 @@
 
     <div class="main-container">
         
-        <!-- Top Navigation Bar -->
+        <!-- Top Navigation Bar (Fixed at top) -->
         <div class="top-nav">
             <button id="themeToggleBtn" class="icon-btn">
-                <i class="fas fa-moon" style="font-size: 14px;"></i>
+                <i class="fas fa-moon" style="font-size: 13px;"></i>
             </button>
             
             <div class="nav-tabs">
@@ -164,21 +192,21 @@
             </div>
 
             <button id="logoutBtn" class="icon-btn" style="color: #f87171;">
-                <i class="fas fa-sign-out-alt" style="font-size: 14px;"></i>
+                <i class="fas fa-sign-out-alt" style="font-size: 13px;"></i>
             </button>
         </div>
 
-        <!-- Profile / Status Glass Card -->
-        <div class="glass-card profile-box">
+        <!-- Profile Box -->
+        <div class="profile-box">
             <div class="avatar-circle">
                 <img id="userAvatarImg" src="Default-User.png" alt="Avatar">
             </div>
-            <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 2px;">send me anonymous messages!</h3>
+            <h3 style="font-size: 14px; font-weight: 800; margin-bottom: 2px;">send me anonymous messages!</h3>
             <p id="platformLabel" style="font-size: 11px; color: #94a3b8; text-transform: capitalize;">Instagram</p>
         </div>
 
-        <!-- Step 1: Copy Link Card -->
-        <div class="glass-card step-card">
+        <!-- Step 1: Copy Link -->
+        <div class="step-card">
             <p class="step-title">Step 1: Copy your link</p>
             <div class="link-row">
                 <span id="profileLinkText" class="link-text">https://loading...</span>
@@ -186,11 +214,11 @@
             </div>
         </div>
 
-        <!-- Step 2: Share Link Card -->
-        <div class="glass-card step-card">
+        <!-- Step 2: Share Link -->
+        <div class="step-card">
             <p class="step-title">Step 2: Share link on your story</p>
-            <button id="shareStoryBtn" class="btn-primary" style="padding: 12px; font-size: 14px;">
-                Share! 🚀
+            <button id="shareStoryBtn" class="btn-action-primary">
+                Share!
             </button>
         </div>
 
