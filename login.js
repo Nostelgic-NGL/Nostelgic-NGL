@@ -8,7 +8,6 @@ let userData = {
     avatarBase64: 'Default-User.png'
 };
 
-// Custom Alert Helper Function
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
     const alertText = document.getElementById('customAlertText');
@@ -92,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (step2BackBtn) step2BackBtn.addEventListener('click', handleBack);
     if (step3BackBtn) step3BackBtn.addEventListener('click', handleBack);
 
-    // Platform Selection Logic with Custom Alert for Snapchat
     platformCards.forEach(card => {
         const selectAction = (e) => {
             if (e) e.preventDefault();
