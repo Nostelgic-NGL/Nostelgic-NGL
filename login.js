@@ -49,10 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const avatarPreviewContainer = document.getElementById('avatarPreviewContainer');
     const avatarFileInput = document.getElementById('avatarFileInput');
-    const actionBtn = document.getElementById('actionBtn');
+    const choosePhotoBtn = document.getElementById('choosePhotoBtn');
+    const createAccountBtn = document.getElementById('createAccountBtn');
 
     let currentStep = 0;
-    let hasSelectedPhoto = false;
 
     function updateStepView() {
         if (welcomeScreen) welcomeScreen.classList.add('hidden');
@@ -176,15 +176,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Gallery Trigger Functions
-    const triggerGallery = (e) => {
+    // Gallery Trigger
+    const openGallery = (e) => {
         if (e) e.preventDefault();
         if (avatarFileInput) avatarFileInput.click();
     };
 
     if (avatarPreviewContainer) {
-        avatarPreviewContainer.addEventListener('click', triggerGallery);
-        avatarPreviewContainer.addEventListener('touchend', triggerGallery);
+        avatarPreviewContainer.addEventListener('click', openGallery);
+        avatarPreviewContainer.addEventListener('touchend', openGallery);
+    }
+
+    if (choosePhotoBtn) {
+        choosePhotoBtn.addEventListener('click', openGallery);
     }
 
     if (avatarFileInput) {
@@ -201,8 +205,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         previewImg.src = userData.avatarBase64;
                         previewImg.classList.remove('hidden');
                         defaultUserIcon.classList.add('hidden');
-                        hasSelectedPhoto = true;
-                        if (actionBtn) actionBtn.innerText = "Create Account 🚀";
+                        
+                        // Photo select hone ke baad "Choose photo" button hide ho jayega aur "Create Account" button dikhega
+                        if (choosePhotoBtn) choosePhotoBtn.classList.add('hidden');
+                        if (createAccountBtn) createAccountBtn.classList.remove('hidden');
                     }
                 };
                 reader.readAsDataURL(file);
@@ -243,16 +249,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Main action button: Agar photo select nahi ki toh gallery kholega, aur agar select kar li toh account create karega!
-    if (actionBtn) {
-        actionBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (!hasSelectedPhoto) {
-                if (avatarFileInput) avatarFileInput.click();
-            } else {
-                finishSetup(e);
-            }
-        });
+    if (createAccountBtn) {
+        createAccountBtn.addEventListener('click', finishSetup);
     }
 
     if (skipBtn) {
