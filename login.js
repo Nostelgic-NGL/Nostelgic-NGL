@@ -38,35 +38,37 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentStep = 0;
 
     function updateStepView() {
-        welcomeScreen.classList.add('hidden');
-        step1.classList.add('hidden');
-        step2.classList.add('hidden');
-        step3.classList.add('hidden');
+        if (welcomeScreen) welcomeScreen.classList.add('hidden');
+        if (step1) step1.classList.add('hidden');
+        if (step2) step2.classList.add('hidden');
+        if (step3) step3.classList.add('hidden');
 
         if (currentStep === 1) {
-            step1.classList.remove('hidden');
+            if (step1) step1.classList.remove('hidden');
         } else if (currentStep === 2) {
-            step2.classList.remove('hidden');
+            if (step2) step2.classList.remove('hidden');
         } else if (currentStep === 3) {
-            step3.classList.remove('hidden');
+            if (step3) step3.classList.remove('hidden');
         }
     }
 
     if (getStartedBtn) {
-        getStartedBtn.addEventListener('click', () => {
+        getStartedBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             currentStep = 1;
             updateStepView();
         });
     }
 
-    const handleBack = () => {
+    const handleBack = (e) => {
+        if (e) e.preventDefault();
         if (currentStep > 1) {
             currentStep--;
             updateStepView();
         } else {
             currentStep = 0;
-            welcomeScreen.classList.remove('hidden');
-            step1.classList.add('hidden');
+            if (welcomeScreen) welcomeScreen.classList.remove('hidden');
+            if (step1) step1.classList.add('hidden');
         }
     };
 
@@ -74,27 +76,32 @@ document.addEventListener('DOMContentLoaded', () => {
     if (step2BackBtn) step2BackBtn.addEventListener('click', handleBack);
     if (step3BackBtn) step3BackBtn.addEventListener('click', handleBack);
 
-    // Platform Card Selection Logic
+    // Platform Selection Logic
     platformCards.forEach(card => {
-        const selectAction = () => {
+        const selectAction = (e) => {
+            if (e) e.preventDefault();
             platformCards.forEach(c => {
                 c.classList.remove('selected');
-                c.querySelector('.radio-indicator').innerHTML = '<div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #475569;"></div>';
+                const indicator = c.querySelector('.radio-indicator');
+                if (indicator) {
+                    indicator.innerHTML = '<div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #475569;"></div>';
+                }
             });
             card.classList.add('selected');
             userData.platform = card.getAttribute('data-platform');
-            card.querySelector('.radio-indicator').innerHTML = '<div style="width: 20px; height: 20px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #030712;"></div></div>';
+            const activeIndicator = card.querySelector('.radio-indicator');
+            if (activeIndicator) {
+                activeIndicator.innerHTML = '<div style="width: 20px; height: 20px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #030712;"></div></div>';
+            }
         };
 
         card.addEventListener('click', selectAction);
-        card.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            selectAction();
-        });
+        card.addEventListener('touchend', selectAction);
     });
 
     if (platformNextBtn) {
-        platformNextBtn.addEventListener('click', () => {
+        platformNextBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             currentStep = 2;
             updateStepView();
             if (usernameInput) usernameInput.focus();
@@ -102,7 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (usernameNextBtn) {
-        usernameNextBtn.addEventListener('click', async () => {
+        usernameNextBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
             const username = usernameInput.value.trim().toLowerCase().replace('@', '');
             if (!username || username.length < 3) {
                 alert("Username must be at least 3 characters long.");
@@ -125,9 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Profile Photo Upload Trigger
     const triggerGallery = (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         if (avatarFileInput) avatarFileInput.click();
     };
 
@@ -150,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         previewImg.src = userData.avatarBase64;
                         previewImg.classList.remove('hidden');
                         defaultUserIcon.classList.add('hidden');
-                        completeBtn.innerText = "Create Account 🚀";
+                        if (completeBtn) completeBtn.innerText = "Create Account 🚀";
                     }
                 };
                 reader.readAsDataURL(file);
@@ -158,7 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const finishSetup = async () => {
+    const finishSetup = async (e) => {
+        if (e) e.preventDefault();
         const loadingOverlay = document.getElementById('loadingOverlay');
         if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
@@ -192,7 +200,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (completeBtn) completeBtn.addEventListener('click', finishSetup);
     if (skipBtn) {
-        skipBtn.addEventListener('click', () => {
+        skipBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             userData.avatarBase64 = 'Default-User.png';
             finishSetup();
         });
