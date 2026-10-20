@@ -3,146 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nostelgic NGL - Dashboard</title>
+    <title>Nostelgic NGL - Home</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-            outline: none;
-        }
+        /* Compact layout adjustments to fit perfectly without vertical scrolling */
         body {
-            background-color: var(--bg-color, #030712);
-            color: var(--text-color, #f8fafc);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            width: 100vw;
-            overflow-x: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: background 0.3s ease, color 0.3s ease;
+            padding: 12px;
+            box-sizing: border-box;
         }
 
-        .phone-container {
+        .main-container {
             width: 100%;
-            max-width: 420px;
-            min-height: 100vh;
-            background: var(--card-bg, rgba(15, 23, 42, 0.95));
+            max-width: 400px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            padding: 20px;
-            box-sizing: border-box;
+            gap: 12px;
         }
 
-        @media (min-width: 480px) {
-            .phone-container {
-                min-height: auto;
-                border-radius: 28px;
-                border: 1px solid var(--card-border, rgba(255, 255, 255, 0.08));
-                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
-                backdrop-filter: blur(12px);
-                margin: 20px;
-            }
+        /* Top Navigation Bar */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px;
         }
 
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: var(--tab-text, #94a3b8);
-            font-size: 11px;
+        .nav-tabs {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            display: flex;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .nav-tab {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 13px;
             font-weight: 700;
             cursor: pointer;
-            padding: 6px 16px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-        .tab-btn.active {
-            background: linear-gradient(135deg, #db2777, #7c3aed);
-            color: #ffffff;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            transition: all 0.2s ease;
         }
 
-        body.light-theme {
-            --bg-color: #f1f5f9;
-            --text-color: #0f172a;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --card-border: rgba(0, 0, 0, 0.1);
-            --tab-text: #64748b;
+        .nav-tab.active {
+            background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4);
+        }
+
+        .icon-btn {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .icon-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* Profile Preview Card */
+        .profile-box {
+            text-align: center;
+            padding: 16px 20px;
+        }
+
+        .avatar-circle {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            margin: 0 auto 8px auto;
+            border: 2px solid #ec4899;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+            overflow: hidden;
+            background: #020617;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Action Step Cards */
+        .step-card {
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .step-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            color: #cbd5e1;
+        }
+
+        .link-row {
+            display: flex;
+            align-items: center;
+            background: #020617;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 2px 4px 2px 12px;
+        }
+
+        .link-text {
+            font-size: 12px;
+            color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        .btn-sm-copy {
+            background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
+            color: #ffffff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
         }
     </style>
 </head>
 <body>
 
-    <!-- Phone Display Container (Dashboard View) -->
-    <div class="phone-container">
+    <div class="main-container">
         
-        <div id="dashboardView" style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Top Navigation Bar -->
+        <div class="top-nav">
+            <button id="themeToggleBtn" class="icon-btn">
+                <i class="fas fa-moon" style="font-size: 14px;"></i>
+            </button>
             
-            <!-- Top Navigation Bar -->
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px;">
-                
-                <!-- Dark/Light Theme Switch Button -->
-                <button id="themeToggleBtn" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #f59e0b; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px;">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
-
-                <!-- Centered HOME & INBOX Tabs -->
-                <div style="display: flex; gap: 4px; background: rgba(2, 6, 23, 0.5); padding: 3px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.06);">
-                    <button id="homeTab" class="tab-btn active">HOME</button>
-                    <button id="inboxTab" class="tab-btn">INBOX</button>
-                </div>
-
-                <!-- Logout Button -->
-                <button id="logoutBtn" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px;">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
+            <div class="nav-tabs">
+                <button class="nav-tab active">HOME</button>
+                <button id="toInboxBtn" class="nav-tab">INBOX</button>
             </div>
 
-            <!-- HOME SECTION (3 Cards) -->
-            <div id="homeSection" style="display: flex; flex-direction: column; gap: 14px;">
-                <!-- CARD 1: Profile Preview Card -->
-                <div style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8)); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 20px; padding: 18px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.4);">
-                    <div style="display: flex; justify-content: center; margin-bottom: 10px;">
-                        <img id="dashAvatar" src="Default-User.png" alt="Avatar" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #ec4899; box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);">
-                    </div>
-                    <h3 style="font-size: 15px; font-weight: 800; color: #ffffff; letter-spacing: 0.3px;">send me anonymous messages!</h3>
-                    <p id="dashPlatform" style="font-size: 11px; color: #94a3b8; margin-top: 4px; text-transform: capitalize;">Instagram</p>
-                </div>
+            <button id="logoutBtn" class="icon-btn" style="color: #f87171;">
+                <i class="fas fa-sign-out-alt" style="font-size: 14px;"></i>
+            </button>
+        </div>
 
-                <!-- CARD 2: Copy Link Card -->
-                <div style="background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; padding: 16px; text-align: center;">
-                    <h4 style="font-size: 13px; font-weight: 700; color: var(--text-color); margin-bottom: 8px;">Step 1: Copy your link</h4>
-                    <input type="text" id="shareLinkInput" readonly style="width: 100%; background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 10px; color: #94a3b8; font-size: 11px; text-align: center; margin-bottom: 10px; outline: none;" />
-                    <button id="copyLinkBtn" style="background: linear-gradient(135deg, #ef4444, #ec4899); color: #ffffff; font-weight: 700; width: 100%; padding: 12px; border-radius: 30px; border: none; font-size: 13px; cursor: pointer; box-shadow: 0 5px 20px rgba(236, 72, 153, 0.4);">
-                        copy link
-                    </button>
-                </div>
-
-                <!-- CARD 3: Share Story Card -->
-                <div style="background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; padding: 16px; text-align: center;">
-                    <h4 style="font-size: 13px; font-weight: 700; color: var(--text-color); margin-bottom: 10px;">Step 2: Share link on your story</h4>
-                    <button id="shareStoryBtn" style="background: linear-gradient(135deg, #ec4899 0%, #f97316 100%); color: #ffffff; font-weight: 700; width: 100%; padding: 12px; border-radius: 30px; border: none; font-size: 13px; cursor: pointer; box-shadow: 0 5px 20px rgba(249, 115, 22, 0.4);">
-                        Share!
-                    </button>
-                </div>
+        <!-- Profile / Status Glass Card -->
+        <div class="glass-card profile-box">
+            <div class="avatar-circle">
+                <img id="userAvatarImg" src="Default-User.png" alt="Avatar">
             </div>
+            <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 2px;">send me anonymous messages!</h3>
+            <p id="platformLabel" style="font-size: 11px; color: #94a3b8; text-transform: capitalize;">Instagram</p>
+        </div>
 
-            <!-- INBOX SECTION (Shown when INBOX tab clicked) -->
-            <div id="inboxSection" class="hidden" style="background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; padding: 16px;">
-                <h4 style="font-size: 14px; font-weight: 700; color: var(--text-color); margin-bottom: 12px;">
-                    <i class="fas fa-inbox" style="color: #ec4899; margin-right: 6px;"></i> Inbox Messages
-                </h4>
-                <div id="messagesContainer" style="display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; padding-right: 2px;">
-                    <div style="background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 12px; text-align: center; color: #64748b; font-size: 12px;">
-                        No messages yet. Share your link to get confessions!
-                    </div>
-                </div>
+        <!-- Step 1: Copy Link Card -->
+        <div class="glass-card step-card">
+            <p class="step-title">Step 1: Copy your link</p>
+            <div class="link-row">
+                <span id="profileLinkText" class="link-text">https://loading...</span>
+                <button id="copyLinkBtn" class="btn-sm-copy">copy link</button>
             </div>
+        </div>
 
+        <!-- Step 2: Share Link Card -->
+        <div class="glass-card step-card">
+            <p class="step-title">Step 2: Share link on your story</p>
+            <button id="shareStoryBtn" class="btn-primary" style="padding: 12px; font-size: 14px;">
+                Share! 🚀
+            </button>
         </div>
 
     </div>
