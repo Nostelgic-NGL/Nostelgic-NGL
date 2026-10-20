@@ -7,21 +7,256 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: #030712; color: #f8fafc; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 16px; }
-        .card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); padding: 24px; border-radius: 28px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); }
-        .input-box { width: 100%; background: #020617; border: 1px solid #1e293b; border-radius: 16px; padding: 14px; color: #fff; margin-bottom: 14px; outline: none; font-size: 14px; }
-        .btn { background: linear-gradient(135deg, #db2777 0%, #ff5e36 100%); color: #fff; font-weight: 700; width: 100%; padding: 14px; border-radius: 35px; border: none; cursor: pointer; font-size: 14px; box-shadow: 0 8px 20px rgba(255, 94, 54, 0.3); }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #030712;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
+        }
+
+        .phone-container {
+            width: 100%;
+            max-width: 420px;
+            min-height: 100vh;
+            background: #030712;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        @media (min-width: 480px) {
+            .phone-container {
+                min-height: 85vh;
+                border-radius: 36px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+                margin: 20px;
+            }
+        }
+
+        .welcome-gradient-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #030712;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 50px 24px 30px 24px;
+            box-sizing: border-box;
+            border-radius: inherit;
+        }
+
+        .welcome-gradient-screen.hidden {
+            display: none !important;
+        }
+
+        .brand-logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            gap: 16px;
+        }
+
+        .brand-large-logo {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .brand-title-lg {
+            font-size: 38px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            text-align: center;
+        }
+
+        .platform-card-ngl {
+            background: #1e2538;
+            border: 2px solid transparent;
+            border-radius: 32px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 14px;
+        }
+        .platform-card-ngl.selected {
+            border-color: #ffffff;
+            background: #252e46;
+        }
+
+        .btn-pill-white {
+            background: #ffffff;
+            color: #000000;
+            font-weight: 800;
+            font-size: 17px;
+            width: 100%;
+            padding: 18px;
+            border-radius: 40px;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: transform 0.1s ease;
+        }
+        .btn-pill-white:active {
+            transform: scale(0.97);
+        }
+
+        .ngl-input {
+            background: #161e31;
+            border: 1px solid #2a344d;
+            border-radius: 24px;
+            padding: 18px 24px;
+            color: #ffffff;
+            font-size: 18px;
+            width: 100%;
+            text-align: center;
+            outline: none;
+            margin-bottom: 12px;
+        }
+
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2 style="margin-bottom: 20px; font-size: 20px;">Nostelgic NGL Login</h2>
-        <input type="email" id="emailInput" class="input-box" placeholder="Enter your email">
-        <input type="password" id="passwordInput" class="input-box" placeholder="Enter your password">
-        <button id="loginBtn" class="btn">Login</button>
+
+    <!-- Professional Loading Overlay -->
+    <div id="loadingOverlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;">
+        <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); padding: 30px; border-radius: 24px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.8); max-width: 280px; width: 90%;">
+            <div style="width: 38px; height: 38px; border: 4px solid #1e293b; border-top: 4px solid #ec4899; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px auto;"></div>
+            <h3 style="color: #f8fafc; font-size: 16px; font-weight: 700; margin-bottom: 6px;">Creating Account</h3>
+            <p style="color: #94a3b8; font-size: 12px; line-height: 1.4;">Please wait while we set up your secure profile...</p>
+        </div>
     </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="customAlertModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000;">
+        <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); padding: 30px; border-radius: 24px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.8); max-width: 280px; width: 90%;">
+            <div style="font-size: 30px; margin-bottom: 12px; color: #ec4899;"><i class="fas fa-info-circle"></i></div>
+            <h3 style="color: #f8fafc; font-size: 16px; font-weight: 700; margin-bottom: 6px;">Snapchat Integration</h3>
+            <p id="customAlertText" style="color: #94a3b8; font-size: 12px; margin-bottom: 20px; line-height: 1.4;">Feature Coming Soon In Next Update</p>
+            <button id="customAlertOkBtn" style="background: linear-gradient(135deg, #db2777, #7c3aed); color: #ffffff; border: none; width: 100%; padding: 12px; border-radius: 30px; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 5px 15px rgba(219,39,119,0.4);">OK</button>
+        </div>
+    </div>
+
+    <!-- Phone Display Container -->
+    <div class="phone-container">
+        
+        <!-- ================= WELCOME SCREEN ================= -->
+        <div id="welcomeScreen" class="welcome-gradient-screen">
+            <div></div>
+            
+            <div class="brand-logo-container">
+                <img src="Nostelgic-NGL.png" alt="Logo" class="brand-large-logo">
+                <h1 class="brand-title-lg">Nostelgic NGL</h1>
+            </div>
+
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 14px;">
+                <button id="getStartedBtn" class="btn-pill-white" type="button">
+                    Get Started!
+                </button>
+                <p style="color: #94a3b8; font-size: 11px; text-align: center; line-height: 1.4;">
+                    By continuing, you agree to our <a href="#" style="color: #fff; text-decoration: underline;">Terms of Use</a> and have read and agreed to our <a href="#" style="color: #fff; text-decoration: underline;">Privacy Policy</a>.
+                </p>
+            </div>
+        </div>
+
+        <!-- ================= STEP 1: CHOOSE PLATFORM ================= -->
+        <div id="step1" class="hidden" style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
+            <div>
+                <button id="step1BackBtn" type="button" style="background: transparent; border: none; color: #ffffff; font-size: 22px; cursor: pointer; padding: 4px; margin-bottom: 20px;">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                
+                <h2 style="font-size: 24px; font-weight: 800; text-align: center; margin-top: 10px; line-height: 1.3;">
+                    Where do you want to use NGL?
+                </h2>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px; margin: auto 0;">
+                <div class="platform-card-ngl selected" data-platform="instagram">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <img src="Insta_Logo.png" alt="Insta" style="width: 28px; height: 28px; object-fit: contain;">
+                        <span style="font-size: 16px; font-weight: 700;">Instagram</span>
+                    </div>
+                    <div class="radio-indicator" style="width: 20px; height: 20px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #030712;"></div>
+                    </div>
+                </div>
+
+                <div class="platform-card-ngl" data-platform="snapchat">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <img src="Snap_Logo.png" alt="Snap" style="width: 28px; height: 28px; object-fit: contain;">
+                        <span style="font-size: 16px; font-weight: 700;">Snapchat</span>
+                    </div>
+                    <div class="radio-indicator" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #475569;"></div>
+                </div>
+            </div>
+
+            <div style="padding-bottom: 10px;">
+                <button id="platformNextBtn" class="btn-pill-white" type="button">Continue</button>
+            </div>
+        </div>
+
+        <!-- ================= STEP 2: CHOOSE USERNAME & CREATE ACCOUNT ================= -->
+        <div id="step2" class="hidden" style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
+            <div>
+                <button id="step2BackBtn" type="button" style="background: transparent; border: none; color: #ffffff; font-size: 22px; cursor: pointer; padding: 4px; margin-bottom: 20px;">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <h2 style="font-size: 24px; font-weight: 800; text-align: center; margin-top: 20px;">Choose a username</h2>
+            </div>
+            
+            <div style="margin: auto 0; text-align: center;">
+                <input type="text" id="usernameInput" placeholder="@username" class="ngl-input" />
+                <p id="usernameErrorText" style="color: #ef4444; font-size: 12px; line-height: 1.4; padding: 0 10px;" class="hidden"></p>
+            </div>
+
+            <div style="padding-bottom: 10px;">
+                <button id="usernameNextBtn" class="btn-pill-white" type="button" style="background: linear-gradient(135deg, #db2777, #7c3aed); color: #fff;">Create Account 🚀</button>
+            </div>
+        </div>
+
+        <p id="errorMessage" style="color: #f87171; font-size: 11px; text-align: center;" class="hidden"></p>
+    </div>
+
+    <!-- Spinner Animation Style -->
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
     <script type="module" src="login.js"></script>
 </body>
 </html>
