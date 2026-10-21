@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Settings Options
     const pauseLinkOption = document.getElementById('pauseLinkOption');
+    const hardRefreshOption = document.getElementById('hardRefreshOption');
     const deleteAccountOption = document.getElementById('deleteAccountOption');
     const logoutBtn = document.getElementById('logoutBtn');
 
@@ -180,6 +181,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-pause-circle" style="color: #ec4899; margin-right: 8px;"></i> Pause my link';
                 showCustomAlert("Your link is now active again! 🚀");
             }
+        });
+    }
+
+    // PC Style Hard Refresh (Ctrl+F5 equivalent for Mobile)
+    if (hardRefreshOption) {
+        hardRefreshOption.addEventListener('click', () => {
+            // Keep user login uid safe, clear cache items and reload fresh from server
+            const currentUid = localStorage.getItem('ngl_uid');
+            const currentTheme = localStorage.getItem('ngl_theme');
+            
+            localStorage.clear(); // Clear all cache
+            
+            // Restore essential session data
+            if (currentUid) localStorage.setItem('ngl_uid', currentUid);
+            if (currentTheme) localStorage.setItem('ngl_theme', currentTheme);
+
+            // Hard reload page bypassing browser cache
+            window.location.reload(true);
         });
     }
 
