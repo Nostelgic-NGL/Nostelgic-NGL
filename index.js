@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Settings Options
     const pauseLinkOption = document.getElementById('pauseLinkOption');
     const hardRefreshOption = document.getElementById('hardRefreshOption');
+    const feedbackOption = document.getElementById('feedbackOption');
     const deleteAccountOption = document.getElementById('deleteAccountOption');
     const logoutBtn = document.getElementById('logoutBtn');
 
@@ -198,6 +199,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (currentTheme) localStorage.setItem('ngl_theme', currentTheme);
 
             window.location.reload(true);
+        });
+    }
+
+    // Feedback & Support Action
+    if (feedbackOption) {
+        feedbackOption.addEventListener('click', () => {
+            showCustomAlert("For feedback & support, DM the developer on Instagram @Jitu_Gurjar_99 💬");
         });
     }
 
