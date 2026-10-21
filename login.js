@@ -8,7 +8,9 @@ let userData = {
     avatarBase64: 'Default-User.png'
 };
 
-let isProcessing = false;
+let isChecking = false;
+let checkTimer = null;
+let isUsernameAvailable = false;
 
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
@@ -46,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const platformNextBtn = document.getElementById('platformNextBtn');
     
     const usernameInput = document.getElementById('usernameInput');
-    const usernameErrorText = document.getElementById('usernameErrorText');
+    const usernameStatusText = document.getElementById('usernameStatusText');
     const usernameNextBtn = document.getElementById('usernameNextBtn');
 
     const avatarInput = document.getElementById('avatarInput');
@@ -82,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handleBack = (e) => {
         if (e) e.preventDefault();
-        if (isProcessing) return;
         if (currentStep > 1) {
             currentStep--;
             updateStepView();
@@ -137,68 +138,88 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Real-time automatic checking as user types
     if (usernameInput) {
         usernameInput.addEventListener('input', () => {
-            if (usernameErrorText) usernameErrorText.classList.add('hidden');
-        });
-    }
-
-    // Step 2 to Step 3: Checking username with inline spinner & text
-    if (usernameNextBtn) {
-        usernameNextBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            if (isProcessing) return;
-
             const username = usernameInput.value.trim().toLowerCase().replace('@', '');
-            if (usernameErrorText) usernameErrorText.classList.add('hidden');
+            
+            // Reset button state & availability
+            isUsernameAvailable = false;
+            if (usernameNextBtn) {
+                usernameNextBtn.style.opacity = "0.5";
+                usernameNextBtn.style.cursor = "not-allowed";
+                usernameNextBtn.setAttribute('disabled', 'true');
+            }
 
             if (!username || username.length < 3) {
-                if (usernameErrorText) {
-                    usernameErrorText.innerText = "Username must be at least 3 characters long.";
-                    usernameErrorText.classList.remove('hidden');
+                if (usernameStatusText) {
+                    if (username.length > 0) {
+                        usernameStatusText.innerHTML = `<span style="color: #ef4444;">Username must be at least 3 characters long.</span>`;
+                        usernameStatusText.classList.remove('hidden');
+                    } else {
+                        usernameStatusText.classList.add('hidden');
+                    }
                 }
                 return;
             }
 
-            isProcessing = true;
-            // Show inline loader inside the button
-            usernameNextBtn.innerHTML = '<div style="display: inline-flex; align-items: center; gap: 8px;"><div style="width: 16px; height: 16px; border: 2px solid #000; border-top: 2px solid transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div> Checking username, please wait...</div>';
-            usernameNextBtn.style.opacity = "0.8";
-
-            try {
-                const dbRef = ref(rtdb);
-                const snapshot = await get(child(dbRef, `usernames/${username}`));
-                
-                if (snapshot.exists()) {
-                    if (usernameErrorText) {
-                        usernameErrorText.innerText = "This username is not available for use. Please try a different one.";
-                        usernameErrorText.classList.remove('hidden');
-                    }
-                    isProcessing = false;
-                    usernameNextBtn.innerHTML = "Continue";
-                    usernameNextBtn.style.opacity = "1";
-                    return;
-                }
-                
-                userData.username = username;
-                
-                isProcessing = false;
-                usernameNextBtn.innerHTML = "Continue";
-                usernameNextBtn.style.opacity = "1";
-                
-                currentStep = 3;
-                updateStepView();
-
-            } catch (error) {
-                isProcessing = false;
-                usernameNextBtn.innerHTML = "Continue";
-                usernameNextBtn.style.opacity = "1";
-                
-                if (usernameErrorText) {
-                    usernameErrorText.innerText = "Connection error. Please try again.";
-                    usernameErrorText.classList.remove('hidden');
-                }
+            // Show "Checking username, please wait..." with spinner immediately
+            if (usernameStatusText) {
+                usernameStatusText.innerHTML = `<div style="display: inline-flex; align-items: center; gap: 8px; color: #94a3b8;"><div style="width: 14px; height: 14px; border: 2px solid #94a3b8; border-top: 2px solid transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div> Checking username, please wait...</div>`;
+                usernameStatusText.classList.remove('hidden');
             }
+
+            // Debounce to prevent too many quick queries while typing
+            clearTimeout(checkTimer);
+            checkTimer = setTimeout(async () => {
+                try {
+                    const dbRef = ref(rtdb);
+                    const snapshot = await get(child(dbRef, `usernames/${username}`));
+                    
+                    // Make sure the input hasn't changed while waiting
+                    const currentTyped = usernameInput.value.trim().toLowerCase().replace('@', '');
+                    if (currentTyped !== username) return;
+
+                    if (snapshot.exists()) {
+                        if (usernameStatusText) {
+                            usernameStatusText.innerHTML = `<span style="color: #ef4444;">This username is not available for use. Please try a different one.</span>`;
+                            usernameStatusText.classList.remove('hidden');
+                        }
+                        isUsernameAvailable = false;
+                    } else {
+                        // Available -> Show Green Text!
+                        if (usernameStatusText) {
+                            usernameStatusText.innerHTML = `<span style="color: #22c55e; font-weight: 600;"><i class="fas fa-check-circle"></i> Username is available!</span>`;
+                            usernameStatusText.classList.remove('hidden');
+                        }
+                        isUsernameAvailable = true;
+                        userData.username = username;
+
+                        // Enable Continue Button
+                        if (usernameNextBtn) {
+                            usernameNextBtn.style.opacity = "1";
+                            usernameNextBtn.style.cursor = "pointer";
+                            usernameNextBtn.removeAttribute('disabled');
+                        }
+                    }
+                } catch (error) {
+                    if (usernameStatusText) {
+                        usernameStatusText.innerHTML = `<span style="color: #ef4444;">Connection error. Please try again.</span>`;
+                        usernameStatusText.classList.remove('hidden');
+                    }
+                }
+            }, 500); // 500ms delay after typing stops
+        });
+    }
+
+    // When clicking Continue after successful check -> Go to Step 3
+    if (usernameNextBtn) {
+        usernameNextBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!isUsernameAvailable) return;
+            
+            currentStep = 3;
+            updateStepView();
         });
     }
 
@@ -255,8 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (createAccountBtn) {
         createAccountBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            if (isProcessing) return;
-            isProcessing = true;
+            if (isChecking) return;
+            isChecking = true;
 
             try {
                 const loadingOverlay = document.getElementById('loadingOverlay');
@@ -284,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = "index.html";
 
             } catch (error) {
-                isProcessing = false;
+                isChecking = false;
                 const loadingOverlay = document.getElementById('loadingOverlay');
                 if (loadingOverlay) loadingOverlay.classList.add('hidden');
                 alert("Account Creation Error: " + error.message);
