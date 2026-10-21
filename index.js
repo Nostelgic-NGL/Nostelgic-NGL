@@ -1,5 +1,5 @@
 import { auth, rtdb } from './firebase-config.js';
-import { ref, get, child, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { ref, get, child, remove, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 // Custom Alert Function
 function showCustomAlert(message) {
@@ -198,11 +198,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Load Inbox Messages Function
+    // Load Inbox Messages Function (Optimized with limitToLast)
     async function loadInboxMessages() {
         try {
-            const dbRef = ref(rtdb);
-            const snapshot = await get(child(dbRef, `messages/${uid}`));
+            const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
+            const snapshot = await get(messagesQuery);
             
             if (snapshot.exists()) {
                 const messagesData = snapshot.val();
