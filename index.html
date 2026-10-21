@@ -174,7 +174,7 @@
         .nav-item i { font-size: 20px; }
         .nav-item.active { color: #ec4899; }
 
-        /* Custom Alert Modal */
+        /* Custom Alert / Confirmation Modal */
         .custom-alert-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.7);
@@ -195,15 +195,36 @@
         .custom-alert-btn {
             flex: 1; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none;
         }
-        .custom-alert-ok {
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
-            color: white;
-        }
-        .custom-alert-cancel {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
+        .custom-alert-ok { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; }
+        .custom-alert-cancel { background: rgba(255, 255, 255, 0.1); color: #fff; }
         body.light-mode .custom-alert-cancel { background: rgba(0,0,0,0.08); color: #0f172a; }
+
+        /* Share Options Grid Modal */
+        .share-options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .share-option-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .share-option-item:active { transform: scale(0.92); }
+        body.light-mode .share-option-item { background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.08); color: #0f172a; }
+        .share-option-item i { font-size: 24px; }
     </style>
 </head>
 <body>
@@ -222,7 +243,7 @@
             <div class="avatar-box">
                 <img id="userAvatarImg" src="https://via.placeholder.com/150" alt="Avatar">
             </div>
-            <div class="platform-badge" id="platformLabel">Instagram</div>
+            <div class="platform-badge" id="platformLabel">@user</div>
             <div class="link-box" id="profileLinkText">Loading link...</div>
             <div class="btn-group">
                 <button class="action-btn btn-secondary" id="copyLinkBtn"><i class="fas fa-copy"></i> Copy Link</button>
@@ -284,13 +305,47 @@
         <button class="nav-item" id="settingsBtn"><i class="fas fa-gear"></i>Settings</button>
     </div>
 
-    <!-- Custom Confirmation / Alert Modal -->
+    <!-- Custom Alert / Confirmation Modal -->
     <div id="customAlertModal" class="custom-alert-modal hidden">
         <div class="custom-alert-box">
             <h3 style="font-size: 18px; font-weight: 600;" id="customAlertTitle">Nostelgic NGL</h3>
             <p id="customAlertText">Alert message here</p>
             <div class="custom-alert-btn-group" id="customAlertBtnGroup">
                 <button class="custom-alert-btn custom-alert-ok" id="customAlertOkBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Share Sheet Modal -->
+    <div id="shareModal" class="custom-alert-modal hidden">
+        <div class="custom-alert-box">
+            <h3 style="font-size: 18px; font-weight: 600;">Share Your Link</h3>
+            <p style="font-size: 12px; color: #94a3b8;">Choose where you want to share your NGL link:</p>
+            <div class="share-options-grid">
+                <a id="shareWhatsApp" href="#" target="_blank" class="share-option-item">
+                    <i class="fab fa-whatsapp" style="color: #25d366;"></i>
+                    <span>WhatsApp</span>
+                </a>
+                <a id="shareTelegram" href="#" target="_blank" class="share-option-item">
+                    <i class="fab fa-telegram" style="color: #229ed9;"></i>
+                    <span>Telegram</span>
+                </a>
+                <a id="shareTwitter" href="#" target="_blank" class="share-option-item">
+                    <i class="fab fa-twitter" style="color: #1da1f2;"></i>
+                    <span>Twitter</span>
+                </a>
+                <a id="shareEmail" href="#" class="share-option-item">
+                    <i class="fas fa-envelope" style="color: #ea4335;"></i>
+                    <span>Email</span>
+                </a>
+                <div id="shareCopy" class="share-option-item">
+                    <i class="fas fa-copy" style="color: #a855f7;"></i>
+                    <span>Copy Link</span>
+                </div>
+                <div id="shareClose" class="share-option-item" style="background: rgba(239,68,68,0.15); color: #ef4444;">
+                    <i class="fas fa-times"></i>
+                    <span>Close</span>
+                </div>
             </div>
         </div>
     </div>
