@@ -143,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
         usernameInput.addEventListener('input', () => {
             const username = usernameInput.value.trim().toLowerCase().replace('@', '');
             
-            // Reset button state & availability
             isUsernameAvailable = false;
             if (usernameNextBtn) {
                 usernameNextBtn.style.opacity = "0.5";
@@ -163,20 +162,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Show "Checking username, please wait..." with spinner immediately
             if (usernameStatusText) {
                 usernameStatusText.innerHTML = `<div style="display: inline-flex; align-items: center; gap: 8px; color: #94a3b8;"><div style="width: 14px; height: 14px; border: 2px solid #94a3b8; border-top: 2px solid transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div> Checking username, please wait...</div>`;
                 usernameStatusText.classList.remove('hidden');
             }
 
-            // Debounce to prevent too many quick queries while typing
             clearTimeout(checkTimer);
             checkTimer = setTimeout(async () => {
                 try {
                     const dbRef = ref(rtdb);
                     const snapshot = await get(child(dbRef, `usernames/${username}`));
                     
-                    // Make sure the input hasn't changed while waiting
                     const currentTyped = usernameInput.value.trim().toLowerCase().replace('@', '');
                     if (currentTyped !== username) return;
 
@@ -187,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         isUsernameAvailable = false;
                     } else {
-                        // Available -> Show Green Text!
                         if (usernameStatusText) {
                             usernameStatusText.innerHTML = `<span style="color: #22c55e; font-weight: 600;"><i class="fas fa-check-circle"></i> Username is available!</span>`;
                             usernameStatusText.classList.remove('hidden');
@@ -195,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         isUsernameAvailable = true;
                         userData.username = username;
 
-                        // Enable Continue Button
                         if (usernameNextBtn) {
                             usernameNextBtn.style.opacity = "1";
                             usernameNextBtn.style.cursor = "pointer";
@@ -208,11 +202,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         usernameStatusText.classList.remove('hidden');
                     }
                 }
-            }, 500); // 500ms delay after typing stops
+            }, 500);
         });
     }
 
-    // When clicking Continue after successful check -> Go to Step 3
     if (usernameNextBtn) {
         usernameNextBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -223,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Avatar Selection & Compression Handler
+    // High Quality Center Circle Crop & Avatar Handler
     const handlePhotoSelect = () => {
         if (avatarInput) avatarInput.click();
     };
@@ -241,27 +234,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-                        const maxSize = 200;
-                        let width = img.width;
-                        let height = img.height;
+                        
+                        // High resolution canvas for crystal clear quality (500x500)
+                        const size = 500;
+                        canvas.width = size;
+                        canvas.height = size;
 
-                        if (width > height) {
-                            if (width > maxSize) {
-                                height *= maxSize / width;
-                                width = maxSize;
-                            }
+                        // Automatic Center Square Crop
+                        let startX = 0, startY = 0, drawSize = 0;
+                        if (img.width > img.height) {
+                            drawSize = img.height;
+                            startX = (img.width - img.height) / 2;
+                            startY = 0;
                         } else {
-                            if (height > maxSize) {
-                                width *= maxSize / height;
-                                height = maxSize;
-                            }
+                            drawSize = img.width;
+                            startX = 0;
+                            startY = (img.height - img.width) / 2;
                         }
 
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
+                        ctx.drawImage(img, startX, startY, drawSize, drawSize, 0, 0, size, size);
 
-                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        // High quality JPEG output (0.95 quality)
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95);
                         userData.avatarBase64 = compressedDataUrl;
                         if (avatarPreview) avatarPreview.src = compressedDataUrl;
                     };
