@@ -138,16 +138,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Real-time automatic checking as user types
+    // Real-time automatic checking with character validation
     if (usernameInput) {
         usernameInput.addEventListener('input', () => {
-            const username = usernameInput.value.trim().toLowerCase().replace('@', '');
+            const rawValue = usernameInput.value;
+            const username = rawValue.toLowerCase().replace('@', '');
             
             isUsernameAvailable = false;
             if (usernameNextBtn) {
                 usernameNextBtn.style.opacity = "0.5";
                 usernameNextBtn.style.cursor = "not-allowed";
                 usernameNextBtn.setAttribute('disabled', 'true');
+            }
+
+            // Check if username contains only small letters, numbers, and underscore
+            const isValidFormat = /^[a-z0-9_]*$/.test(username);
+
+            if (!isValidFormat) {
+                if (usernameStatusText) {
+                    usernameStatusText.innerHTML = `<span style="color: #ef4444;">Only small letters, numbers, and underscore (_) are allowed.</span>`;
+                    usernameStatusText.classList.remove('hidden');
+                }
+                return;
             }
 
             if (!username || username.length < 3) {
@@ -162,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Show "Checking username, please wait..." with spinner
             if (usernameStatusText) {
                 usernameStatusText.innerHTML = `<div style="display: inline-flex; align-items: center; gap: 8px; color: #94a3b8;"><div style="width: 14px; height: 14px; border: 2px solid #94a3b8; border-top: 2px solid transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div> Checking username, please wait...</div>`;
                 usernameStatusText.classList.remove('hidden');
@@ -173,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const dbRef = ref(rtdb);
                     const snapshot = await get(child(dbRef, `usernames/${username}`));
                     
-                    const currentTyped = usernameInput.value.trim().toLowerCase().replace('@', '');
+                    const currentTyped = usernameInput.value.toLowerCase().replace('@', '');
                     if (currentTyped !== username) return;
 
                     if (snapshot.exists()) {
@@ -216,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // High Quality Center Circle Crop & Avatar Handler
+    // Avatar Selection & High Quality Handler
     const handlePhotoSelect = () => {
         if (avatarInput) avatarInput.click();
     };
@@ -235,12 +248,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
                         
-                        // High resolution canvas for crystal clear quality (500x500)
                         const size = 500;
                         canvas.width = size;
                         canvas.height = size;
 
-                        // Automatic Center Square Crop
                         let startX = 0, startY = 0, drawSize = 0;
                         if (img.width > img.height) {
                             drawSize = img.height;
@@ -254,7 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         ctx.drawImage(img, startX, startY, drawSize, drawSize, 0, 0, size, size);
 
-                        // High quality JPEG output (0.95 quality)
                         const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.95);
                         userData.avatarBase64 = compressedDataUrl;
                         if (avatarPreview) avatarPreview.src = compressedDataUrl;
