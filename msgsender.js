@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const headerUsernameTitle = document.getElementById('headerUsernameTitle');
     const anonymousMessageInput = document.getElementById('anonymousMessageInput');
     const sendMessageBtn = document.getElementById('sendMessageBtn');
+    const senderLoadingOverlay = document.getElementById('senderLoadingOverlay');
     
     const formSection = document.getElementById('formSection');
     const successSection = document.getElementById('successSection');
@@ -59,8 +60,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // 1. Instant UI setup using URL username immediately
+    if (headerUsernameTitle) headerUsernameTitle.innerText = `@${username}`;
+    if (profileTitleText) profileTitleText.innerText = `Send anonymous msg to @${username}`;
+
     let targetUid = null;
 
+    // 2. Check LocalStorage Cache for Instant Load
+    const cachedDataKey = `ngl_send_cache_${username}`;
+    const cachedData = localStorage.getItem(cachedDataKey);
+
+    if (cachedData) {
+        try {
+            const parsed = JSON.parse(cachedData);
+            targetUid = parsed.targetUid;
+            if (parsed.platform && senderPlatformLabel) senderPlatformLabel.innerText = parsed.platform;
+            if (parsed.avatarUrl && senderAvatarImg) senderAvatarImg.src = parsed.avatarUrl;
+
+            // Hide loading overlay instantly from cache
+            if (senderLoadingOverlay) {
+                senderLoadingOverlay.style.opacity = '0';
+                setTimeout(() => senderLoadingOverlay.classList.add('hidden'), 300);
+            }
+        } catch (e) {
+            console.error("Cache parse error", e);
+        }
+    }
+
+    // 3. Background Sync with Firebase
     try {
         const dbRef = ref(rtdb);
         const usernameSnapshot = await get(child(dbRef, `usernames/${username}`));
@@ -70,26 +97,39 @@ document.addEventListener('DOMContentLoaded', async () => {
             const userSnapshot = await get(child(dbRef, `users/${targetUid}`));
             if (userSnapshot.exists()) {
                 const userData = userSnapshot.val();
-                if (headerUsernameTitle) headerUsernameTitle.innerText = `@${userData.username}`;
+                const realUsername = userData.username || username;
                 
-                // Yahan par text update kar diya hai jo user ka naam/username show karega
-                if (profileTitleText) {
-                    profileTitleText.innerText = `Send anonymous msg to @${userData.username}`;
-                }
-
+                if (headerUsernameTitle) headerUsernameTitle.innerText = `@${realUsername}`;
+                if (profileTitleText) profileTitleText.innerText = `Send anonymous msg to @${realUsername}`;
                 if (senderPlatformLabel) senderPlatformLabel.innerText = userData.platform || 'Instagram';
+                
                 if (userData.avatarUrl && senderAvatarImg) {
                     senderAvatarImg.src = userData.avatarUrl;
                 }
+
+                // Save to Cache for next time
+                localStorage.setItem(cachedDataKey, JSON.stringify({
+                    targetUid: targetUid,
+                    avatarUrl: userData.avatarUrl || 'Default-User.png',
+                    platform: userData.platform || 'Instagram'
+                }));
             }
         } else {
-            showCustomAlert("User not found!", () => {
-                window.location.replace("index.html");
-            });
-            return;
+            if (!cachedData) {
+                showCustomAlert("User not found!", () => {
+                    window.location.replace("index.html");
+                });
+                return;
+            }
         }
     } catch (error) {
         console.error("Error fetching target user:", error);
+    } finally {
+        // Ensure loading overlay is hidden once firebase sync finishes
+        if (senderLoadingOverlay) {
+            senderLoadingOverlay.style.opacity = '0';
+            setTimeout(() => senderLoadingOverlay.classList.add('hidden'), 300);
+        }
     }
 
     if (sendMessageBtn) {
