@@ -4,7 +4,8 @@ import { ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/
 
 let userData = {
     platform: 'instagram',
-    username: ''
+    username: '',
+    avatarBase64: 'Default-User.png'
 };
 
 function showCustomAlert(message) {
@@ -33,15 +34,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const getStartedBtn = document.getElementById('getStartedBtn');
     const step1 = document.getElementById('step1');
     const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
     
     const step1BackBtn = document.getElementById('step1BackBtn');
     const step2BackBtn = document.getElementById('step2BackBtn');
+    const step3BackBtn = document.getElementById('step3BackBtn');
     
     const platformCards = document.querySelectorAll('.platform-card-ngl');
     const platformNextBtn = document.getElementById('platformNextBtn');
+    
     const usernameInput = document.getElementById('usernameInput');
     const usernameErrorText = document.getElementById('usernameErrorText');
     const usernameNextBtn = document.getElementById('usernameNextBtn');
+
+    const avatarInput = document.getElementById('avatarInput');
+    const selectPhotoBtn = document.getElementById('selectPhotoBtn');
+    const avatarContainer = document.getElementById('avatarContainer');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const createAccountBtn = document.getElementById('createAccountBtn');
 
     let currentStep = 0;
 
@@ -49,11 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (welcomeScreen) welcomeScreen.classList.add('hidden');
         if (step1) step1.classList.add('hidden');
         if (step2) step2.classList.add('hidden');
+        if (step3) step3.classList.add('hidden');
 
         if (currentStep === 1) {
             if (step1) step1.classList.remove('hidden');
         } else if (currentStep === 2) {
             if (step2) step2.classList.remove('hidden');
+        } else if (currentStep === 3) {
+            if (step3) step3.classList.remove('hidden');
         }
     }
 
@@ -79,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (step1BackBtn) step1BackBtn.addEventListener('click', handleBack);
     if (step2BackBtn) step2BackBtn.addEventListener('click', handleBack);
+    if (step3BackBtn) step3BackBtn.addEventListener('click', handleBack);
 
     platformCards.forEach(card => {
         const selectAction = (e) => {
@@ -126,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // From Step 2 to Step 3 (Username Validation check before moving to photo upload)
     if (usernameNextBtn) {
         usernameNextBtn.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -152,7 +167,75 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 userData.username = username;
+                
+                // Move to Step 3: Avatar Upload
+                currentStep = 3;
+                updateStepView();
 
+            } catch (error) {
+                if (usernameErrorText) {
+                    usernameErrorText.innerText = "Error: " + error.message;
+                    usernameErrorText.classList.remove('hidden');
+                }
+            }
+        });
+    }
+
+    // Avatar Selection & Compression Handler
+    const handlePhotoSelect = () => {
+        if (avatarInput) avatarInput.click();
+    };
+
+    if (selectPhotoBtn) selectPhotoBtn.addEventListener('click', handlePhotoSelect);
+    if (avatarContainer) avatarContainer.addEventListener('click', handlePhotoSelect);
+
+    if (avatarInput) {
+        avatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const maxSize = 200; // Resize to max 200px for database optimization
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > maxSize) {
+                                height *= maxSize / width;
+                                width = maxSize;
+                            }
+                        } else {
+                            if (height > maxSize) {
+                                width *= maxSize / height;
+                                height = maxSize;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        userData.avatarBase64 = compressedDataUrl;
+                        if (avatarPreview) avatarPreview.src = compressedDataUrl;
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Step 3: Final Account Creation & Firebase Write
+    if (createAccountBtn) {
+        createAccountBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            try {
                 const loadingOverlay = document.getElementById('loadingOverlay');
                 if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
@@ -163,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     uid: user.uid,
                     username: userData.username,
                     platform: userData.platform,
-                    avatarUrl: 'Default-User.png',
+                    avatarUrl: userData.avatarBase64,
                     createdAt: new Date().toISOString()
                 });
 
@@ -180,10 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 const loadingOverlay = document.getElementById('loadingOverlay');
                 if (loadingOverlay) loadingOverlay.classList.add('hidden');
-                if (usernameErrorText) {
-                    usernameErrorText.innerText = "Error: " + error.message;
-                    usernameErrorText.classList.remove('hidden');
-                }
+                alert("Account Creation Error: " + error.message);
             }
         });
     }
