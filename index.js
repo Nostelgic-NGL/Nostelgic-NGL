@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const platformLabel = document.getElementById('platformLabel');
     const copyLinkBtn = document.getElementById('copyLinkBtn');
     const shareStoryBtn = document.getElementById('shareStoryBtn');
+    const homeLoadingOverlay = document.getElementById('homeLoadingOverlay');
 
     // Inbox Elements
     const messagesContainer = document.getElementById('messagesContainer');
@@ -130,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (navInboxBtn) navInboxBtn.addEventListener('click', () => switchView('inbox'));
     if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
 
-    // Load Profile & Generate Link (Optimized with LocalStorage Caching for Super Fast Load)
+    // Load Profile & Generate Link (Optimized with LocalStorage Caching)
     const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
 
@@ -143,6 +144,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (profileLinkText) profileLinkText.innerText = profileUrl;
         if (platformLabel) platformLabel.innerText = `@${cachedUsername}`;
         if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
+        
+        // Hide loading overlay instantly if cache exists
+        if (homeLoadingOverlay) {
+            homeLoadingOverlay.style.opacity = '0';
+            setTimeout(() => homeLoadingOverlay.classList.add('hidden'), 300);
+        }
     }
 
     // 2. Background Sync with Firebase
@@ -166,6 +173,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (error) {
         console.error("Background sync error:", error);
+    } finally {
+        // Ensure loading overlay is hidden once firebase fetch completes
+        if (homeLoadingOverlay) {
+            homeLoadingOverlay.style.opacity = '0';
+            setTimeout(() => homeLoadingOverlay.classList.add('hidden'), 300);
+        }
     }
 
     // Copy Link Action
