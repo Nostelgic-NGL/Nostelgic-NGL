@@ -130,18 +130,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (navInboxBtn) navInboxBtn.addEventListener('click', () => switchView('inbox'));
     if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
 
-    // Load Profile & Generate Link (Optimized with LocalStorage Caching for Super Fast Load)
-    const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
-    let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
+    // Load Profile & Generate Shortened Link Format
+    const currentDomain = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+    let profileUrl = `${currentDomain}/msgsender.html?u=user`;
 
     // 1. Instant Load from Cache
     const cachedUsername = localStorage.getItem('ngl_cached_username');
     const cachedAvatar = localStorage.getItem('ngl_cached_avatar');
 
     if (cachedUsername) {
-        profileUrl = `${currentBaseUrl}/msgsender.html?u=${cachedUsername}`;
-        if (profileLinkText) profileLinkText.innerText = profileUrl;
-        if (platformLabel) platformLabel.innerText = cachedUsername; // Display Username instead of platform
+        profileUrl = `${currentDomain}/msgsender.html?u=${cachedUsername}`;
+        if (profileLinkText) profileLinkText.innerText = `Nostelgic-NGL/${cachedUsername}`; // Choti aur clean link display
+        if (platformLabel) platformLabel.innerText = cachedUsername;
         if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
     }
 
@@ -152,14 +152,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (snapshot.exists()) {
             const data = snapshot.val();
             const username = data.username || localStorage.getItem('ngl_username') || 'user';
-            profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
+            profileUrl = `${currentDomain}/msgsender.html?u=${username}`;
             
             // Save to Cache
             localStorage.setItem('ngl_cached_username', username);
             if (data.avatarUrl) localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
 
-            if (profileLinkText) profileLinkText.innerText = profileUrl;
-            if (platformLabel) platformLabel.innerText = username; // Display Username here
+            if (profileLinkText) profileLinkText.innerText = `Nostelgic-NGL/${username}`; // Clean short display
+            if (platformLabel) platformLabel.innerText = username;
             if (data.avatarUrl && userAvatarImg) {
                 userAvatarImg.src = data.avatarUrl;
             }
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error("Background sync error:", error);
     }
 
-    // Copy Link Action
+    // Copy Link Action (Copies the full working URL)
     if (copyLinkBtn) {
         copyLinkBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(profileUrl).then(() => {
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             await remove(ref(rtdb, `messages/${uid}/${msgId}`));
                             card.remove();
                             if (messagesContainer.children.length === 0) {
-                                emptyState.classList.remove('hidden');
+                                emptyState.classList.add('hidden');
                             }
                             showCustomAlert("Message deleted.");
                         } catch (err) {
