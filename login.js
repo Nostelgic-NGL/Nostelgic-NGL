@@ -8,7 +8,7 @@ let userData = {
     avatarBase64: 'Default-User.png'
 };
 
-let isProcessing = false; // Prevent multiple spam clicks
+let isProcessing = false;
 
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // From Step 2 to Step 3 (Optimized with instant response and prevention of spam clicks)
+    // Step 2 to Step 3: Checking username with inline spinner & text
     if (usernameNextBtn) {
         usernameNextBtn.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -161,8 +161,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             isProcessing = true;
-            usernameNextBtn.innerText = "Checking...";
-            usernameNextBtn.style.opacity = "0.7";
+            // Show inline loader inside the button
+            usernameNextBtn.innerHTML = '<div style="display: inline-flex; align-items: center; gap: 8px;"><div style="width: 16px; height: 16px; border: 2px solid #000; border-top: 2px solid transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div> Checking username, please wait...</div>';
+            usernameNextBtn.style.opacity = "0.8";
 
             try {
                 const dbRef = ref(rtdb);
@@ -174,16 +175,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         usernameErrorText.classList.remove('hidden');
                     }
                     isProcessing = false;
-                    usernameNextBtn.innerText = "Continue";
+                    usernameNextBtn.innerHTML = "Continue";
                     usernameNextBtn.style.opacity = "1";
                     return;
                 }
                 
                 userData.username = username;
                 
-                // Reset button state and move to Step 3 smoothly
                 isProcessing = false;
-                usernameNextBtn.innerText = "Continue";
+                usernameNextBtn.innerHTML = "Continue";
                 usernameNextBtn.style.opacity = "1";
                 
                 currentStep = 3;
@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } catch (error) {
                 isProcessing = false;
-                usernameNextBtn.innerText = "Continue";
+                usernameNextBtn.innerHTML = "Continue";
                 usernameNextBtn.style.opacity = "1";
                 
                 if (usernameErrorText) {
