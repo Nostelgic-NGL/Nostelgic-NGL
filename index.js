@@ -1,20 +1,48 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// Custom Alert Function
+// Custom Alert Function (Simple OK)
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
+    const alertTitle = document.getElementById('customAlertTitle');
     const alertText = document.getElementById('customAlertText');
-    const okBtn = document.getElementById('customAlertOkBtn');
+    const btnGroup = document.getElementById('customAlertBtnGroup');
     
+    if (alertTitle) alertTitle.innerText = "Nostelgic NGL";
     if (alertText) alertText.innerText = message;
+    
+    btnGroup.innerHTML = `<button class="custom-alert-btn custom-alert-ok" id="customAlertOkBtn">OK</button>`;
     if (alertModal) alertModal.classList.remove('hidden');
 
-    if (okBtn) {
-        okBtn.onclick = () => {
-            if (alertModal) alertModal.classList.add('hidden');
-        };
-    }
+    document.getElementById('customAlertOkBtn').onclick = () => {
+        if (alertModal) alertModal.classList.add('hidden');
+    };
+}
+
+// Custom Confirmation Function (Yes/No - for Delete & Logout)
+function showCustomConfirm(title, message, onConfirm) {
+    const alertModal = document.getElementById('customAlertModal');
+    const alertTitle = document.getElementById('customAlertTitle');
+    const alertText = document.getElementById('customAlertText');
+    const btnGroup = document.getElementById('customAlertBtnGroup');
+    
+    if (alertTitle) alertTitle.innerText = title;
+    if (alertText) alertText.innerText = message;
+    
+    btnGroup.innerHTML = `
+        <button class="custom-alert-btn custom-alert-cancel" id="customAlertCancelBtn">Cancel</button>
+        <button class="custom-alert-btn custom-alert-ok" id="customAlertConfirmBtn">Confirm</button>
+    `;
+    if (alertModal) alertModal.classList.remove('hidden');
+
+    document.getElementById('customAlertCancelBtn').onclick = () => {
+        if (alertModal) alertModal.classList.add('hidden');
+    };
+
+    document.getElementById('customAlertConfirmBtn').onclick = () => {
+        if (alertModal) alertModal.classList.add('hidden');
+        onConfirm();
+    };
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -49,6 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const pauseLinkOption = document.getElementById('pauseLinkOption');
     const hardRefreshOption = document.getElementById('hardRefreshOption');
     const feedbackOption = document.getElementById('feedbackOption');
+    const supportOption = document.getElementById('supportOption');
     const deleteAccountOption = document.getElementById('deleteAccountOption');
     const logoutBtn = document.getElementById('logoutBtn');
 
@@ -202,25 +231,51 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Feedback & Support Action
+    // Separate Feedback Option (Opens Gmail)
     if (feedbackOption) {
         feedbackOption.addEventListener('click', () => {
-            showCustomAlert("For feedback & support, DM the developer on Instagram @Jitu_Gurjar_99 💬");
+            window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Feedback%20for%20Nostelgic%20NGL";
         });
     }
 
+    // Separate Support Option (Opens Gmail)
+    if (supportOption) {
+        supportOption.addEventListener('click', () => {
+            window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Support%20Request%20-%20Nostelgic%20NGL";
+        });
+    }
+
+    // Custom Confirmation Modal for Delete Account
     if (deleteAccountOption) {
-        deleteAccountOption.addEventListener('click', async () => {
-            if (confirm("Are you sure you want to delete your account? All messages and data will be permanently removed.")) {
-                try {
-                    await remove(ref(rtdb, `users/${uid}`));
-                    await remove(ref(rtdb, `messages/${uid}`));
+        deleteAccountOption.addEventListener('click', () => {
+            showCustomConfirm(
+                "Delete Account",
+                "Are you sure you want to delete your account? All messages and data will be permanently removed.",
+                async () => {
+                    try {
+                        await remove(ref(rtdb, `users/${uid}`));
+                        await remove(ref(rtdb, `messages/${uid}`));
+                        localStorage.clear();
+                        window.location.replace("login.html");
+                    } catch (err) {
+                        showCustomAlert("Failed to delete account. Try again.");
+                    }
+                }
+            );
+        });
+    }
+
+    // Custom Confirmation Modal for Logout
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            showCustomConfirm(
+                "Logout",
+                "Are you sure you want to logout from your account?",
+                () => {
                     localStorage.clear();
                     window.location.replace("login.html");
-                } catch (err) {
-                    showCustomAlert("Failed to delete account. Try again.");
                 }
-            }
+            );
         });
     }
 
@@ -372,13 +427,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             messagesContainer.innerHTML = '';
             emptyState.classList.add('hidden');
         }
-    }
-
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            localStorage.clear();
-            window.location.replace("login.html");
-        });
     }
 });
 
