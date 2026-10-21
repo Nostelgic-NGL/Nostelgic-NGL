@@ -191,12 +191,19 @@
         body.light-mode .custom-alert-box { background: #ffffff; border: 1px solid rgba(0,0,0,0.1); color: #0f172a; }
         .custom-alert-box p { font-size: 14px; color: #cbd5e1; }
         body.light-mode .custom-alert-box p { color: #475569; }
+        .custom-alert-btn-group { display: flex; gap: 10px; margin-top: 5px; }
+        .custom-alert-btn {
+            flex: 1; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none;
+        }
         .custom-alert-ok {
             background: linear-gradient(135deg, #8b5cf6, #ec4899);
-            color: white; border: none; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer;
-            transition: transform 0.1s;
+            color: white;
         }
-        .custom-alert-ok:active { transform: scale(0.95); }
+        .custom-alert-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        body.light-mode .custom-alert-cancel { background: rgba(0,0,0,0.08); color: #0f172a; }
     </style>
 </head>
 <body>
@@ -246,11 +253,15 @@
                     <i class="fas fa-chevron-right" style="color: #94a3b8; font-size: 13px;"></i>
                 </div>
                 <a href="https://instagram.com/Jitu_Gurjar_99" target="_blank" class="setting-item">
-                    <span><i class="fab fa-instagram" style="color: #ec4899; margin-right: 8px;"></i> Follow Developer (@Jitu_Gurjar_99)</span>
+                    <span><i class="fab fa-instagram" style="color: #ec4899; margin-right: 8px;"></i> Follow Developer</span>
                     <i class="fas fa-external-link-alt" style="color: #94a3b8; font-size: 13px;"></i>
                 </a>
                 <div class="setting-item" id="feedbackOption">
-                    <span><i class="fas fa-headset" style="color: #a855f7; margin-right: 8px;"></i> Feedback & Support</span>
+                    <span><i class="fas fa-comment-dots" style="color: #a855f7; margin-right: 8px;"></i> Feedback</span>
+                    <i class="fas fa-chevron-right" style="color: #94a3b8; font-size: 13px;"></i>
+                </div>
+                <div class="setting-item" id="supportOption">
+                    <span><i class="fas fa-headset" style="color: #38bdf8; margin-right: 8px;"></i> Support</span>
                     <i class="fas fa-chevron-right" style="color: #94a3b8; font-size: 13px;"></i>
                 </div>
                 <div class="setting-item" id="deleteAccountOption" style="color: #ef4444;">
@@ -273,12 +284,14 @@
         <button class="nav-item" id="settingsBtn"><i class="fas fa-gear"></i>Settings</button>
     </div>
 
-    <!-- Custom Alert Modal -->
+    <!-- Custom Confirmation / Alert Modal -->
     <div id="customAlertModal" class="custom-alert-modal hidden">
         <div class="custom-alert-box">
-            <h3 style="font-size: 18px; font-weight: 600;">Nostelgic NGL</h3>
+            <h3 style="font-size: 18px; font-weight: 600;" id="customAlertTitle">Nostelgic NGL</h3>
             <p id="customAlertText">Alert message here</p>
-            <button class="custom-alert-ok" id="customAlertOkBtn">OK</button>
+            <div class="custom-alert-btn-group" id="customAlertBtnGroup">
+                <button class="custom-alert-btn custom-alert-ok" id="customAlertOkBtn">OK</button>
+            </div>
         </div>
     </div>
 
