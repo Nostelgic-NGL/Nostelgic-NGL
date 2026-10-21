@@ -49,7 +49,7 @@ function showCustomAlert(message) {
     };
 }
 
-// Custom Confirmation Function (Yes/No - for Logout with Permanent Deletion Warning)
+// Custom Confirmation Function (Yes/No - for Logout)
 function showCustomConfirm(title, message, onConfirm) {
     const alertModal = document.getElementById('customAlertModal');
     const alertTitle = document.getElementById('customAlertTitle');
@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Views
     const homeView = document.getElementById('homeView');
     const inboxView = document.getElementById('inboxView');
+    const messageDetailView = document.getElementById('messageDetailView');
     const settingsView = document.getElementById('settingsView');
 
     // Nav Buttons
@@ -105,6 +106,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Inbox Elements
     const messagesContainer = document.getElementById('messagesContainer');
     const emptyState = document.getElementById('emptyState');
+
+    // Detail View Elements
+    const backToInboxBtn = document.getElementById('backToInboxBtn');
+    const detailMsgText = document.getElementById('detailMsgText');
+    const detailMsgDate = document.getElementById('detailMsgDate');
+    const detailDeleteBtn = document.getElementById('detailDeleteBtn');
+    const detailReplyBtn = document.getElementById('detailReplyBtn');
 
     // Settings Options
     const pauseLinkOption = document.getElementById('pauseLinkOption');
@@ -139,6 +147,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function switchView(viewName) {
         homeView.classList.add('hidden');
         inboxView.classList.add('hidden');
+        messageDetailView.classList.add('hidden');
         settingsView.classList.add('hidden');
 
         navHomeBtn.classList.remove('active');
@@ -152,6 +161,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             inboxView.classList.remove('hidden');
             navInboxBtn.classList.add('active');
             loadInboxMessages();
+        } else if (viewName === 'detail') {
+            messageDetailView.classList.remove('hidden');
+            navInboxBtn.classList.add('active');
         } else if (viewName === 'settings') {
             settingsView.classList.remove('hidden');
             settingsBtn.classList.add('active');
@@ -161,6 +173,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (navHomeBtn) navHomeBtn.addEventListener('click', () => switchView('home'));
     if (navInboxBtn) navInboxBtn.addEventListener('click', () => switchView('inbox'));
     if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
+    if (backToInboxBtn) backToInboxBtn.addEventListener('click', () => switchView('inbox'));
 
     // Load Profile & Generate Link
     const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
@@ -284,7 +297,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Logout Action (Deletes account from Firebase and warns user in English)
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             showCustomConfirm(
@@ -302,6 +314,84 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             );
         });
+    }
+
+    // Helper function to generate and trigger story reply canvas
+    function generateStoryReply(text) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1920;
+        const ctx = canvas.getContext('2d', { alpha: false });
+
+        const bgGradient = ctx.createLinearGradient(0, 0, 0, 1920);
+        bgGradient.addColorStop(0, '#030712');
+        bgGradient.addColorStop(1, '#0f172a');
+        ctx.fillStyle = bgGradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.roundRect = function(x, y, w, h, r) {
+            if (w < 2 * r) r = w / 2;
+            if (h < 2 * r) r = h / 2;
+            this.beginPath();
+            this.moveTo(x + r, y);
+            this.arcTo(x + w, y, x + w, y + h, r);
+            this.arcTo(x + w, y + h, x, y + h, r);
+            this.arcTo(x, y + h, x, y, r);
+            this.arcTo(x, y, x + w, y, r);
+            this.closePath();
+            this.fill();
+        };
+        
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+        ctx.shadowBlur = 40;
+        ctx.shadowOffsetY = 20;
+        ctx.fillStyle = '#ffffff';
+        ctx.roundRect(110, 550, 860, 780, 48);
+        ctx.shadowBlur = 0;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(110, 550, 860, 220, [48, 48, 0, 0]);
+        ctx.clip();
+        const cardHeaderGrad = ctx.createLinearGradient(110, 550, 970, 770);
+        cardHeaderGrad.addColorStop(0, '#db2777');
+        cardHeaderGrad.addColorStop(1, '#ff5e36');
+        ctx.fillStyle = cardHeaderGrad;
+        ctx.fillRect(110, 550, 860, 220);
+        
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 42px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('send me anonymous messages!', 540, 680);
+        ctx.restore();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 50px sans-serif';
+        ctx.textAlign = 'center';
+        
+        const words = text.split(' ');
+        let line = '';
+        let y = 920;
+        const maxWidth = 760;
+        
+        for (let n = 0; n < words.length; n++) {
+            let testLine = line + words[n] + ' ';
+            if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+                ctx.fillText(line, 540, y);
+                line = words[n] + ' ';
+                y += 70;
+            } else {
+                line = testLine;
+            }
+        }
+        ctx.fillText(line, 540, y);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'bold 30px sans-serif';
+        ctx.fillText('Nostelgic NGL • Anonymous Q&A', 540, 1750);
+
+        const dataUrl = canvas.toDataURL('image/png', 0.9);
+        window.location.href = `instagram-story://${encodeURIComponent(dataUrl)}`;
     }
 
     // Load Inbox Messages Function
@@ -324,121 +414,48 @@ document.addEventListener('DOMContentLoaded', async () => {
                     
                     const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'Just now';
 
+                    // Inbox Preview Card (Click to open detail view)
                     card.innerHTML = `
                         <div class="msg-header">
                             <span>Anonymous</span>
                             <span>${dateString}</span>
                         </div>
                         <div class="msg-text">${escapeHtml(msg.text)}</div>
-                        <div class="msg-actions">
-                            <button class="btn-delete" data-id="${msgId}"><i class="fas fa-trash"></i> Delete</button>
-                            <button class="btn-reply" data-text="${encodeURIComponent(msg.text)}"><i class="fas fa-share"></i> Share Reply</button>
-                        </div>
                     `;
 
-                    card.querySelector('.btn-delete').addEventListener('click', async () => {
-                        try {
-                            await remove(ref(rtdb, `messages/${uid}/${msgId}`));
-                            card.remove();
-                            if (messagesContainer.children.length === 0) {
-                                emptyState.classList.remove('hidden');
+                    // Open Message Detail Screen on Click
+                    card.addEventListener('click', () => {
+                        detailMsgText.innerText = msg.text;
+                        detailMsgDate.innerText = dateString;
+                        switchView('detail');
+
+                        // Setup Delete Action in Detail View
+                        detailDeleteBtn.onclick = async () => {
+                            try {
+                                await remove(ref(rtdb, `messages/${uid}/${msgId}`));
+                                switchView('inbox');
+                                showCustomAlert("Message deleted.");
+                            } catch (err) {
+                                showCustomAlert("Failed to delete message.");
                             }
-                            showCustomAlert("Message deleted.");
-                        } catch (err) {
-                            showCustomAlert("Failed to delete message.");
-                        }
-                    });
-
-                    card.querySelector('.btn-reply').addEventListener('click', (e) => {
-                        const replyBtn = e.currentTarget;
-                        const text = decodeURIComponent(replyBtn.getAttribute('data-text'));
-
-                        const canvas = document.createElement('canvas');
-                        canvas.width = 1080;
-                        canvas.height = 1920;
-                        const ctx = canvas.getContext('2d', { alpha: false });
-
-                        const bgGradient = ctx.createLinearGradient(0, 0, 0, 1920);
-                        bgGradient.addColorStop(0, '#030712');
-                        bgGradient.addColorStop(1, '#0f172a');
-                        ctx.fillStyle = bgGradient;
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                        ctx.roundRect = function(x, y, w, h, r) {
-                            if (w < 2 * r) r = w / 2;
-                            if (h < 2 * r) r = h / 2;
-                            this.beginPath();
-                            this.moveTo(x + r, y);
-                            this.arcTo(x + w, y, x + w, y + h, r);
-                            this.arcTo(x + w, y + h, x, y + h, r);
-                            this.arcTo(x, y + h, x, y, r);
-                            this.arcTo(x, y, x + w, y, r);
-                            this.closePath();
-                            this.fill();
                         };
-                        
-                        ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-                        ctx.shadowBlur = 40;
-                        ctx.shadowOffsetY = 20;
-                        ctx.fillStyle = '#ffffff';
-                        ctx.roundRect(110, 550, 860, 780, 48);
-                        ctx.shadowBlur = 0;
 
-                        ctx.save();
-                        ctx.beginPath();
-                        ctx.roundRect(110, 550, 860, 220, [48, 48, 0, 0]);
-                        ctx.clip();
-                        const cardHeaderGrad = ctx.createLinearGradient(110, 550, 970, 770);
-                        cardHeaderGrad.addColorStop(0, '#db2777');
-                        cardHeaderGrad.addColorStop(1, '#ff5e36');
-                        ctx.fillStyle = cardHeaderGrad;
-                        ctx.fillRect(110, 550, 860, 220);
-                        
-                        ctx.fillStyle = '#ffffff';
-                        ctx.font = 'bold 42px sans-serif';
-                        ctx.textAlign = 'center';
-                        ctx.fillText('send me anonymous messages!', 540, 680);
-                        ctx.restore();
-
-                        ctx.fillStyle = '#0f172a';
-                        ctx.font = 'bold 50px sans-serif';
-                        ctx.textAlign = 'center';
-                        
-                        const words = text.split(' ');
-                        let line = '';
-                        let y = 920;
-                        const maxWidth = 760;
-                        
-                        for (let n = 0; n < words.length; n++) {
-                            let testLine = line + words[n] + ' ';
-                            if (ctx.measureText(testLine).width > maxWidth && n > 0) {
-                                ctx.fillText(line, 540, y);
-                                line = words[n] + ' ';
-                                y += 70;
-                            } else {
-                                line = testLine;
-                            }
-                        }
-                        ctx.fillText(line, 540, y);
-
-                        ctx.fillStyle = '#94a3b8';
-                        ctx.font = 'bold 30px sans-serif';
-                        ctx.fillText('Nostelgic NGL • Anonymous Q&A', 540, 1750);
-
-                        const dataUrl = canvas.toDataURL('image/png', 0.9);
-                        window.location.href = `instagram-story://${encodeURIComponent(dataUrl)}`;
+                        // Setup Reply / Story Share Action in Detail View
+                        detailReplyBtn.onclick = () => {
+                            generateStoryReply(msg.text);
+                        };
                     });
 
                     messagesContainer.appendChild(card);
                 });
             } else {
                 messagesContainer.innerHTML = '';
-                emptyState.classList.add('hidden');
+                emptyState.classList.remove('hidden');
             }
         } catch (error) {
             console.error("Error loading messages:", error);
             messagesContainer.innerHTML = '';
-            emptyState.classList.add('hidden');
+            emptyState.classList.remove('hidden');
         }
     }
 });
