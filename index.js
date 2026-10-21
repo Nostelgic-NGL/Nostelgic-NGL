@@ -179,22 +179,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Direct Native Phone Share Sheet Trigger
+    // Force Native System Share Sheet Handler (WebView + Browser Compatible)
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', async () => {
+            const shareData = {
+                title: 'Nostelgic NGL',
+                text: 'Send me anonymous messages! 💬',
+                url: profileUrl
+            };
+
             if (navigator.share) {
                 try {
-                    await navigator.share({
-                        title: 'Nostelgic NGL',
-                        text: 'Send me anonymous messages! 💬',
-                        url: profileUrl,
-                    });
+                    await navigator.share(shareData);
                 } catch (err) {
-                    console.log("Share dismissed", err);
+                    console.log("Share dismissed or failed", err);
                 }
             } else {
-                navigator.clipboard.writeText(profileUrl);
-                showCustomAlert("Link copied to clipboard! 📋");
+                // Android WebView native bridge intent trigger
+                window.location.href = `native-share://${encodeURIComponent(profileUrl)}`;
             }
         });
     }
