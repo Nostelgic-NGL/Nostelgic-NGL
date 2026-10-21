@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Native Android Share Sheet Trigger
+    // Direct Native Phone Share Sheet Trigger
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', async () => {
             if (navigator.share) {
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         url: profileUrl,
                     });
                 } catch (err) {
-                    console.log("Share cancelled or failed", err);
+                    console.log("Share dismissed", err);
                 }
             } else {
                 navigator.clipboard.writeText(profileUrl);
