@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Load Inbox Messages Function (Optimized with limitToLast)
+    // Load Inbox Messages Function (Optimized with limitToLast & Lightning Fast Canvas)
     async function loadInboxMessages() {
         try {
             const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
@@ -244,16 +244,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                         }
                     });
 
-                    // Share Reply - Direct Instagram Story Card Generator
+                    // Share Reply - Super Optimized Instant Canvas Generator
                     card.querySelector('.btn-reply').addEventListener('click', (e) => {
                         const replyBtn = e.currentTarget;
                         const text = decodeURIComponent(replyBtn.getAttribute('data-text'));
 
-                        // Create Canvas to draw NGL style card
+                        // Create Canvas
                         const canvas = document.createElement('canvas');
                         canvas.width = 1080;
                         canvas.height = 1920;
-                        const ctx = canvas.getContext('2d');
+                        const ctx = canvas.getContext('2d', { alpha: false });
 
                         // Background Gradient
                         const bgGradient = ctx.createLinearGradient(0, 0, 0, 1920);
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         ctx.fillStyle = bgGradient;
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                        // Helper function for rounded rectangles
+                        // Rounded Rect Helper
                         ctx.roundRect = function(x, y, w, h, r) {
                             if (w < 2 * r) r = w / 2;
                             if (h < 2 * r) r = h / 2;
@@ -276,10 +276,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                             this.fill();
                         };
                         
-                        // Draw Card Box Shadow & Body
-                        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-                        ctx.shadowBlur = 60;
-                        ctx.shadowOffsetY = 25;
+                        // Draw Card Box
+                        ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+                        ctx.shadowBlur = 40;
+                        ctx.shadowOffsetY = 20;
                         ctx.fillStyle = '#ffffff';
                         ctx.roundRect(110, 550, 860, 780, 48);
                         ctx.shadowBlur = 0;
@@ -302,12 +302,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                         ctx.fillText('send me anonymous messages!', 540, 680);
                         ctx.restore();
 
-                        // Message Text (User Question)
+                        // Message Text
                         ctx.fillStyle = '#0f172a';
                         ctx.font = 'bold 50px sans-serif';
                         ctx.textAlign = 'center';
                         
-                        // Text Wrapping for long messages
+                        // Fast Text Wrapping
                         const words = text.split(' ');
                         let line = '';
                         let y = 920;
@@ -315,9 +315,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         
                         for (let n = 0; n < words.length; n++) {
                             let testLine = line + words[n] + ' ';
-                            let metrics = ctx.measureText(testLine);
-                            let testWidth = metrics.width;
-                            if (testWidth > maxWidth && n > 0) {
+                            if (ctx.measureText(testLine).width > maxWidth && n > 0) {
                                 ctx.fillText(line, 540, y);
                                 line = words[n] + ' ';
                                 y += 70;
@@ -327,13 +325,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                         }
                         ctx.fillText(line, 540, y);
 
-                        // Footer Branding inside Image
+                        // Footer Branding
                         ctx.fillStyle = '#94a3b8';
                         ctx.font = 'bold 30px sans-serif';
                         ctx.fillText('Nostelgic NGL • Anonymous Q&A', 540, 1750);
 
-                        // Convert canvas to data URL and trigger native Android Story Intent
-                        const dataUrl = canvas.toDataURL('image/png');
+                        // Instant Data URL & Trigger Story Intent
+                        const dataUrl = canvas.toDataURL('image/png', 0.9);
                         window.location.href = `instagram-story://${encodeURIComponent(dataUrl)}`;
                     });
 
