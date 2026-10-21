@@ -49,7 +49,7 @@ function showCustomAlert(message) {
     };
 }
 
-// Custom Confirmation Function (Yes/No - for Delete & Logout)
+// Custom Confirmation Function (Yes/No - for Logout with Permanent Deletion Warning)
 function showCustomConfirm(title, message, onConfirm) {
     const alertModal = document.getElementById('customAlertModal');
     const alertTitle = document.getElementById('customAlertTitle');
@@ -111,7 +111,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hardRefreshOption = document.getElementById('hardRefreshOption');
     const feedbackOption = document.getElementById('feedbackOption');
     const supportOption = document.getElementById('supportOption');
-    const deleteAccountOption = document.getElementById('deleteAccountOption');
     const logoutBtn = document.getElementById('logoutBtn');
 
     // Theme Elements
@@ -285,11 +284,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    if (deleteAccountOption) {
-        deleteAccountOption.addEventListener('click', () => {
+    // Logout Action (Deletes account from Firebase and warns user in English)
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
             showCustomConfirm(
-                "Delete Account",
-                "Are you sure you want to delete your account? All messages and data will be permanently removed.",
+                "Logout & Delete Account",
+                "Are you sure you want to logout? Logging out will permanently delete your account and all messages.",
                 async () => {
                     try {
                         await remove(ref(rtdb, `users/${uid}`));
@@ -297,21 +297,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         localStorage.clear();
                         window.location.replace("login.html");
                     } catch (err) {
-                        showCustomAlert("Failed to delete account. Try again.");
+                        showCustomAlert("Failed to process logout. Try again.");
                     }
-                }
-            );
-        });
-    }
-
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            showCustomConfirm(
-                "Logout",
-                "Are you sure you want to logout from your account?",
-                () => {
-                    localStorage.clear();
-                    window.location.replace("login.html");
                 }
             );
         });
