@@ -1,7 +1,7 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// Internet Connection Checker
+// Internet Connection Checker & Retry Logic
 function checkInternetConnection() {
     const modal = document.getElementById('noInternetModal');
     if (!navigator.onLine) {
@@ -10,7 +10,24 @@ function checkInternetConnection() {
         if (modal) modal.classList.add('hidden');
     }
 }
-window.addEventListener('load', checkInternetConnection);
+
+window.addEventListener('load', () => {
+    checkInternetConnection();
+    
+    const retryBtn = document.getElementById('retryConnectionBtn');
+    if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+            if (navigator.onLine) {
+                window.location.reload();
+            } else {
+                retryBtn.style.transform = 'scale(0.95)';
+                setTimeout(() => retryBtn.style.transform = 'scale(1)', 150);
+                showCustomAlert("Still offline! Please check your Wi-Fi or Mobile Data.");
+            }
+        });
+    }
+});
+
 window.addEventListener('online', checkInternetConnection);
 window.addEventListener('offline', checkInternetConnection);
 
@@ -146,11 +163,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (navInboxBtn) navInboxBtn.addEventListener('click', () => switchView('inbox'));
     if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
 
-    // Load Profile & Generate Link (Optimized with LocalStorage Caching)
+    // Load Profile & Generate Link
     const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
 
-    // 1. Instant Load from Cache
     const cachedUsername = localStorage.getItem('ngl_cached_username');
     const cachedAvatar = localStorage.getItem('ngl_cached_avatar');
 
@@ -160,14 +176,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (platformLabel) platformLabel.innerText = `@${cachedUsername}`;
         if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
         
-        // Hide loading overlay instantly if cache exists
         if (homeLoadingOverlay) {
             homeLoadingOverlay.style.opacity = '0';
             setTimeout(() => homeLoadingOverlay.classList.add('hidden'), 300);
         }
     }
 
-    // 2. Background Sync with Firebase
     try {
         const dbRef = ref(rtdb);
         const snapshot = await get(child(dbRef, `users/${uid}`));
@@ -176,7 +190,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const username = data.username || localStorage.getItem('ngl_username') || 'user';
             profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
             
-            // Save to Cache
             localStorage.setItem('ngl_cached_username', username);
             if (data.avatarUrl) localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
 
@@ -206,7 +219,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Force Native System Share Sheet Handler
+    // Share Story Action
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', async () => {
             const shareData = {
@@ -246,7 +259,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Hard Refresh
     if (hardRefreshOption) {
         hardRefreshOption.addEventListener('click', () => {
             const currentUid = localStorage.getItem('ngl_uid');
@@ -261,21 +273,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Feedback Option
     if (feedbackOption) {
         feedbackOption.addEventListener('click', () => {
             window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Feedback%20for%20Nostelgic%20NGL";
         });
     }
 
-    // Support Option
     if (supportOption) {
         supportOption.addEventListener('click', () => {
             window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Support%20Request%20-%20Nostelgic%20NGL";
         });
     }
 
-    // Delete Account
     if (deleteAccountOption) {
         deleteAccountOption.addEventListener('click', () => {
             showCustomConfirm(
@@ -295,7 +304,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Logout
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             showCustomConfirm(
@@ -341,7 +349,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </div>
                     `;
 
-                    // Delete Button
                     card.querySelector('.btn-delete').addEventListener('click', async () => {
                         try {
                             await remove(ref(rtdb, `messages/${uid}/${msgId}`));
@@ -355,7 +362,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         }
                     });
 
-                    // Share Reply - Canvas Generator
                     card.querySelector('.btn-reply').addEventListener('click', (e) => {
                         const replyBtn = e.currentTarget;
                         const text = decodeURIComponent(replyBtn.getAttribute('data-text'));
