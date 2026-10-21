@@ -2,537 +2,265 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nostelgic NGL</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nostelgic NGL - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            user-select: none;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body {
-            background-color: #030712;
-            color: #f8fafc;
+            background-color: #0b0f19;
+            color: #ffffff;
             min-height: 100vh;
-            width: 100vw;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-bottom: 70px;
         }
-
-        /* Light Theme Overrides */
         body.light-mode {
-            background-color: #f1f5f9 !important;
-            color: #0f172a !important;
+            background-color: #f8fafc;
+            color: #0f172a;
         }
-        body.light-mode .single-unified-card,
-        body.light-mode .message-card,
-        body.light-mode .settings-card {
-            background: #ffffff !important;
-            border: 1px solid #e2e8f0 !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+        .hidden { display: none !important; }
+
+        /* Top Bar */
+        .top-bar {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        body.light-mode .nav-tabs,
-        body.light-mode .icon-btn {
-            background: #ffffff !important;
-            border: 1px solid #e2e8f0 !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        .logo { font-size: 20px; font-weight: 700; background: linear-gradient(135deg, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
         }
-        body.light-mode .link-row {
-            background: #f8fafc !important;
-            border: 1px solid #cbd5e1 !important;
-        }
-        body.light-mode .link-text {
-            color: #475569 !important;
-        }
-        body.light-mode .step-title,
-        body.light-mode h3,
-        body.light-mode .settings-title {
-            color: #0f172a !important;
-        }
-        body.light-mode .nav-tab {
-            color: #64748b !important;
-        }
-        body.light-mode .nav-tab.active {
-            color: #ffffff !important;
-        }
-        body.light-mode .icon-btn {
-            color: #0f172a !important;
-        }
-        body.light-mode .msg-text {
-            color: #1e293b !important;
-        }
-        body.light-mode .setting-item {
-            background: #f8fafc !important;
-            border: 1px solid #e2e8f0 !important;
-            color: #0f172a !important;
-        }
+        body.light-mode .theme-btn { background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); color: #000; }
 
         /* Main Container */
-        .main-container {
-            width: 100%;
-            max-width: 420px;
-            height: 100vh;
-            max-height: 850px;
+        .container {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            padding: 20px 16px;
-        }
-
-        @media (min-width: 480px) {
-            .main-container {
-                height: 90vh;
-                border-radius: 36px;
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
-            }
-        }
-
-        /* Top Navigation Bar */
-        .top-nav {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
+            padding: 20px;
+            max-width: 480px;
             width: 100%;
-            padding: 0 4px;
-            flex-shrink: 0;
+            margin: 0 auto;
         }
 
-        .nav-tabs {
-            background: rgba(15, 23, 42, 0.9);
+        /* Home View */
+        .profile-card {
+            background: #131b2e;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
+            width: 100%;
+            border-radius: 24px;
+            padding: 25px;
             display: flex;
-            padding: 3px;
-            gap: 4px;
-            transition: all 0.3s ease;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            margin-bottom: 20px;
         }
+        body.light-mode .profile-card { background: #ffffff; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
 
-        .nav-tab {
-            padding: 8px 18px;
+        .avatar-box {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #ec4899;
+            margin-bottom: 15px;
+        }
+        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        .platform-badge {
+            background: rgba(236, 72, 153, 0.15);
+            color: #ec4899;
+            padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            border: none;
-            background: transparent;
-            color: #94a3b8;
-            transition: all 0.2s ease;
-        }
-
-        .nav-tab.active {
-            background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(219, 39, 119, 0.4);
-        }
-
-        .icon-btn {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #f8fafc;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .icon-btn:active {
-            transform: scale(0.92);
-        }
-
-        /* App Views Container */
-        .app-view {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin: 12px 0;
-            overflow: hidden;
-        }
-
-        .app-view.hidden {
-            display: none !important;
-        }
-
-        /* Single Unified Card (Home View) */
-        .single-unified-card {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            border-radius: 28px;
-            padding: 22px 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .avatar-circle {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            margin: 0 auto 8px auto;
-            border: 2px solid #ec4899;
-            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
-            overflow: hidden;
-            background: #020617;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .avatar-circle img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .step-section {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            text-align: left;
-        }
-
-        .step-title {
-            font-size: 12px;
-            font-weight: 700;
-            text-align: center;
-            color: #cbd5e1;
-            transition: color 0.3s ease;
-        }
-
-        .link-row {
-            display: flex;
-            align-items: center;
-            background: #020617;
-            border: 1px solid #1e293b;
-            border-radius: 16px;
-            padding: 4px 4px 4px 14px;
-            transition: all 0.3s ease;
-        }
-
-        .link-text {
-            font-size: 12px;
-            color: #94a3b8;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            width: 100%;
-            user-select: text;
-        }
-
-        .btn-sm-copy {
-            background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
-            color: #ffffff;
-            border: none;
-            padding: 11px 18px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .btn-action-primary {
-            background: linear-gradient(135deg, #db2777 0%, #ff5e36 100%);
-            color: #ffffff;
-            font-weight: 700;
-            width: 100%;
-            padding: 14px;
-            border-radius: 35px;
-            border: none;
-            box-shadow: 0 8px 20px rgba(255, 94, 54, 0.3);
-            cursor: pointer;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        /* Inbox Scrollable Area */
-        .messages-scroll-area {
-            height: 100%;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            padding-right: 4px;
-        }
-
-        .messages-scroll-area::-webkit-scrollbar {
-            width: 4px;
-        }
-        .messages-scroll-area::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-        }
-
-        .message-card {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border-radius: 20px;
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .msg-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 11px;
-            color: #94a3b8;
-        }
-
-        .msg-text {
-            font-size: 15px;
             font-weight: 600;
-            color: #f8fafc;
-            line-height: 1.4;
-            word-break: break-word;
-            user-select: text;
+            margin-bottom: 15px;
         }
-
-        .msg-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .btn-reply {
-            background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .btn-delete {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .empty-inbox {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            color: #64748b;
-            gap: 10px;
-        }
-
-        .empty-inbox i {
-            font-size: 48px;
-            color: #334155;
-            margin-bottom: 4px;
-        }
-
-        /* Settings View Card */
-        .settings-card {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            border-radius: 28px;
-            padding: 20px 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            height: 100%;
-            overflow-y: auto;
-        }
-
-        .settings-card::-webkit-scrollbar {
-            width: 4px;
-        }
-        .settings-card::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-        }
-
-        .settings-title {
-            font-size: 16px;
-            font-weight: 800;
-            margin-bottom: 2px;
-        }
-
-        .setting-item {
-            background: #020617;
-            border: 1px solid #1e293b;
-            border-radius: 16px;
-            padding: 14px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 700;
-            color: #f8fafc;
-            transition: all 0.2s ease;
-        }
-        .setting-item:active {
-            transform: scale(0.98);
-        }
-
-        .btn-logout {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            font-weight: 700;
+        .link-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 12px;
             width: 100%;
-            padding: 13px;
-            border-radius: 35px;
-            cursor: pointer;
             font-size: 13px;
-            text-align: center;
+            color: #94a3b8;
+            word-break: break-all;
+            margin-bottom: 20px;
         }
+        body.light-mode .link-box { background: rgba(0,0,0,0.02); border: 1px dashed rgba(0,0,0,0.15); color: #64748b; }
 
-        .hidden { display: none !important; }
+        .btn-group { display: flex; gap: 10px; width: 100%; }
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 14px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-primary { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.08); color: #fff; }
+        body.light-mode .btn-secondary { background: rgba(0, 0, 0, 0.06); color: #0f172a; }
+
+        /* Inbox View */
+        .inbox-header { width: 100%; font-size: 22px; font-weight: 700; margin-bottom: 20px; text-align: left; }
+        .messages-container { width: 100%; display: flex; flex-direction: column; gap: 15px; }
+        .message-card {
+            background: #131b2e;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 18px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        body.light-mode .message-card { background: #ffffff; border: 1px solid rgba(0,0,0,0.08); }
+        .msg-header { display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; }
+        .msg-text { font-size: 15px; color: #fff; line-height: 1.5; word-break: break-word; }
+        body.light-mode .msg-text { color: #0f172a; }
+        .msg-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 5px; }
+        .btn-delete { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .btn-reply { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+        /* Settings View */
+        .settings-list { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+        .setting-item {
+            background: #131b2e;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 16px;
+            border-radius: 14px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 15px; font-weight: 500; cursor: pointer;
+        }
+        body.light-mode .setting-item { background: #ffffff; border: 1px solid rgba(0,0,0,0.08); color: #0f172a; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #0b0f19;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex; justify-content: space-around;
+            padding: 12px 0;
+            z-index: 100;
+        }
+        body.light-mode .bottom-nav { background: #ffffff; border-top: 1px solid rgba(0,0,0,0.08); }
+        .nav-item {
+            background: none; border: none; color: #94a3b8;
+            font-size: 18px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px;
+        }
+        .nav-item i { font-size: 20px; }
+        .nav-item.active { color: #ec4899; }
+
+        /* Custom Alert Modal */
+        .custom-alert-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        .custom-alert-box {
+            background: #131b2e;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px; border-radius: 20px;
+            width: 85%; max-width: 320px;
+            text-align: center; display: flex; flex-direction: column; gap: 15px;
+        }
+        body.light-mode .custom-alert-box { background: #ffffff; border: 1px solid rgba(0,0,0,0.1); color: #0f172a; }
+        .custom-alert-box p { font-size: 14px; color: #cbd5e1; }
+        body.light-mode .custom-alert-box p { color: #475569; }
+        .custom-alert-ok {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white; border: none; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Custom Alert Modal -->
-    <div id="customAlertModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000;">
-        <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); padding: 30px; border-radius: 24px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.8); max-width: 280px; width: 90%;">
-            <div style="font-size: 32px; margin-bottom: 12px; color: #ec4899;"><i class="fas fa-info-circle"></i></div>
-            <h3 style="color: #f8fafc; font-size: 16px; font-weight: 700; margin-bottom: 6px;">Notification</h3>
-            <p id="customAlertText" style="color: #94a3b8; font-size: 12px; margin-bottom: 20px; line-height: 1.4;">Action successful!</p>
-            <button id="customAlertOkBtn" style="background: linear-gradient(135deg, #db2777, #7c3aed); color: #ffffff; border: none; width: 100%; padding: 12px; border-radius: 30px; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 5px 15px rgba(219,39,119,0.4);">OK</button>
-        </div>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="logo">Nostelgic NGL</div>
+        <button class="theme-btn" id="themeToggleBtn"><i class="fas fa-moon" id="themeIcon"></i></button>
     </div>
 
-    <div class="main-container">
-        
-        <!-- Top Navigation Bar -->
-        <div class="top-nav">
-            <button id="themeToggleBtn" class="icon-btn" type="button">
-                <i id="themeIcon" class="fas fa-moon" style="font-size: 14px;"></i>
-            </button>
-            
-            <div class="nav-tabs">
-                <button id="navHomeBtn" class="nav-tab active" type="button">HOME</button>
-                <button id="navInboxBtn" class="nav-tab" type="button">INBOX</button>
-            </div>
+    <!-- Main Views Container -->
+    <div class="container">
 
-            <button id="settingsBtn" class="icon-btn" type="button" title="Settings">
-                <i class="fas fa-cog" style="font-size: 14px;"></i>
-            </button>
-        </div>
-
-        <!-- ================= 1. HOME VIEW ================= -->
-        <div id="homeView" class="app-view">
-            <div class="single-unified-card">
-                <div>
-                    <div class="avatar-circle">
-                        <img id="userAvatarImg" src="Default-User.png" alt="Avatar">
-                    </div>
-                    <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">send me anonymous messages!</h3>
-                    <p id="platformLabel" style="font-size: 12px; color: #94a3b8; text-transform: capitalize;">Instagram</p>
+        <!-- Home View -->
+        <div id="homeView" class="container" style="padding: 0; max-width: 100%;">
+            <div class="profile-card">
+                <div class="avatar-box">
+                    <img id="userAvatarImg" src="https://via.placeholder.com/150" alt="Avatar">
                 </div>
-
-                <div style="height: 1px; background: rgba(100, 116, 139, 0.2); width: 100%;"></div>
-
-                <div class="step-section">
-                    <p class="step-title">Step 1: Copy your link</p>
-                    <div class="link-row">
-                        <span id="profileLinkText" class="link-text">https://loading...</span>
-                        <button id="copyLinkBtn" class="btn-sm-copy" type="button">copy link</button>
-                    </div>
-                </div>
-
-                <div style="height: 1px; background: rgba(100, 116, 139, 0.2); width: 100%;"></div>
-
-                <div class="step-section">
-                    <p class="step-title">Step 2: Share link on your story</p>
-                    <button id="shareStoryBtn" class="btn-action-primary" type="button">
-                        Share!
-                    </button>
+                <div class="platform-badge" id="platformLabel">Instagram</div>
+                <div class="link-box" id="profileLinkText">Loading link...</div>
+                <div class="btn-group">
+                    <button class="action-btn btn-secondary" id="copyLinkBtn"><i class="fas fa-copy"></i> Copy Link</button>
+                    <button class="action-btn btn-primary" id="shareStoryBtn"><i class="fas fa-share-nodes"></i> Share</button>
                 </div>
             </div>
         </div>
 
-        <!-- ================= 2. INBOX VIEW ================= -->
-        <div id="inboxView" class="app-view hidden">
-            <div id="messagesContainer" class="messages-scroll-area">
-                <!-- Messages load here -->
-            </div>
-            <div id="emptyState" class="empty-inbox hidden">
-                <i class="far fa-envelope-open"></i>
-                <p style="font-size: 14px; font-weight: 700;">No messages yet!</p>
-                <p style="font-size: 11px;">Share your link to start receiving anonymous messages.</p>
+        <!-- Inbox View -->
+        <div id="inboxView" class="container hidden" style="padding: 0; max-width: 100%;">
+            <div class="inbox-header">Inbox</div>
+            <div class="messages-container" id="messagesContainer"></div>
+            <div id="emptyState" style="text-align: center; color: #94a3b8; margin-top: 50px;">
+                <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 10px; opacity: 0.5;"></i>
+                <p>No messages yet!</p>
             </div>
         </div>
 
-        <!-- ================= 3. SETTINGS VIEW ================= -->
-        <div id="settingsView" class="app-view hidden">
-            <div class="settings-card">
-                <h2 class="settings-title"><i class="fas fa-cog"></i> Settings</h2>
-                
+        <!-- Settings View -->
+        <div id="settingsView" class="container hidden" style="padding: 0; max-width: 100%;">
+            <div class="inbox-header">Settings</div>
+            <div class="settings-list">
                 <div class="setting-item" id="pauseLinkOption">
                     <span><i class="fas fa-pause-circle" style="color: #ec4899; margin-right: 8px;"></i> Pause my link</span>
-                    <i class="fas fa-chevron-right" style="font-size: 11px; color: #64748b;"></i>
+                    <i class="fas fa-chevron-right" style="color: #94a3b8; font-size: 13px;"></i>
                 </div>
-
-                <div class="setting-item" id="supportOption">
-                    <span><i class="fas fa-headset" style="color: #3b82f6; margin-right: 8px;"></i> Support</span>
-                    <i class="fas fa-envelope" style="font-size: 11px; color: #64748b;"></i>
+                <!-- PC Style Ctrl+F5 Hard Refresh Button -->
+                <div class="setting-item" id="hardRefreshOption">
+                    <span><i class="fas fa-rotate" style="color: #38bdf8; margin-right: 8px;"></i> Clear Cache & Hard Refresh</span>
+                    <i class="fas fa-chevron-right" style="color: #94a3b8; font-size: 13px;"></i>
                 </div>
-
-                <div class="setting-item" id="feedbackOption">
-                    <span><i class="fas fa-comment-dots" style="color: #8b5cf6; margin-right: 8px;"></i> Feedback</span>
-                    <i class="fas fa-envelope" style="font-size: 11px; color: #64748b;"></i>
+                <div class="setting-item" id="deleteAccountOption" style="color: #ef4444;">
+                    <span><i class="fas fa-trash-alt" style="margin-right: 8px;"></i> Delete account</span>
+                    <i class="fas fa-chevron-right" style="font-size: 13px;"></i>
                 </div>
-
-                <div class="setting-item" id="followDevOption">
-                    <span><i class="fab fa-instagram" style="color: #f43f5e; margin-right: 8px;"></i> Follow the developer</span>
-                    <i class="fas fa-external-link-alt" style="font-size: 11px; color: #64748b;"></i>
+                <div class="setting-item" id="logoutBtn" style="color: #f59e0b;">
+                    <span><i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i> Logout</span>
+                    <i class="fas fa-chevron-right" style="font-size: 13px;"></i>
                 </div>
-
-                <div class="setting-item" id="deleteAccountOption" style="border-color: rgba(239, 68, 68, 0.3);">
-                    <span style="color: #ef4444;"><i class="fas fa-user-slash" style="margin-right: 8px;"></i> Delete account</span>
-                    <i class="fas fa-chevron-right" style="font-size: 11px; color: #ef4444;"></i>
-                </div>
-
-                <div style="height: 1px; background: rgba(100, 116, 139, 0.2); width: 100%; margin: 2px 0;"></div>
-                
-                <button id="logoutBtn" class="btn-logout" type="button">
-                    <i class="fas fa-sign-out-alt"></i> Log Out
-                </button>
             </div>
         </div>
 
-        <!-- Bottom Spacer -->
-        <div></div>
+    </div>
 
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <button class="nav-item active" id="navHomeBtn"><i class="fas fa-home"></i>Home</button>
+        <button class="nav-item" id="navInboxBtn"><i class="fas fa-inbox"></i>Inbox</button>
+        <button class="nav-item" id="settingsBtn"><i class="fas fa-gear"></i>Settings</button>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="customAlertModal" class="custom-alert-modal hidden">
+        <div class="custom-alert-box">
+            <h3 style="font-size: 18px; font-weight: 600;">Nostelgic NGL</h3>
+            <p id="customAlertText">Alert message here</p>
+            <button class="custom-alert-ok" id="customAlertOkBtn">OK</button>
+        </div>
     </div>
 
     <script type="module" src="index.js"></script>
