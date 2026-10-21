@@ -60,6 +60,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Disable send button initially until targetUid is loaded
+    if (sendMessageBtn) {
+        sendMessageBtn.style.opacity = "0.6";
+        sendMessageBtn.style.cursor = "not-allowed";
+        sendMessageBtn.setAttribute('disabled', 'true');
+        sendMessageBtn.innerText = "Loading...";
+    }
+
     // 1. Instant UI setup using URL username immediately
     if (headerUsernameTitle) headerUsernameTitle.innerText = `@${username}`;
     if (profileTitleText) profileTitleText.innerText = `Send anonymous msg to @${username}`;
@@ -76,6 +84,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             targetUid = parsed.targetUid;
             if (parsed.platform && senderPlatformLabel) senderPlatformLabel.innerText = parsed.platform;
             if (parsed.avatarUrl && senderAvatarImg) senderAvatarImg.src = parsed.avatarUrl;
+
+            // Enable send button if cache has targetUid
+            if (targetUid && sendMessageBtn) {
+                sendMessageBtn.style.opacity = "1";
+                sendMessageBtn.style.cursor = "pointer";
+                sendMessageBtn.removeAttribute('disabled');
+                sendMessageBtn.innerText = "Send! 🚀";
+            }
 
             // Hide loading overlay instantly from cache
             if (senderLoadingOverlay) {
@@ -130,6 +146,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             senderLoadingOverlay.style.opacity = '0';
             setTimeout(() => senderLoadingOverlay.classList.add('hidden'), 300);
         }
+        // Enable send button once targetUid is ready
+        if (targetUid && sendMessageBtn) {
+            sendMessageBtn.style.opacity = "1";
+            sendMessageBtn.style.cursor = "pointer";
+            sendMessageBtn.removeAttribute('disabled');
+            sendMessageBtn.innerText = "Send! 🚀";
+        }
     }
 
     if (sendMessageBtn) {
@@ -141,9 +164,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             if (!targetUid) {
-                showCustomAlert("Recipient not found.");
+                showCustomAlert("Recipient is still loading, please wait a moment.");
                 return;
             }
+
+            // Disable button during send to prevent double submission
+            sendMessageBtn.setAttribute('disabled', 'true');
+            sendMessageBtn.style.opacity = "0.7";
+            sendMessageBtn.innerText = "Sending...";
 
             try {
                 const newMsgRef = push(ref(rtdb, `messages/${targetUid}`));
@@ -159,6 +187,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             } catch (error) {
                 console.error("Error sending message:", error);
                 showCustomAlert("Failed to send message. Try again.");
+            } finally {
+                sendMessageBtn.removeAttribute('disabled');
+                sendMessageBtn.style.opacity = "1";
+                sendMessageBtn.innerText = "Send! 🚀";
             }
         });
     }
