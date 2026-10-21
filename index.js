@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Switch View Function
+    // Switch View Function with Active Nav Highlights
     function switchView(viewName) {
         homeView.classList.add('hidden');
         inboxView.classList.add('hidden');
@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         navHomeBtn.classList.remove('active');
         navInboxBtn.classList.remove('active');
+        settingsBtn.classList.remove('active');
 
         if (viewName === 'home') {
             homeView.classList.remove('hidden');
@@ -91,6 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             loadInboxMessages();
         } else if (viewName === 'settings') {
             settingsView.classList.remove('hidden');
+            settingsBtn.classList.add('active');
         }
     }
 
@@ -187,17 +189,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // PC Style Hard Refresh (Ctrl+F5 equivalent for Mobile)
     if (hardRefreshOption) {
         hardRefreshOption.addEventListener('click', () => {
-            // Keep user login uid safe, clear cache items and reload fresh from server
             const currentUid = localStorage.getItem('ngl_uid');
             const currentTheme = localStorage.getItem('ngl_theme');
             
-            localStorage.clear(); // Clear all cache
+            localStorage.clear();
             
-            // Restore essential session data
             if (currentUid) localStorage.setItem('ngl_uid', currentUid);
             if (currentTheme) localStorage.setItem('ngl_theme', currentTheme);
 
-            // Hard reload page bypassing browser cache
             window.location.reload(true);
         });
     }
@@ -255,7 +254,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             await remove(ref(rtdb, `messages/${uid}/${msgId}`));
                             card.remove();
                             if (messagesContainer.children.length === 0) {
-                                emptyState.classList.remove('hidden');
+                                emptyState.classList.add('hidden');
                             }
                             showCustomAlert("Message deleted.");
                         } catch (err) {
