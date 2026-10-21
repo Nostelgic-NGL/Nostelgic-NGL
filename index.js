@@ -97,10 +97,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (navInboxBtn) navInboxBtn.addEventListener('click', () => switchView('inbox'));
     if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
 
-    // Load Profile & Generate Link
+    // Load Profile & Generate Link (Optimized with LocalStorage Caching for Super Fast Load)
     const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
 
+    // 1. Instant Load from Cache
+    const cachedUsername = localStorage.getItem('ngl_cached_username');
+    const cachedAvatar = localStorage.getItem('ngl_cached_avatar');
+    const cachedPlatform = localStorage.getItem('ngl_cached_platform');
+
+    if (cachedUsername) {
+        profileUrl = `${currentBaseUrl}/msgsender.html?u=${cachedUsername}`;
+        if (profileLinkText) profileLinkText.innerText = profileUrl;
+        if (platformLabel) platformLabel.innerText = cachedPlatform || 'Instagram';
+        if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
+    }
+
+    // 2. Background Sync with Firebase
     try {
         const dbRef = ref(rtdb);
         const snapshot = await get(child(dbRef, `users/${uid}`));
@@ -109,18 +122,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             const username = data.username || localStorage.getItem('ngl_username');
             profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
             
+            // Save to Cache
+            localStorage.setItem('ngl_cached_username', username);
+            if (data.avatarUrl) localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
+            localStorage.setItem('ngl_cached_platform', data.platform || 'Instagram');
+
             if (profileLinkText) profileLinkText.innerText = profileUrl;
             if (platformLabel) platformLabel.innerText = data.platform || 'Instagram';
             if (data.avatarUrl && userAvatarImg) {
                 userAvatarImg.src = data.avatarUrl;
             }
-        } else {
-            const username = localStorage.getItem('ngl_username') || 'user';
-            profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
-            if (profileLinkText) profileLinkText.innerText = profileUrl;
         }
     } catch (error) {
-        console.error("Error loading profile:", error);
+        console.error("Background sync error:", error);
     }
 
     // Copy Link Action
@@ -222,7 +236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             await remove(ref(rtdb, `messages/${uid}/${msgId}`));
                             card.remove();
                             if (messagesContainer.children.length === 0) {
-                                emptyState.classList.add('hidden');
+                                emptyState.classList.remove('hidden');
                             }
                             showCustomAlert("Message deleted.");
                         } catch (err) {
@@ -235,7 +249,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const replyBtn = e.currentTarget;
                         const text = decodeURIComponent(replyBtn.getAttribute('data-text'));
 
-                        // Create Canvas to draw NGL style card matching user design[cite: 2, 3]
+                        // Create Canvas to draw NGL style card
                         const canvas = document.createElement('canvas');
                         canvas.width = 1080;
                         canvas.height = 1920;
@@ -268,7 +282,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         ctx.shadowOffsetY = 25;
                         ctx.fillStyle = '#ffffff';
                         ctx.roundRect(110, 550, 860, 780, 48);
-                        ctx.shadowBlur = 0; // Reset shadow
+                        ctx.shadowBlur = 0;
 
                         // Top Header inside card (Gradient Header)
                         ctx.save();
