@@ -141,7 +141,7 @@
             width: 100%;
             text-align: center;
             outline: none;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .hidden { display: none !important; }
@@ -238,11 +238,12 @@
             
             <div style="margin: auto 0; text-align: center;">
                 <input type="text" id="usernameInput" placeholder="@username" class="ngl-input" />
-                <p id="usernameErrorText" style="color: #ef4444; font-size: 12px; line-height: 1.4; padding: 0 10px;" class="hidden"></p>
+                <!-- Dynamic Feedback Text (Checking / Error / Success) -->
+                <p id="usernameStatusText" style="font-size: 13px; line-height: 1.4; padding: 0 10px;" class="hidden"></p>
             </div>
 
             <div style="padding-bottom: 10px;">
-                <button id="usernameNextBtn" class="btn-pill-white" type="button">Continue</button>
+                <button id="usernameNextBtn" class="btn-pill-white" type="button" disabled style="opacity: 0.5; cursor: not-allowed;">Continue</button>
             </div>
         </div>
 
