@@ -1,6 +1,19 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+// Internet Connection Checker
+function checkInternetConnection() {
+    const modal = document.getElementById('noInternetModal');
+    if (!navigator.onLine) {
+        if (modal) modal.classList.remove('hidden');
+    } else {
+        if (modal) modal.classList.add('hidden');
+    }
+}
+window.addEventListener('load', checkInternetConnection);
+window.addEventListener('online', checkInternetConnection);
+window.addEventListener('offline', checkInternetConnection);
+
 // Custom Alert Function (Simple OK)
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
@@ -46,6 +59,8 @@ function showCustomConfirm(title, message, onConfirm) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    checkInternetConnection();
+
     const uid = localStorage.getItem('ngl_uid');
     if (!uid) {
         window.location.replace("login.html");
@@ -174,7 +189,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
         console.error("Background sync error:", error);
     } finally {
-        // Ensure loading overlay is hidden once firebase fetch completes
         if (homeLoadingOverlay) {
             homeLoadingOverlay.style.opacity = '0';
             setTimeout(() => homeLoadingOverlay.classList.add('hidden'), 300);
@@ -192,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Force Native System Share Sheet Handler (WebView + Browser Compatible)
+    // Force Native System Share Sheet Handler
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', async () => {
             const shareData = {
@@ -208,7 +222,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     console.log("Share dismissed or failed", err);
                 }
             } else {
-                // Android WebView native bridge intent trigger
                 window.location.href = `native-share://${encodeURIComponent(profileUrl)}`;
             }
         });
@@ -233,7 +246,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // PC Style Hard Refresh (Ctrl+F5 equivalent for Mobile)
+    // Hard Refresh
     if (hardRefreshOption) {
         hardRefreshOption.addEventListener('click', () => {
             const currentUid = localStorage.getItem('ngl_uid');
@@ -248,21 +261,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Separate Feedback Option (Opens Gmail)
+    // Feedback Option
     if (feedbackOption) {
         feedbackOption.addEventListener('click', () => {
             window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Feedback%20for%20Nostelgic%20NGL";
         });
     }
 
-    // Separate Support Option (Opens Gmail)
+    // Support Option
     if (supportOption) {
         supportOption.addEventListener('click', () => {
             window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Support%20Request%20-%20Nostelgic%20NGL";
         });
     }
 
-    // Custom Confirmation Modal for Delete Account
+    // Delete Account
     if (deleteAccountOption) {
         deleteAccountOption.addEventListener('click', () => {
             showCustomConfirm(
@@ -282,7 +295,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Custom Confirmation Modal for Logout
+    // Logout
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             showCustomConfirm(
@@ -296,7 +309,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Load Inbox Messages Function (Optimized with limitToLast & Lightning Fast Canvas)
+    // Load Inbox Messages Function
     async function loadInboxMessages() {
         try {
             const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
@@ -342,25 +355,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                         }
                     });
 
-                    // Share Reply - Super Optimized Instant Canvas Generator
+                    // Share Reply - Canvas Generator
                     card.querySelector('.btn-reply').addEventListener('click', (e) => {
                         const replyBtn = e.currentTarget;
                         const text = decodeURIComponent(replyBtn.getAttribute('data-text'));
 
-                        // Create Canvas
                         const canvas = document.createElement('canvas');
                         canvas.width = 1080;
                         canvas.height = 1920;
                         const ctx = canvas.getContext('2d', { alpha: false });
 
-                        // Background Gradient
                         const bgGradient = ctx.createLinearGradient(0, 0, 0, 1920);
                         bgGradient.addColorStop(0, '#030712');
                         bgGradient.addColorStop(1, '#0f172a');
                         ctx.fillStyle = bgGradient;
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                        // Rounded Rect Helper
                         ctx.roundRect = function(x, y, w, h, r) {
                             if (w < 2 * r) r = w / 2;
                             if (h < 2 * r) r = h / 2;
@@ -374,7 +384,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             this.fill();
                         };
                         
-                        // Draw Card Box
                         ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
                         ctx.shadowBlur = 40;
                         ctx.shadowOffsetY = 20;
@@ -382,7 +391,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         ctx.roundRect(110, 550, 860, 780, 48);
                         ctx.shadowBlur = 0;
 
-                        // Top Header inside card (Gradient Header)
                         ctx.save();
                         ctx.beginPath();
                         ctx.roundRect(110, 550, 860, 220, [48, 48, 0, 0]);
@@ -393,19 +401,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                         ctx.fillStyle = cardHeaderGrad;
                         ctx.fillRect(110, 550, 860, 220);
                         
-                        // Header Text inside Card
                         ctx.fillStyle = '#ffffff';
                         ctx.font = 'bold 42px sans-serif';
                         ctx.textAlign = 'center';
                         ctx.fillText('send me anonymous messages!', 540, 680);
                         ctx.restore();
 
-                        // Message Text
                         ctx.fillStyle = '#0f172a';
                         ctx.font = 'bold 50px sans-serif';
                         ctx.textAlign = 'center';
                         
-                        // Fast Text Wrapping
                         const words = text.split(' ');
                         let line = '';
                         let y = 920;
@@ -423,12 +428,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         }
                         ctx.fillText(line, 540, y);
 
-                        // Footer Branding
                         ctx.fillStyle = '#94a3b8';
                         ctx.font = 'bold 30px sans-serif';
                         ctx.fillText('Nostelgic NGL • Anonymous Q&A', 540, 1750);
 
-                        // Instant Data URL & Trigger Story Intent
                         const dataUrl = canvas.toDataURL('image/png', 0.9);
                         window.location.href = `instagram-story://${encodeURIComponent(dataUrl)}`;
                     });
