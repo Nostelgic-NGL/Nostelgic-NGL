@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Real-time automatic checking with character validation
+    // Real-time automatic checking with character validation & 12 character limit
     if (usernameInput) {
         usernameInput.addEventListener('input', () => {
             const rawValue = usernameInput.value;
@@ -170,6 +170,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         usernameStatusText.classList.add('hidden');
                     }
+                }
+                return;
+            }
+
+            if (username.length > 12) {
+                if (usernameStatusText) {
+                    usernameStatusText.innerHTML = `<span style="color: #ef4444;">Username cannot exceed 12 characters.</span>`;
+                    usernameStatusText.classList.remove('hidden');
                 }
                 return;
             }
