@@ -137,12 +137,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. Instant Load from Cache
     const cachedUsername = localStorage.getItem('ngl_cached_username');
     const cachedAvatar = localStorage.getItem('ngl_cached_avatar');
-    const cachedPlatform = localStorage.getItem('ngl_cached_platform');
 
     if (cachedUsername) {
         profileUrl = `${currentBaseUrl}/msgsender.html?u=${cachedUsername}`;
         if (profileLinkText) profileLinkText.innerText = profileUrl;
-        if (platformLabel) platformLabel.innerText = cachedPlatform || 'Instagram';
+        if (platformLabel) platformLabel.innerText = cachedUsername; // Display Username instead of platform
         if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
     }
 
@@ -152,16 +151,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const snapshot = await get(child(dbRef, `users/${uid}`));
         if (snapshot.exists()) {
             const data = snapshot.val();
-            const username = data.username || localStorage.getItem('ngl_username');
+            const username = data.username || localStorage.getItem('ngl_username') || 'user';
             profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
             
             // Save to Cache
             localStorage.setItem('ngl_cached_username', username);
             if (data.avatarUrl) localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
-            localStorage.setItem('ngl_cached_platform', data.platform || 'Instagram');
 
             if (profileLinkText) profileLinkText.innerText = profileUrl;
-            if (platformLabel) platformLabel.innerText = data.platform || 'Instagram';
+            if (platformLabel) platformLabel.innerText = username; // Display Username here
             if (data.avatarUrl && userAvatarImg) {
                 userAvatarImg.src = data.avatarUrl;
             }
@@ -192,11 +190,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                         url: profileUrl,
                     });
                 } catch (err) {
-                    // User cancelled share or error occurred
                     console.log("Share cancelled or failed", err);
                 }
             } else {
-                // Fallback for browsers not supporting navigator.share
                 navigator.clipboard.writeText(profileUrl);
                 showCustomAlert("Link copied to clipboard! 📋");
             }
@@ -323,7 +319,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             await remove(ref(rtdb, `messages/${uid}/${msgId}`));
                             card.remove();
                             if (messagesContainer.children.length === 0) {
-                                emptyState.classList.add('hidden');
+                                emptyState.classList.remove('hidden');
                             }
                             showCustomAlert("Message deleted.");
                         } catch (err) {
