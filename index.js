@@ -69,15 +69,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const copyLinkBtn = document.getElementById('copyLinkBtn');
     const shareStoryBtn = document.getElementById('shareStoryBtn');
 
-    // Share Modal Elements
-    const shareModal = document.getElementById('shareModal');
-    const shareWhatsApp = document.getElementById('shareWhatsApp');
-    const shareTelegram = document.getElementById('shareTelegram');
-    const shareTwitter = document.getElementById('shareTwitter');
-    const shareEmail = document.getElementById('shareEmail');
-    const shareCopy = document.getElementById('shareCopy');
-    const shareClose = document.getElementById('shareClose');
-
     // Inbox Elements
     const messagesContainer = document.getElementById('messagesContainer');
     const emptyState = document.getElementById('emptyState');
@@ -188,34 +179,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Open Custom Share Modal on Share Button Click
+    // Native Android Share Sheet Trigger
     if (shareStoryBtn) {
-        shareStoryBtn.addEventListener('click', () => {
-            const shareText = encodeURIComponent('Send me anonymous messages! 💬 ' + profileUrl);
-            
-            // Set dynamic links for share items
-            if (shareWhatsApp) shareWhatsApp.href = `https://api.whatsapp.com/send?text=${shareText}`;
-            if (shareTelegram) shareTelegram.href = `https://t.me/share/url?url=${encodeURIComponent(profileUrl)}&text=${encodeURIComponent('Send me anonymous messages! 💬')}`;
-            if (shareTwitter) shareTwitter.href = `https://twitter.com/intent/tweet?text=${shareText}`;
-            if (shareEmail) shareEmail.href = `mailto:?subject=Send me anonymous messages&body=${shareText}`;
-            
-            if (shareModal) shareModal.classList.remove('hidden');
-        });
-    }
-
-    // Share Modal Actions
-    if (shareCopy) {
-        shareCopy.addEventListener('click', () => {
-            navigator.clipboard.writeText(profileUrl).then(() => {
-                if (shareModal) shareModal.classList.add('hidden');
+        shareStoryBtn.addEventListener('click', async () => {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Nostelgic NGL',
+                        text: 'Send me anonymous messages! 💬',
+                        url: profileUrl,
+                    });
+                } catch (err) {
+                    console.log("Share cancelled or failed", err);
+                }
+            } else {
+                navigator.clipboard.writeText(profileUrl);
                 showCustomAlert("Link copied to clipboard! 📋");
-            });
-        });
-    }
-
-    if (shareClose) {
-        shareClose.addEventListener('click', () => {
-            if (shareModal) shareModal.classList.add('hidden');
+            }
         });
     }
 
@@ -339,7 +319,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             await remove(ref(rtdb, `messages/${uid}/${msgId}`));
                             card.remove();
                             if (messagesContainer.children.length === 0) {
-                                emptyState.classList.add('hidden');
+                                emptyState.classList.remove('hidden');
                             }
                             showCustomAlert("Message deleted.");
                         } catch (err) {
