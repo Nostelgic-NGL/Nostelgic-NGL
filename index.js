@@ -174,25 +174,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (copyLinkBtn) {
         copyLinkBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(profileUrl).then(() => {
-                showCustomAlert("Link copied to clipboard! 📋 Share it on your Instagram story!");
+                showCustomAlert("Link copied to clipboard! 📋");
             }).catch(() => {
                 showCustomAlert("Failed to copy link.");
             });
         });
     }
 
-    // Share Story Action (Home)
+    // Native Share Sheet Menu Action (Home Share Button)
     if (shareStoryBtn) {
-        shareStoryBtn.addEventListener('click', () => {
+        shareStoryBtn.addEventListener('click', async () => {
             if (navigator.share) {
-                navigator.share({
-                    title: 'Nostelgic NGL',
-                    text: 'Send me anonymous messages! 💬',
-                    url: profileUrl,
-                }).catch(() => {});
+                try {
+                    await navigator.share({
+                        title: 'Nostelgic NGL',
+                        text: 'Send me anonymous messages! 💬',
+                        url: profileUrl,
+                    });
+                } catch (err) {
+                    // User cancelled share or error occurred
+                    console.log("Share cancelled or failed", err);
+                }
             } else {
+                // Fallback for browsers not supporting navigator.share
                 navigator.clipboard.writeText(profileUrl);
-                showCustomAlert("Link copied! Paste it on your Instagram story 🚀");
+                showCustomAlert("Link copied to clipboard! 📋");
             }
         });
     }
