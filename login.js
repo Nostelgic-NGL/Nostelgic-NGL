@@ -8,6 +8,8 @@ let userData = {
     avatarBase64: 'Default-User.png'
 };
 
+let isProcessing = false; // Prevent multiple spam clicks
+
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
     const alertText = document.getElementById('customAlertText');
@@ -80,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handleBack = (e) => {
         if (e) e.preventDefault();
+        if (isProcessing) return;
         if (currentStep > 1) {
             currentStep--;
             updateStepView();
@@ -140,12 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // From Step 2 to Step 3 (Username Validation check before moving to photo upload)
+    // From Step 2 to Step 3 (Optimized with instant response and prevention of spam clicks)
     if (usernameNextBtn) {
         usernameNextBtn.addEventListener('click', async (e) => {
             e.preventDefault();
+            if (isProcessing) return;
+
             const username = usernameInput.value.trim().toLowerCase().replace('@', '');
-            
             if (usernameErrorText) usernameErrorText.classList.add('hidden');
 
             if (!username || username.length < 3) {
@@ -156,25 +160,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            isProcessing = true;
+            usernameNextBtn.innerText = "Checking...";
+            usernameNextBtn.style.opacity = "0.7";
+
             try {
                 const dbRef = ref(rtdb);
                 const snapshot = await get(child(dbRef, `usernames/${username}`));
+                
                 if (snapshot.exists()) {
                     if (usernameErrorText) {
                         usernameErrorText.innerText = "This username is not available for use. Please try a different one.";
                         usernameErrorText.classList.remove('hidden');
                     }
+                    isProcessing = false;
+                    usernameNextBtn.innerText = "Continue";
+                    usernameNextBtn.style.opacity = "1";
                     return;
                 }
+                
                 userData.username = username;
                 
-                // Move to Step 3: Avatar Upload
+                // Reset button state and move to Step 3 smoothly
+                isProcessing = false;
+                usernameNextBtn.innerText = "Continue";
+                usernameNextBtn.style.opacity = "1";
+                
                 currentStep = 3;
                 updateStepView();
 
             } catch (error) {
+                isProcessing = false;
+                usernameNextBtn.innerText = "Continue";
+                usernameNextBtn.style.opacity = "1";
+                
                 if (usernameErrorText) {
-                    usernameErrorText.innerText = "Error: " + error.message;
+                    usernameErrorText.innerText = "Connection error. Please try again.";
                     usernameErrorText.classList.remove('hidden');
                 }
             }
@@ -199,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-                        const maxSize = 200; // Resize to max 200px for database optimization
+                        const maxSize = 200;
                         let width = img.width;
                         let height = img.height;
 
@@ -234,6 +255,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (createAccountBtn) {
         createAccountBtn.addEventListener('click', async (e) => {
             e.preventDefault();
+            if (isProcessing) return;
+            isProcessing = true;
 
             try {
                 const loadingOverlay = document.getElementById('loadingOverlay');
@@ -261,6 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = "index.html";
 
             } catch (error) {
+                isProcessing = false;
                 const loadingOverlay = document.getElementById('loadingOverlay');
                 if (loadingOverlay) loadingOverlay.classList.add('hidden');
                 alert("Account Creation Error: " + error.message);
