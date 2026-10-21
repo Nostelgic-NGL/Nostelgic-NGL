@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const avatarContainer = document.getElementById('avatarContainer');
     const avatarPreview = document.getElementById('avatarPreview');
     const createAccountBtn = document.getElementById('createAccountBtn');
+    const skipPhotoBtn = document.getElementById('skipPhotoBtn');
 
     let currentStep = 0;
 
@@ -151,7 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 usernameNextBtn.setAttribute('disabled', 'true');
             }
 
-            // Check if username contains only small letters, numbers, and underscore
             const isValidFormat = /^[a-z0-9_]*$/.test(username);
 
             if (!isValidFormat) {
@@ -182,7 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Show "Checking username, please wait..." with spinner
             if (usernameStatusText) {
                 usernameStatusText.innerHTML = `<div style="display: inline-flex; align-items: center; gap: 8px; color: #94a3b8;"><div style="width: 14px; height: 14px; border: 2px solid #94a3b8; border-top: 2px solid transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div> Checking username, please wait...</div>`;
                 usernameStatusText.classList.remove('hidden');
@@ -284,44 +283,58 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Step 3: Final Account Creation & Firebase Write
+    // Common function to save user account to Firebase
+    async function registerUserAccount() {
+        if (isChecking) return;
+        isChecking = true;
+
+        try {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+
+            const userCredential = await signInAnonymously(auth);
+            const user = userCredential.user;
+
+            await set(ref(rtdb, 'users/' + user.uid), {
+                uid: user.uid,
+                username: userData.username,
+                platform: userData.platform,
+                avatarUrl: userData.avatarBase64,
+                createdAt: new Date().toISOString()
+            });
+
+            await set(ref(rtdb, 'usernames/' + userData.username), {
+                uid: user.uid
+            });
+
+            localStorage.setItem('ngl_uid', user.uid);
+            localStorage.setItem('ngl_username', userData.username);
+
+            if (loadingOverlay) loadingOverlay.classList.add('hidden');
+            window.location.href = "index.html";
+
+        } catch (error) {
+            isChecking = false;
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) loadingOverlay.classList.add('hidden');
+            alert("Account Creation Error: " + error.message);
+        }
+    }
+
+    // Step 3: Create Account with Photo
     if (createAccountBtn) {
-        createAccountBtn.addEventListener('click', async (e) => {
+        createAccountBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            if (isChecking) return;
-            isChecking = true;
+            registerUserAccount();
+        });
+    }
 
-            try {
-                const loadingOverlay = document.getElementById('loadingOverlay');
-                if (loadingOverlay) loadingOverlay.classList.remove('hidden');
-
-                const userCredential = await signInAnonymously(auth);
-                const user = userCredential.user;
-
-                await set(ref(rtdb, 'users/' + user.uid), {
-                    uid: user.uid,
-                    username: userData.username,
-                    platform: userData.platform,
-                    avatarUrl: userData.avatarBase64,
-                    createdAt: new Date().toISOString()
-                });
-
-                await set(ref(rtdb, 'usernames/' + userData.username), {
-                    uid: user.uid
-                });
-
-                localStorage.setItem('ngl_uid', user.uid);
-                localStorage.setItem('ngl_username', userData.username);
-
-                if (loadingOverlay) loadingOverlay.classList.add('hidden');
-                window.location.href = "index.html";
-
-            } catch (error) {
-                isChecking = false;
-                const loadingOverlay = document.getElementById('loadingOverlay');
-                if (loadingOverlay) loadingOverlay.classList.add('hidden');
-                alert("Account Creation Error: " + error.message);
-            }
+    // Step 3: Skip Photo and Create Account with Default Avatar
+    if (skipPhotoBtn) {
+        skipPhotoBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            userData.avatarBase64 = 'Default-User.png';
+            registerUserAccount();
         });
     }
 });
