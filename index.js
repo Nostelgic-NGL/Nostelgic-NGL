@@ -316,84 +316,49 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Helper function to generate story reply canvas and trigger native share sheet
+    // Helper function using ReplyImage.png template for Instagram Story Reply
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
         canvas.height = 1920;
         const ctx = canvas.getContext('2d', { alpha: false });
 
-        const bgGradient = ctx.createLinearGradient(0, 0, 0, 1920);
-        bgGradient.addColorStop(0, '#030712');
-        bgGradient.addColorStop(1, '#0f172a');
-        ctx.fillStyle = bgGradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const templateImg = new Image();
+        templateImg.crossOrigin = "anonymous";
+        templateImg.src = 'ReplyImage.png'; // Loads template image from the same folder path
 
-        ctx.roundRect = function(x, y, w, h, r) {
-            if (w < 2 * r) r = w / 2;
-            if (h < 2 * r) r = h / 2;
-            this.beginPath();
-            this.moveTo(x + r, y);
-            this.arcTo(x + w, y, x + w, y + h, r);
-            this.arcTo(x + w, y + h, x, y + h, r);
-            this.arcTo(x, y + h, x, y, r);
-            this.arcTo(x, y, x + w, y, r);
-            this.closePath();
-            this.fill();
-        };
-        
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-        ctx.shadowBlur = 40;
-        ctx.shadowOffsetY = 20;
-        ctx.fillStyle = '#ffffff';
-        ctx.roundRect(110, 550, 860, 780, 48);
-        ctx.shadowBlur = 0;
+        templateImg.onload = () => {
+            ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.roundRect(110, 550, 860, 220, [48, 48, 0, 0]);
-        ctx.clip();
-        const cardHeaderGrad = ctx.createLinearGradient(110, 550, 970, 770);
-        cardHeaderGrad.addColorStop(0, '#db2777');
-        cardHeaderGrad.addColorStop(1, '#ff5e36');
-        ctx.fillStyle = cardHeaderGrad;
-        ctx.fillRect(110, 550, 860, 220);
-        
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 42px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('send me anonymous messages!', 540, 680);
-        ctx.restore();
-
-        ctx.fillStyle = '#0f172a';
-        ctx.font = 'bold 50px sans-serif';
-        ctx.textAlign = 'center';
-        
-        const words = text.split(' ');
-        let line = '';
-        let y = 920;
-        const maxWidth = 760;
-        
-        for (let n = 0; n < words.length; n++) {
-            let testLine = line + words[n] + ' ';
-            if (ctx.measureText(testLine).width > maxWidth && n > 0) {
-                ctx.fillText(line, 540, y);
-                line = words[n] + ' ';
-                y += 70;
-            } else {
-                line = testLine;
+            // Styling text over the template's blank area
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 55px Poppins, sans-serif';
+            ctx.textAlign = 'center';
+            
+            const words = text.split(' ');
+            let line = '';
+            let y = 950; // Vertical position inside the template
+            const maxWidth = 800;
+            
+            for (let n = 0; n < words.length; n++) {
+                let testLine = line + words[n] + ' ';
+                if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+                    ctx.fillText(line, 540, y);
+                    line = words[n] + ' ';
+                    y += 80;
+                } else {
+                    line = testLine;
+                }
             }
-        }
-        ctx.fillText(line, 540, y);
+            ctx.fillText(line, 540, y);
 
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = 'bold 30px sans-serif';
-        ctx.fillText('Nostelgic NGL • Anonymous Q&A', 540, 1750);
+            const dataUrl = canvas.toDataURL('image/png', 0.9);
+            window.location.href = `native-share://${encodeURIComponent(dataUrl)}`;
+        };
 
-        const dataUrl = canvas.toDataURL('image/png', 0.9);
-
-        // Trigger native share intent scheme so Android opens the share menu directly to Instagram
-        window.location.href = `native-share://${encodeURIComponent(dataUrl)}`;
+        templateImg.onerror = () => {
+            showCustomAlert("Failed to load ReplyImage.png template.");
+        };
     }
 
     // Load Inbox Messages Function
@@ -416,7 +381,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     
                     const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'Just now';
 
-                    // Inbox Preview showing "New Message!" like real NGL
                     card.innerHTML = `
                         <div class="msg-header">
                             <span style="color: #ec4899; font-weight: 700;"><i class="fas fa-envelope"></i> New Message!</span>
@@ -425,13 +389,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <div class="msg-text">${escapeHtml(msg.text)}</div>
                     `;
 
-                    // Open Message Detail Screen on Click
                     card.addEventListener('click', () => {
                         detailMsgText.innerText = msg.text;
                         detailMsgDate.innerText = dateString;
                         switchView('detail');
 
-                        // Setup Delete Action in Detail View
                         detailDeleteBtn.onclick = async () => {
                             try {
                                 await remove(ref(rtdb, `messages/${uid}/${msgId}`));
@@ -442,7 +404,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             }
                         };
 
-                        // Setup Reply / Story Share Action in Detail View
                         detailReplyBtn.onclick = () => {
                             generateStoryReply(msg.text);
                         };
@@ -452,12 +413,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             } else {
                 messagesContainer.innerHTML = '';
-                emptyState.classList.remove('hidden');
+                emptyState.classList.add('hidden');
             }
         } catch (error) {
             console.error("Error loading messages:", error);
             messagesContainer.innerHTML = '';
-            emptyState.classList.remove('hidden');
+            emptyState.classList.add('hidden');
         }
     }
 });
@@ -471,4 +432,4 @@ function escapeHtml(text) {
         "'": '&#039;'
     };
     return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-}
+                        }
