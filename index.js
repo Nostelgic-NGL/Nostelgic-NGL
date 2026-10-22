@@ -414,9 +414,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                             }
                         };
 
-                        detailReplyBtn.onclick = () => {
-                            generateStoryReply(msg.text);
-                        };
+                        if (detailReplyBtn) {
+                            detailReplyBtn.onclick = () => {
+                                generateStoryReply(msg.text);
+                            };
+                        }
                     });
 
                     messagesContainer.appendChild(card);
