@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Helper function using ReplyImage.png background template with header and smaller message text inside the box
+    // Helper function using ReplyImage.png background template with header inside the box and smaller text
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
 
             // 1. Setup smaller font for message text to fit long messages perfectly
-            ctx.font = 'bold 42px Poppins, sans-serif';
+            ctx.font = 'bold 36px Poppins, sans-serif';
             ctx.textAlign = 'center';
             
             const words = text.split(' ');
@@ -351,20 +351,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             lines.push(line);
 
-            // Box dimensions & coordinates
+            // Box dimensions & coordinates (matched perfectly with template)
             const boxX = 120;
-            const boxY = 320; // Positioned cleanly near the top section
+            const boxY = 280; // Positioned neatly in the upper section like real NGL
             const boxWidth = 840;
             const headerHeight = 70; // Space for "Send Me Anonymous Message"
-            const lineHeight = 55;
+            const lineHeight = 50;
             const padding = 50;
             
             // Dynamic box height based on message lines
-            const boxHeight = Math.max(220, headerHeight + (lines.length * lineHeight) + padding);
+            const boxHeight = Math.max(200, headerHeight + (lines.length * lineHeight) + padding);
             const cornerRadius = 35;
 
             // Draw rounded background card box
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.90)'; // Premium dark card background
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)'; // Premium dark card background
             ctx.strokeStyle = '#3b82f6'; // Neon blue border
             ctx.lineWidth = 4;
 
@@ -374,23 +374,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.stroke();
 
             // 2. Draw "Send Me Anonymous Message" header inside the box at the top
-            ctx.font = '600 32px Poppins, sans-serif';
-            ctx.fillStyle = '#cbd5e1'; // Light greyish white color for title
-            ctx.fillText("Send Me Anonymous Message", 540, boxY + 60);
+            ctx.font = '600 30px Poppins, sans-serif';
+            ctx.fillStyle = '#38bdf8'; // Bright cyan/blue accent color for title
+            ctx.fillText("Send Me Anonymous Message", 540, boxY + 55);
 
             // Draw a subtle divider line inside the box under the header
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(boxX + 50, boxY + 90);
-            ctx.lineTo(boxX + boxWidth - 50, boxY + 90);
+            ctx.moveTo(boxX + 50, boxY + 85);
+            ctx.lineTo(boxX + boxWidth - 50, boxY + 85);
             ctx.stroke();
 
             // 3. Draw the user's message text below the header inside the box
-            ctx.font = 'bold 42px Poppins, sans-serif';
+            ctx.font = 'bold 36px Poppins, sans-serif';
             ctx.fillStyle = '#ffffff'; // Pure white for message text
             
-            let startY = boxY + 145; // Start rendering message text below divider
+            let startY = boxY + 135; // Start rendering message text below divider
             for (let i = 0; i < lines.length; i++) {
                 ctx.fillText(lines[i], 540, startY + (i * lineHeight));
             }
