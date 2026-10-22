@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Helper function using ReplyImage.png background template with perfectly fitted message box
+    // Helper function using ReplyImage.png background template with header and smaller message text inside the box
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -330,14 +330,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         templateImg.onload = () => {
             ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
 
-            // Configure text styling to match the background style
-            ctx.font = 'bold 52px Poppins, sans-serif';
+            // 1. Setup smaller font for message text to fit long messages perfectly
+            ctx.font = 'bold 42px Poppins, sans-serif';
             ctx.textAlign = 'center';
             
             const words = text.split(' ');
             let line = '';
             let lines = [];
-            const maxWidth = 760; // Fits nicely inside the background container
+            const maxWidth = 760;
             
             // Text wrapping logic
             for (let n = 0; n < words.length; n++) {
@@ -351,17 +351,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             lines.push(line);
 
-            // Coordinates perfectly positioned below the "Send Me Anonymous Message" box
+            // Box dimensions & coordinates
             const boxX = 120;
-            const boxY = 420; // Placed right below the top instruction box
+            const boxY = 320; // Positioned cleanly near the top section
             const boxWidth = 840;
-            const lineHeight = 75;
-            const boxHeight = Math.max(180, lines.length * lineHeight + 60);
+            const headerHeight = 70; // Space for "Send Me Anonymous Message"
+            const lineHeight = 55;
+            const padding = 50;
+            
+            // Dynamic box height based on message lines
+            const boxHeight = Math.max(220, headerHeight + (lines.length * lineHeight) + padding);
             const cornerRadius = 35;
 
-            // Draw rounded background card box matching the dark theme & neon border
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.85)'; // Dark premium card background
-            ctx.strokeStyle = '#3b82f6'; // Blue-purple neon glow border matching template top
+            // Draw rounded background card box
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.90)'; // Premium dark card background
+            ctx.strokeStyle = '#3b82f6'; // Neon blue border
             ctx.lineWidth = 4;
 
             ctx.beginPath();
@@ -369,10 +373,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.fill();
             ctx.stroke();
 
-            // Draw message text centered inside the box
-            ctx.fillStyle = '#ffffff';
-            let startY = boxY + (boxHeight - (lines.length * lineHeight)) / 2 + 45;
+            // 2. Draw "Send Me Anonymous Message" header inside the box at the top
+            ctx.font = '600 32px Poppins, sans-serif';
+            ctx.fillStyle = '#cbd5e1'; // Light greyish white color for title
+            ctx.fillText("Send Me Anonymous Message", 540, boxY + 60);
+
+            // Draw a subtle divider line inside the box under the header
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(boxX + 50, boxY + 90);
+            ctx.lineTo(boxX + boxWidth - 50, boxY + 90);
+            ctx.stroke();
+
+            // 3. Draw the user's message text below the header inside the box
+            ctx.font = 'bold 42px Poppins, sans-serif';
+            ctx.fillStyle = '#ffffff'; // Pure white for message text
             
+            let startY = boxY + 145; // Start rendering message text below divider
             for (let i = 0; i < lines.length; i++) {
                 ctx.fillText(lines[i], 540, startY + (i * lineHeight));
             }
