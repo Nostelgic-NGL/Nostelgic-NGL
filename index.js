@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Helper function to generate canvas image, download it, and guide user to Instagram
+    // Helper function to generate story reply canvas and trigger native share sheet
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -392,18 +392,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const dataUrl = canvas.toDataURL('image/png', 0.9);
 
-        // Automatically trigger download of the story card image
-        const downloadLink = document.createElement('a');
-        downloadLink.href = dataUrl;
-        downloadLink.download = 'Nostelgic-NGL-Story.png';
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-
-        showCustomAlert("Story card downloaded to your device! 📥 Open Instagram to post it on your story.");
+        // Trigger native share intent scheme so Android opens the share menu directly to Instagram
+        window.location.href = `native-share://${encodeURIComponent(dataUrl)}`;
     }
 
-    // Load Inbox Messages Function
+    // Load Inbox Messages Function (Real NGL style "New Message!")
     async function loadInboxMessages() {
         try {
             const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
@@ -423,10 +416,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     
                     const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'Just now';
 
-                    // Inbox Preview Card (Click to open detail view)
+                    // Inbox Preview showing "New Message!" like real NGL
                     card.innerHTML = `
                         <div class="msg-header">
-                            <span>Anonymous</span>
+                            <span style="color: #ec4899; font-weight: 700;"><i class="fas fa-envelope"></i> New Message!</span>
                             <span>${dateString}</span>
                         </div>
                         <div class="msg-text">${escapeHtml(msg.text)}</div>
@@ -459,12 +452,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             } else {
                 messagesContainer.innerHTML = '';
-                emptyState.classList.remove('hidden');
+                emptyState.classList.add('hidden');
             }
         } catch (error) {
             console.error("Error loading messages:", error);
             messagesContainer.innerHTML = '';
-            emptyState.classList.remove('hidden');
+            emptyState.classList.add('hidden');
         }
     }
 });
