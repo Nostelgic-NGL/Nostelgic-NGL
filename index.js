@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Helper function using ReplyImage.png template with a background card box for the message
+    // Helper function using ReplyImage.png background template with perfectly fitted message box
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -330,14 +330,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         templateImg.onload = () => {
             ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
 
-            // Configure text styling
-            ctx.font = 'bold 50px Poppins, sans-serif';
+            // Configure text styling to match the background style
+            ctx.font = 'bold 52px Poppins, sans-serif';
             ctx.textAlign = 'center';
             
             const words = text.split(' ');
             let line = '';
             let lines = [];
-            const maxWidth = 800;
+            const maxWidth = 760; // Fits nicely inside the background container
             
             // Text wrapping logic
             for (let n = 0; n < words.length; n++) {
@@ -351,17 +351,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             lines.push(line);
 
-            // Calculate card box dimensions based on text lines
-            const boxX = 140;
-            const boxY = 880;
-            const boxWidth = 800;
-            const lineHeight = 70;
-            const boxHeight = Math.max(160, lines.length * lineHeight + 60);
-            const cornerRadius = 30;
+            // Coordinates perfectly positioned below the "Send Me Anonymous Message" box
+            const boxX = 120;
+            const boxY = 420; // Placed right below the top instruction box
+            const boxWidth = 840;
+            const lineHeight = 75;
+            const boxHeight = Math.max(180, lines.length * lineHeight + 60);
+            const cornerRadius = 35;
 
-            // Draw rounded background card box for the message
-            ctx.fillStyle = 'rgba(25, 33, 56, 0.85)'; // Semi-transparent dark background card
-            ctx.strokeStyle = 'rgba(236, 72, 153, 0.6)'; // Pink glowing border
+            // Draw rounded background card box matching the dark theme & neon border
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.85)'; // Dark premium card background
+            ctx.strokeStyle = '#3b82f6'; // Blue-purple neon glow border matching template top
             ctx.lineWidth = 4;
 
             ctx.beginPath();
@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.fill();
             ctx.stroke();
 
-            // Draw text centered inside the box
+            // Draw message text centered inside the box
             ctx.fillStyle = '#ffffff';
             let startY = boxY + (boxHeight - (lines.length * lineHeight)) / 2 + 45;
             
