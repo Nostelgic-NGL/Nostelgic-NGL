@@ -118,20 +118,67 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Tutorial Modal Elements
     const howToReplyBtn = document.getElementById('howToReplyBtn');
     const tutorialModal = document.getElementById('tutorialModal');
-    const closeTutorialBtn = document.getElementById('closeTutorialBtn');
     const closeTutorialXBtn = document.getElementById('closeTutorialXBtn');
+    const currentStepNum = document.getElementById('currentStepNum');
+    const tutStep1 = document.getElementById('tutStep1');
+    const tutStep2 = document.getElementById('tutStep2');
+    const tutStep3 = document.getElementById('tutStep3');
+    const prevStepBtn = document.getElementById('prevStepBtn');
+    const nextStepBtn = document.getElementById('nextStepBtn');
 
-    // Tutorial Modal Toggle Logic
+    // Tutorial Step-by-Step Logic
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    function updateTutorialView() {
+        if (currentStepNum) currentStepNum.innerText = currentStep;
+        if (tutStep1) tutStep1.classList.add('hidden');
+        if (tutStep2) tutStep2.classList.add('hidden');
+        if (tutStep3) tutStep3.classList.add('hidden');
+
+        if (currentStep === 1) {
+            if (tutStep1) tutStep1.classList.remove('hidden');
+            if (prevStepBtn) prevStepBtn.classList.add('hidden');
+            if (nextStepBtn) nextStepBtn.innerText = 'Next';
+        } else if (currentStep === 2) {
+            if (tutStep2) tutStep2.classList.remove('hidden');
+            if (prevStepBtn) prevStepBtn.classList.remove('hidden');
+            if (nextStepBtn) nextStepBtn.innerText = 'Next';
+        } else if (currentStep === 3) {
+            if (tutStep3) tutStep3.classList.remove('hidden');
+            if (prevStepBtn) prevStepBtn.classList.remove('hidden');
+            if (nextStepBtn) nextStepBtn.innerText = 'Got It!';
+        }
+    }
+
     if (howToReplyBtn && tutorialModal) {
         howToReplyBtn.addEventListener('click', () => {
+            currentStep = 1;
+            updateTutorialView();
             tutorialModal.classList.remove('hidden');
         });
     }
-    if (closeTutorialBtn && tutorialModal) {
-        closeTutorialBtn.addEventListener('click', () => {
-            tutorialModal.classList.add('hidden');
+
+    if (nextStepBtn) {
+        nextStepBtn.addEventListener('click', () => {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateTutorialView();
+            } else {
+                tutorialModal.classList.add('hidden');
+            }
         });
     }
+
+    if (prevStepBtn) {
+        prevStepBtn.addEventListener('click', () => {
+            if (currentStep > 1) {
+                currentStep--;
+                updateTutorialView();
+            }
+        });
+    }
+
     if (closeTutorialXBtn && tutorialModal) {
         closeTutorialXBtn.addEventListener('click', () => {
             tutorialModal.classList.add('hidden');
