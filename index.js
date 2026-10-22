@@ -115,6 +115,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     const detailDeleteBtn = document.getElementById('detailDeleteBtn');
     const detailReplyBtn = document.getElementById('detailReplyBtn');
 
+    // Tutorial Modal Elements
+    const howToReplyBtn = document.getElementById('howToReplyBtn');
+    const tutorialModal = document.getElementById('tutorialModal');
+    const closeTutorialBtn = document.getElementById('closeTutorialBtn');
+    const closeTutorialXBtn = document.getElementById('closeTutorialXBtn');
+
+    // Tutorial Modal Toggle Logic
+    if (howToReplyBtn && tutorialModal) {
+        howToReplyBtn.addEventListener('click', () => {
+            tutorialModal.classList.remove('hidden');
+        });
+    }
+    if (closeTutorialBtn && tutorialModal) {
+        closeTutorialBtn.addEventListener('click', () => {
+            tutorialModal.classList.add('hidden');
+        });
+    }
+    if (closeTutorialXBtn && tutorialModal) {
+        closeTutorialXBtn.addEventListener('click', () => {
+            tutorialModal.classList.add('hidden');
+        });
+    }
+
     // Settings Options
     const pauseLinkOption = document.getElementById('pauseLinkOption');
     const hardRefreshOption = document.getElementById('hardRefreshOption');
