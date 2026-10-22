@@ -42,7 +42,7 @@ function showCustomAlert(message) {
     if (alertText) alertText.innerText = message;
     
     btnGroup.innerHTML = `<button class="custom-alert-btn custom-alert-ok" id="customAlertOkBtn">OK</button>`;
-    if (alertModal) alertModal.classList.remove('hidden');
+    if (alertModal) alertModal.classList.add('hidden');
 
     document.getElementById('customAlertOkBtn').onclick = () => {
         if (alertModal) alertModal.classList.add('hidden');
@@ -63,7 +63,7 @@ function showCustomConfirm(title, message, onConfirm) {
         <button class="custom-alert-btn custom-alert-cancel" id="customAlertCancelBtn">Cancel</button>
         <button class="custom-alert-btn custom-alert-ok" id="customAlertConfirmBtn">Confirm</button>
     `;
-    if (alertModal) alertModal.classList.remove('hidden');
+    if (alertModal) alertModal.classList.add('hidden');
 
     document.getElementById('customAlertCancelBtn').onclick = () => {
         if (alertModal) alertModal.classList.add('hidden');
@@ -106,6 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Inbox Elements
     const messagesContainer = document.getElementById('messagesContainer');
     const emptyState = document.getElementById('emptyState');
+    const inboxLoadingState = document.getElementById('inboxLoadingState');
 
     // Detail View Elements
     const backToInboxBtn = document.getElementById('backToInboxBtn');
@@ -405,13 +406,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
-    // Load Inbox Messages with Local Storage Caching Strategy
+    // Load Inbox Messages with Local Storage Caching Strategy & Loading Spinner
     async function loadInboxMessages() {
+        // Show loading spinner initially
+        if (inboxLoadingState) inboxLoadingState.classList.remove('hidden');
+        if (emptyState) emptyState.classList.add('hidden');
+        messagesContainer.innerHTML = '';
+
         // 1. Pehle local cache se instant messages render karo (Zero loading lag)
         const cachedMessages = localStorage.getItem(`ngl_messages_${uid}`);
         if (cachedMessages) {
             try {
                 const messagesData = JSON.parse(cachedMessages);
+                if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
                 renderMessagesList(messagesData);
             } catch (e) {
                 console.error("Cache parse error", e);
@@ -423,22 +430,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
             const snapshot = await get(messagesQuery);
             
+            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
+
             if (snapshot.exists()) {
                 const messagesData = snapshot.val();
-                // Save to device storage
                 localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
                 renderMessagesList(messagesData);
             } else {
                 if (!cachedMessages) {
                     messagesContainer.innerHTML = '';
-                    emptyState.classList.remove('hidden');
+                    if (emptyState) emptyState.classList.remove('hidden');
                 }
             }
         } catch (error) {
             console.error("Error loading messages from server:", error);
+            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
             if (!cachedMessages) {
                 messagesContainer.innerHTML = '';
-                emptyState.classList.remove('hidden');
+                if (emptyState) emptyState.classList.remove('hidden');
             }
         }
     }
@@ -446,10 +455,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Helper function to render message cards in the DOM
     function renderMessagesList(messagesData) {
         messagesContainer.innerHTML = '';
-        emptyState.classList.add('hidden');
+        if (emptyState) emptyState.classList.add('hidden');
         
         const messageKeys = Object.keys(messagesData).reverse();
         
+        if (messageKeys.length === 0) {
+            if (emptyState) emptyState.classList.remove('hidden');
+            return;
+        }
+
         messageKeys.forEach(msgId => {
             const msg = messagesData[msgId];
             const card = document.createElement('div');
@@ -474,7 +488,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     try {
                         await remove(ref(rtdb, `messages/${uid}/${msgId}`));
                         
-                        // Update local cache after deletion
                         delete messagesData[msgId];
                         localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
 
