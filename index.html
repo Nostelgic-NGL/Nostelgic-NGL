@@ -177,6 +177,32 @@
         }
         body.light-mode .detail-text { color: #0f172a; border-bottom-color: rgba(0,0,0,0.08); }
 
+        /* Tutorial Box Style */
+        .tutorial-box {
+            background: rgba(139, 92, 246, 0.08);
+            border: 1px dashed rgba(139, 92, 246, 0.4);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .tutorial-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #c084fc;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+        .tutorial-step {
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+        body.light-mode .tutorial-step { color: #475569; }
+
         /* Settings View */
         .settings-list { width: 100%; display: flex; flex-direction: column; gap: 12px; }
         .setting-item {
@@ -309,8 +335,18 @@
                     <span id="detailMsgDate">Just now</span>
                 </div>
                 <div class="detail-text" id="detailMsgText">Message text goes here...</div>
+                
                 <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
                     <button class="action-btn btn-primary" id="detailReplyBtn"><i class="fab fa-instagram"></i> Reply on Instagram</button>
+                    
+                    <!-- Tutorial Box Added Here -->
+                    <div class="tutorial-box">
+                        <div class="tutorial-title"><i class="fas fa-lightbulb"></i> How to reply on Instagram:</div>
+                        <div class="tutorial-step">1. Click on the <b>Reply on Instagram</b> button</div>
+                        <div class="tutorial-step">2. Now find <b>Instagram</b> and click on it[cite: 7]</div>
+                        <div class="tutorial-step">3. Now click on <b>Stories</b>[cite: 6]</div>
+                    </div>
+
                     <button class="action-btn" id="detailDeleteBtn" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;"><i class="fas fa-trash"></i> Delete</button>
                 </div>
             </div>
