@@ -42,7 +42,7 @@ function showCustomAlert(message) {
     if (alertText) alertText.innerText = message;
     
     btnGroup.innerHTML = `<button class="custom-alert-btn custom-alert-ok" id="customAlertOkBtn">OK</button>`;
-    if (alertModal) alertModal.classList.add('hidden');
+    if (alertModal) alertModal.classList.remove('hidden');
 
     document.getElementById('customAlertOkBtn').onclick = () => {
         if (alertModal) alertModal.classList.add('hidden');
@@ -63,7 +63,7 @@ function showCustomConfirm(title, message, onConfirm) {
         <button class="custom-alert-btn custom-alert-cancel" id="customAlertCancelBtn">Cancel</button>
         <button class="custom-alert-btn custom-alert-ok" id="customAlertConfirmBtn">Confirm</button>
     `;
-    if (alertModal) alertModal.classList.add('hidden');
+    if (alertModal) alertModal.classList.remove('hidden');
 
     document.getElementById('customAlertCancelBtn').onclick = () => {
         if (alertModal) alertModal.classList.add('hidden');
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
     if (backToInboxBtn) backToInboxBtn.addEventListener('click', () => switchView('inbox'));
 
-    // Load Profile & Generate Link
+    // Load Profile & Generate Link (Using Cached Data First)
     const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
 
@@ -258,16 +258,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (profileLinkText) profileLinkText.innerText = profileUrl;
         if (platformLabel) platformLabel.innerText = `@${cachedUsername}`;
         if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
-        
+    }
+
+    // Function to safely hide loading overlay
+    function hideLoadingOverlay() {
         if (homeLoadingOverlay) {
             homeLoadingOverlay.style.opacity = '0';
             setTimeout(() => homeLoadingOverlay.classList.add('hidden'), 300);
         }
     }
 
+    // Safety timeout: force hide loading overlay after 2 seconds no matter what
+    const safetyTimer = setTimeout(() => {
+        hideLoadingOverlay();
+    }, 2000);
+
+    // Background sync with Firebase
     try {
         const dbRef = ref(rtdb);
         const snapshot = await get(child(dbRef, `users/${uid}`));
+        clearTimeout(safetyTimer); // Clear safety timer if loaded successfully
+        
         if (snapshot.exists()) {
             const data = snapshot.val();
             const username = data.username || localStorage.getItem('ngl_username') || 'user';
@@ -285,10 +296,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
         console.error("Background sync error:", error);
     } finally {
-        if (homeLoadingOverlay) {
-            homeLoadingOverlay.style.opacity = '0';
-            setTimeout(() => homeLoadingOverlay.classList.add('hidden'), 300);
-        }
+        hideLoadingOverlay();
     }
 
     // Copy Link Action
@@ -493,12 +501,4 @@ document.addEventListener('DOMContentLoaded', async () => {
                     renderMessagesList(messagesData);
                 }
             } catch (e) {
-                console.error("Cache parse error", e);
-            }
-        }
-
-        try {
-            const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
-            const snapshot = await get(messagesQuery);
-            
-            if (inboxLoadingState) i
+                console
