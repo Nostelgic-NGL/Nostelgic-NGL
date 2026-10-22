@@ -75,7 +75,7 @@ function showCustomConfirm(title, message, onConfirm) {
     };
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     checkInternetConnection();
 
     const uid = localStorage.getItem('ngl_uid');
@@ -260,45 +260,43 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
     }
 
-    // Helper to hide loading overlay instantly
-    let isOverlayHidden = false;
+    // INSTANT OVERLAY REMOVAL (Guaranteed to hide within 500ms)
     function hideLoadingOverlay() {
-        if (!isOverlayHidden && homeLoadingOverlay) {
-            isOverlayHidden = true;
+        if (homeLoadingOverlay) {
             homeLoadingOverlay.style.opacity = '0';
-            setTimeout(() => homeLoadingOverlay.classList.add('hidden'), 300);
+            setTimeout(() => homeLoadingOverlay.classList.add('hidden'), 200);
         }
     }
 
-    // Fail-safe timer: Guaranteed to hide loading screen within 1 second maximum
-    setTimeout(() => {
-        hideLoadingOverlay();
-    }, 1000);
+    // Force hide loading screen immediately using setTimeout
+    setTimeout(hideLoadingOverlay, 400);
 
-    // Background sync with Firebase (Wrapped in robust try-catch)
-    try {
-        const dbRef = ref(rtdb);
-        const snapshot = await get(child(dbRef, `users/${uid}`));
-        
-        if (snapshot.exists()) {
-            const data = snapshot.val();
-            const username = data.username || localStorage.getItem('ngl_username') || 'user';
-            profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
+    // Background sync with Firebase (Non-blocking)
+    (async () => {
+        try {
+            const dbRef = ref(rtdb);
+            const snapshot = await get(child(dbRef, `users/${uid}`));
             
-            localStorage.setItem('ngl_cached_username', username);
-            if (data.avatarUrl) localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const username = data.username || localStorage.getItem('ngl_username') || 'user';
+                profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
+                
+                localStorage.setItem('ngl_cached_username', username);
+                if (data.avatarUrl) localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
 
-            if (profileLinkText) profileLinkText.innerText = profileUrl;
-            if (platformLabel) platformLabel.innerText = `@${username}`;
-            if (data.avatarUrl && userAvatarImg) {
-                userAvatarImg.src = data.avatarUrl;
+                if (profileLinkText) profileLinkText.innerText = profileUrl;
+                if (platformLabel) platformLabel.innerText = `@${username}`;
+                if (data.avatarUrl && userAvatarImg) {
+                    userAvatarImg.src = data.avatarUrl;
+                }
             }
+        } catch (error) {
+            console.error("Background sync error:", error);
+        } finally {
+            hideLoadingOverlay();
         }
-    } catch (error) {
-        console.error("Background sync error:", error);
-    } finally {
-        hideLoadingOverlay();
-    }
+    })();
 
     // Copy Link Action
     if (copyLinkBtn) {
@@ -502,4 +500,100 @@ document.addEventListener('DOMContentLoaded', async () => {
                     renderMessagesList(messagesData);
                 }
             } catch (e) {
-  
+                console.error("Cache parse error", e);
+            }
+        }
+
+        try {
+            const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
+            const snapshot = await get(messagesQuery);
+            
+            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
+
+            if (snapshot.exists()) {
+                const messagesData = snapshot.val();
+                localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
+                renderMessagesList(messagesData);
+            } else {
+                if (!hasLoadedFromCache) {
+                    messagesContainer.innerHTML = '';
+                    if (emptyState) emptyState.classList.remove('hidden');
+                }
+            }
+        } catch (error) {
+            console.error("Error loading messages from server:", error);
+            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
+            if (!hasLoadedFromCache) {
+                messagesContainer.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+            }
+        }
+    }
+
+    // Helper function to render message cards in the DOM
+    function renderMessagesList(messagesData) {
+        messagesContainer.innerHTML = '';
+        if (emptyState) emptyState.classList.add('hidden');
+        
+        const messageKeys = Object.keys(messagesData).reverse();
+        
+        if (messageKeys.length === 0) {
+            if (emptyState) emptyState.classList.remove('hidden');
+            return;
+        }
+
+        messageKeys.forEach(msgId => {
+            const msg = messagesData[msgId];
+            const card = document.createElement('div');
+            card.className = 'message-card';
+            
+            const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'Just now';
+
+            card.innerHTML = `
+                <div class="msg-header">
+                    <span style="color: #ec4899; font-weight: 700;"><i class="fas fa-envelope"></i> New Message !!</span>
+                    <span>${dateString}</span>
+                </div>
+            `;
+
+            card.addEventListener('click', () => {
+                detailMsgText.innerText = msg.text;
+                detailMsgDate.innerText = dateString;
+                switchView('detail');
+
+                detailDeleteBtn.onclick = async () => {
+                    try {
+                        await remove(ref(rtdb, `messages/${uid}/${msgId}`));
+                        
+                        delete messagesData[msgId];
+                        localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
+
+                        switchView('inbox');
+                        showCustomAlert("Message deleted.");
+                    } catch (err) {
+                        showCustomAlert("Failed to delete message.");
+                    }
+                };
+
+                if (detailReplyBtn) {
+                    detailReplyBtn.onclick = () => {
+                        generateStoryReply(msg.text);
+                    };
+                }
+            });
+
+            messagesContainer.appendChild(card);
+        });
+    }
+});
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
