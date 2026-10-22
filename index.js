@@ -407,14 +407,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Load Inbox Messages with Local Storage Caching Strategy & Robust Loading Spinner Management
     async function loadInboxMessages() {
-        // Clear previous content and show spinner initially
         messagesContainer.innerHTML = '';
         if (emptyState) emptyState.classList.add('hidden');
         if (inboxLoadingState) inboxLoadingState.classList.remove('hidden');
 
         let hasLoadedFromCache = false;
 
-        // 1. Check local cache first
         const cachedMessages = localStorage.getItem(`ngl_messages_${uid}`);
         if (cachedMessages) {
             try {
@@ -429,12 +427,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // 2. Fetch latest data from Firebase in background
         try {
             const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
             const snapshot = await get(messagesQuery);
             
-            // Always hide loading spinner once network request finishes
             if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
 
             if (snapshot.exists()) {
