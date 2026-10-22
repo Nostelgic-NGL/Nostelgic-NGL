@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = `native-share://${encodeURIComponent(dataUrl)}`;
     }
 
-    // Load Inbox Messages Function (Real NGL style "New Message!")
+    // Load Inbox Messages Function
     async function loadInboxMessages() {
         try {
             const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
@@ -452,12 +452,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             } else {
                 messagesContainer.innerHTML = '';
-                emptyState.classList.add('hidden');
+                emptyState.classList.remove('hidden');
             }
         } catch (error) {
             console.error("Error loading messages:", error);
             messagesContainer.innerHTML = '';
-            emptyState.classList.add('hidden');
+            emptyState.classList.remove('hidden');
         }
     }
 });
