@@ -260,24 +260,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
     }
 
-    // Function to safely hide loading overlay
+    // Helper to hide loading overlay instantly
+    let isOverlayHidden = false;
     function hideLoadingOverlay() {
-        if (homeLoadingOverlay) {
+        if (!isOverlayHidden && homeLoadingOverlay) {
+            isOverlayHidden = true;
             homeLoadingOverlay.style.opacity = '0';
             setTimeout(() => homeLoadingOverlay.classList.add('hidden'), 300);
         }
     }
 
-    // Safety timeout: force hide loading overlay after 2 seconds no matter what
-    const safetyTimer = setTimeout(() => {
+    // Fail-safe timer: Guaranteed to hide loading screen within 1 second maximum
+    setTimeout(() => {
         hideLoadingOverlay();
-    }, 2000);
+    }, 1000);
 
-    // Background sync with Firebase
+    // Background sync with Firebase (Wrapped in robust try-catch)
     try {
         const dbRef = ref(rtdb);
         const snapshot = await get(child(dbRef, `users/${uid}`));
-        clearTimeout(safetyTimer); // Clear safety timer if loaded successfully
         
         if (snapshot.exists()) {
             const data = snapshot.val();
@@ -501,4 +502,4 @@ document.addEventListener('DOMContentLoaded', async () => {
                     renderMessagesList(messagesData);
                 }
             } catch (e) {
-                console
+  
