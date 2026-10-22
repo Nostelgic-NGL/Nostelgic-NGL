@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
     if (backToInboxBtn) backToInboxBtn.addEventListener('click', () => switchView('inbox'));
 
-    // Load Profile & Generate Link
+    // Load Profile & Generate Link (Using Cached Data first for instant load)
     const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
 
@@ -194,6 +194,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // Background sync with Firebase to keep profile updated
     try {
         const dbRef = ref(rtdb);
         const snapshot = await get(child(dbRef, `users/${uid}`));
@@ -325,12 +326,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const templateImg = new Image();
         templateImg.crossOrigin = "anonymous";
-        templateImg.src = 'ReplyImage.png'; // Loads template image from project folder
+        templateImg.src = 'ReplyImage.png';
 
         templateImg.onload = () => {
             ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
 
-            // 1. Setup smaller font for message text to fit long messages perfectly
             ctx.font = 'bold 36px Poppins, sans-serif';
             ctx.textAlign = 'center';
             
@@ -339,7 +339,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             let lines = [];
             const maxWidth = 760;
             
-            // Text wrapping logic
             for (let n = 0; n < words.length; n++) {
                 let testLine = line + words[n] + ' ';
                 if (ctx.measureText(testLine).width > maxWidth && n > 0) {
@@ -351,21 +350,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             lines.push(line);
 
-            // Box dimensions & coordinates (matched perfectly with template)
             const boxX = 120;
-            const boxY = 280; // Positioned neatly in the upper section like real NGL
+            const boxY = 280;
             const boxWidth = 840;
-            const headerHeight = 70; // Space for "Send Me Anonymous Message"
+            const headerHeight = 70;
             const lineHeight = 50;
             const padding = 50;
             
-            // Dynamic box height based on message lines
             const boxHeight = Math.max(200, headerHeight + (lines.length * lineHeight) + padding);
             const cornerRadius = 35;
 
-            // Draw rounded background card box
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)'; // Premium dark card background
-            ctx.strokeStyle = '#3b82f6'; // Neon blue border
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+            ctx.strokeStyle = '#3b82f6';
             ctx.lineWidth = 4;
 
             ctx.beginPath();
@@ -373,12 +369,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.fill();
             ctx.stroke();
 
-            // 2. Draw "Send Me Anonymous Message" header inside the box at the top
             ctx.font = '600 30px Poppins, sans-serif';
-            ctx.fillStyle = '#38bdf8'; // Bright cyan/blue accent color for title
+            ctx.fillStyle = '#38bdf8';
             ctx.fillText("Send Me Anonymous Message", 540, boxY + 55);
 
-            // Draw a subtle divider line inside the box under the header
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -386,22 +380,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.lineTo(boxX + boxWidth - 50, boxY + 85);
             ctx.stroke();
 
-            // 3. Draw the user's message text below the header inside the box
             ctx.font = 'bold 36px Poppins, sans-serif';
-            ctx.fillStyle = '#ffffff'; // Pure white for message text
+            ctx.fillStyle = '#ffffff';
             
-            let startY = boxY + 135; // Start rendering message text below divider
+            let startY = boxY + 135;
             for (let i = 0; i < lines.length; i++) {
                 ctx.fillText(lines[i], 540, startY + (i * lineHeight));
             }
 
             const dataUrl = canvas.toDataURL('image/png', 0.9);
 
-            // Send image data directly to Android via Javascript Interface Bridge
             if (window.AndroidBridge && typeof window.AndroidBridge.shareStory === 'function') {
                 window.AndroidBridge.shareStory(dataUrl);
             } else {
-                // Fallback if tested in a normal web browser
                 const downloadLink = document.createElement('a');
                 downloadLink.href = dataUrl;
                 downloadLink.download = 'ReplyImage.png';
@@ -414,67 +405,95 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
-    // Load Inbox Messages Function
+    // Load Inbox Messages with Local Storage Caching Strategy
     async function loadInboxMessages() {
+        // 1. Pehle local cache se instant messages render karo (Zero loading lag)
+        const cachedMessages = localStorage.getItem(`ngl_messages_${uid}`);
+        if (cachedMessages) {
+            try {
+                const messagesData = JSON.parse(cachedMessages);
+                renderMessagesList(messagesData);
+            } catch (e) {
+                console.error("Cache parse error", e);
+            }
+        }
+
+        // 2. Background mein Firebase se latest data fetch karke cache update karo
         try {
             const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
             const snapshot = await get(messagesQuery);
             
             if (snapshot.exists()) {
                 const messagesData = snapshot.val();
-                messagesContainer.innerHTML = '';
-                emptyState.classList.add('hidden');
-                
-                const messageKeys = Object.keys(messagesData).reverse();
-                
-                messageKeys.forEach(msgId => {
-                    const msg = messagesData[msgId];
-                    const card = document.createElement('div');
-                    card.className = 'message-card';
-                    
-                    const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'Just now';
-
-                    card.innerHTML = `
-                        <div class="msg-header">
-                            <span style="color: #ec4899; font-weight: 700;"><i class="fas fa-envelope"></i> New Message!</span>
-                            <span>${dateString}</span>
-                        </div>
-                        <div class="msg-text">${escapeHtml(msg.text)}</div>
-                    `;
-
-                    card.addEventListener('click', () => {
-                        detailMsgText.innerText = msg.text;
-                        detailMsgDate.innerText = dateString;
-                        switchView('detail');
-
-                        detailDeleteBtn.onclick = async () => {
-                            try {
-                                await remove(ref(rtdb, `messages/${uid}/${msgId}`));
-                                switchView('inbox');
-                                showCustomAlert("Message deleted.");
-                            } catch (err) {
-                                showCustomAlert("Failed to delete message.");
-                            }
-                        };
-
-                        if (detailReplyBtn) {
-                            detailReplyBtn.onclick = () => {
-                                generateStoryReply(msg.text);
-                            };
-                        }
-                    });
-
-                    messagesContainer.appendChild(card);
-                });
+                // Save to device storage
+                localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
+                renderMessagesList(messagesData);
             } else {
+                if (!cachedMessages) {
+                    messagesContainer.innerHTML = '';
+                    emptyState.classList.remove('hidden');
+                }
+            }
+        } catch (error) {
+            console.error("Error loading messages from server:", error);
+            if (!cachedMessages) {
                 messagesContainer.innerHTML = '';
                 emptyState.classList.remove('hidden');
             }
-        } catch (error) {
-            console.error("Error loading messages:", error);
-            messagesContainer.innerHTML = '';
-            emptyState.classList.remove('hidden');
         }
+    }
+
+    // Helper function to render message cards in the DOM
+    function renderMessagesList(messagesData) {
+        messagesContainer.innerHTML = '';
+        emptyState.classList.add('hidden');
+        
+        const messageKeys = Object.keys(messagesData).reverse();
+        
+        messageKeys.forEach(msgId => {
+            const msg = messagesData[msgId];
+            const card = document.createElement('div');
+            card.className = 'message-card';
+            
+            const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'Just now';
+
+            card.innerHTML = `
+                <div class="msg-header">
+                    <span style="color: #ec4899; font-weight: 700;"><i class="fas fa-envelope"></i> New Message!</span>
+                    <span>${dateString}</span>
+                </div>
+                <div class="msg-text">${escapeHtml(msg.text)}</div>
+            `;
+
+            card.addEventListener('click', () => {
+                detailMsgText.innerText = msg.text;
+                detailMsgDate.innerText = dateString;
+                switchView('detail');
+
+                detailDeleteBtn.onclick = async () => {
+                    try {
+                        await remove(ref(rtdb, `messages/${uid}/${msgId}`));
+                        
+                        // Update local cache after deletion
+                        delete messagesData[msgId];
+                        localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
+
+                        switchView('inbox');
+                        showCustomAlert("Message deleted.");
+                    } catch (err) {
+                        showCustomAlert("Failed to delete message.");
+                    }
+                };
+
+                if (detailReplyBtn) {
+                    detailReplyBtn.onclick = () => {
+                        generateStoryReply(msg.text);
+                    };
+                }
+            });
+
+            messagesContainer.appendChild(card);
+        });
     }
 });
 
