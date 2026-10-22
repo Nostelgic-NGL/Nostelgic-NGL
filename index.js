@@ -42,7 +42,7 @@ function showCustomAlert(message) {
     if (alertText) alertText.innerText = message;
     
     btnGroup.innerHTML = `<button class="custom-alert-btn custom-alert-ok" id="customAlertOkBtn">OK</button>`;
-    if (alertModal) alertModal.classList.add('hidden');
+    if (alertModal) alertModal.classList.remove('hidden');
 
     document.getElementById('customAlertOkBtn').onclick = () => {
         if (alertModal) alertModal.classList.add('hidden');
@@ -63,7 +63,7 @@ function showCustomConfirm(title, message, onConfirm) {
         <button class="custom-alert-btn custom-alert-cancel" id="customAlertCancelBtn">Cancel</button>
         <button class="custom-alert-btn custom-alert-ok" id="customAlertConfirmBtn">Confirm</button>
     `;
-    if (alertModal) alertModal.classList.add('hidden');
+    if (alertModal) alertModal.classList.remove('hidden');
 
     document.getElementById('customAlertCancelBtn').onclick = () => {
         if (alertModal) alertModal.classList.add('hidden');
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
     if (backToInboxBtn) backToInboxBtn.addEventListener('click', () => switchView('inbox'));
 
-    // Load Profile & Generate Link (Using Cached Data first for instant load)
+    // Load Profile & Generate Link
     const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
 
@@ -195,7 +195,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Background sync with Firebase to keep profile updated
     try {
         const dbRef = ref(rtdb);
         const snapshot = await get(child(dbRef, `users/${uid}`));
@@ -406,30 +405,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
-    // Load Inbox Messages with Local Storage Caching Strategy & Loading Spinner
+    // Load Inbox Messages with Local Storage Caching Strategy & Robust Loading Spinner Management
     async function loadInboxMessages() {
-        // Show loading spinner initially
-        if (inboxLoadingState) inboxLoadingState.classList.remove('hidden');
-        if (emptyState) emptyState.classList.add('hidden');
+        // Clear previous content and show spinner initially
         messagesContainer.innerHTML = '';
+        if (emptyState) emptyState.classList.add('hidden');
+        if (inboxLoadingState) inboxLoadingState.classList.remove('hidden');
 
-        // 1. Pehle local cache se instant messages render karo (Zero loading lag)
+        let hasLoadedFromCache = false;
+
+        // 1. Check local cache first
         const cachedMessages = localStorage.getItem(`ngl_messages_${uid}`);
         if (cachedMessages) {
             try {
                 const messagesData = JSON.parse(cachedMessages);
-                if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
-                renderMessagesList(messagesData);
+                if (messagesData && Object.keys(messagesData).length > 0) {
+                    hasLoadedFromCache = true;
+                    if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
+                    renderMessagesList(messagesData);
+                }
             } catch (e) {
                 console.error("Cache parse error", e);
             }
         }
 
-        // 2. Background mein Firebase se latest data fetch karke cache update karo
+        // 2. Fetch latest data from Firebase in background
         try {
             const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
             const snapshot = await get(messagesQuery);
             
+            // Always hide loading spinner once network request finishes
             if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
 
             if (snapshot.exists()) {
@@ -437,7 +442,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
                 renderMessagesList(messagesData);
             } else {
-                if (!cachedMessages) {
+                if (!hasLoadedFromCache) {
                     messagesContainer.innerHTML = '';
                     if (emptyState) emptyState.classList.remove('hidden');
                 }
@@ -445,7 +450,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error("Error loading messages from server:", error);
             if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
-            if (!cachedMessages) {
+            if (!hasLoadedFromCache) {
                 messagesContainer.innerHTML = '';
                 if (emptyState) emptyState.classList.remove('hidden');
             }
