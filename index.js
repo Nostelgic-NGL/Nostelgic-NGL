@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Helper function to generate and trigger story reply canvas
+    // Helper function to generate canvas image, download it, and guide user to Instagram
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -391,7 +391,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         ctx.fillText('Nostelgic NGL • Anonymous Q&A', 540, 1750);
 
         const dataUrl = canvas.toDataURL('image/png', 0.9);
-        window.location.href = `instagram-story://${encodeURIComponent(dataUrl)}`;
+
+        // Automatically trigger download of the story card image
+        const downloadLink = document.createElement('a');
+        downloadLink.href = dataUrl;
+        downloadLink.download = 'Nostelgic-NGL-Story.png';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        showCustomAlert("Story card downloaded to your device! 📥 Open Instagram to post it on your story.");
     }
 
     // Load Inbox Messages Function
