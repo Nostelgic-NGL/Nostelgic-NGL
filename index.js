@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Helper function using ReplyImage.png template for Instagram Story Reply
+    // Helper function using ReplyImage.png template and AndroidBridge to share story
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const templateImg = new Image();
         templateImg.crossOrigin = "anonymous";
-        templateImg.src = 'ReplyImage.png'; // Loads template image from the same folder path
+        templateImg.src = 'ReplyImage.png'; // Loads template image from project folder
 
         templateImg.onload = () => {
             ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
@@ -353,7 +353,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.fillText(line, 540, y);
 
             const dataUrl = canvas.toDataURL('image/png', 0.9);
-            window.location.href = `native-share://${encodeURIComponent(dataUrl)}`;
+
+            // Send image data directly to Android via Javascript Interface Bridge
+            if (window.AndroidBridge && typeof window.AndroidBridge.shareStory === 'function') {
+                window.AndroidBridge.shareStory(dataUrl);
+            } else {
+                // Fallback if tested in a normal web browser
+                const downloadLink = document.createElement('a');
+                downloadLink.href = dataUrl;
+                downloadLink.download = 'ReplyImage.png';
+                downloadLink.click();
+            }
         };
 
         templateImg.onerror = () => {
@@ -413,12 +423,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             } else {
                 messagesContainer.innerHTML = '';
-                emptyState.classList.add('hidden');
+                emptyState.classList.remove('hidden');
             }
         } catch (error) {
             console.error("Error loading messages:", error);
             messagesContainer.innerHTML = '';
-            emptyState.classList.add('hidden');
+            emptyState.classList.remove('hidden');
         }
     }
 });
@@ -432,4 +442,4 @@ function escapeHtml(text) {
         "'": '&#039;'
     };
     return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-                        }
+}
