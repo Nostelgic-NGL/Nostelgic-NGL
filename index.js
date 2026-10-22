@@ -42,7 +42,7 @@ function showCustomAlert(message) {
     if (alertText) alertText.innerText = message;
     
     btnGroup.innerHTML = `<button class="custom-alert-btn custom-alert-ok" id="customAlertOkBtn">OK</button>`;
-    if (alertModal) alertModal.classList.remove('hidden');
+    if (alertModal) alertModal.classList.add('hidden');
 
     document.getElementById('customAlertOkBtn').onclick = () => {
         if (alertModal) alertModal.classList.add('hidden');
@@ -63,7 +63,7 @@ function showCustomConfirm(title, message, onConfirm) {
         <button class="custom-alert-btn custom-alert-cancel" id="customAlertCancelBtn">Cancel</button>
         <button class="custom-alert-btn custom-alert-ok" id="customAlertConfirmBtn">Confirm</button>
     `;
-    if (alertModal) alertModal.classList.remove('hidden');
+    if (alertModal) alertModal.classList.add('hidden');
 
     document.getElementById('customAlertCancelBtn').onclick = () => {
         if (alertModal) alertModal.classList.add('hidden');
@@ -501,93 +501,4 @@ document.addEventListener('DOMContentLoaded', async () => {
             const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
             const snapshot = await get(messagesQuery);
             
-            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
-
-            if (snapshot.exists()) {
-                const messagesData = snapshot.val();
-                localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
-                renderMessagesList(messagesData);
-            } else {
-                if (!hasLoadedFromCache) {
-                    messagesContainer.innerHTML = '';
-                    if (emptyState) emptyState.classList.remove('hidden');
-                }
-            }
-        } catch (error) {
-            console.error("Error loading messages from server:", error);
-            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
-            if (!hasLoadedFromCache) {
-                messagesContainer.innerHTML = '';
-                if (emptyState) emptyState.classList.remove('hidden');
-            }
-        }
-    }
-
-    // Helper function to render message cards in the DOM
-    function renderMessagesList(messagesData) {
-        messagesContainer.innerHTML = '';
-        if (emptyState) emptyState.classList.add('hidden');
-        
-        const messageKeys = Object.keys(messagesData).reverse();
-        
-        if (messageKeys.length === 0) {
-            if (emptyState) emptyState.classList.remove('hidden');
-            return;
-        }
-
-        messageKeys.forEach(msgId => {
-            const msg = messagesData[msgId];
-            const card = document.createElement('div');
-            card.className = 'message-card';
-            
-            const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'Just now';
-
-            card.innerHTML = `
-                <div class="msg-header">
-                    <span style="color: #ec4899; font-weight: 700;"><i class="fas fa-envelope"></i> New Message!</span>
-                    <span>${dateString}</span>
-                </div>
-                <div class="msg-text">${escapeHtml(msg.text)}</div>
-            `;
-
-            card.addEventListener('click', () => {
-                detailMsgText.innerText = msg.text;
-                detailMsgDate.innerText = dateString;
-                switchView('detail');
-
-                detailDeleteBtn.onclick = async () => {
-                    try {
-                        await remove(ref(rtdb, `messages/${uid}/${msgId}`));
-                        
-                        delete messagesData[msgId];
-                        localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
-
-                        switchView('inbox');
-                        showCustomAlert("Message deleted.");
-                    } catch (err) {
-                        showCustomAlert("Failed to delete message.");
-                    }
-                };
-
-                if (detailReplyBtn) {
-                    detailReplyBtn.onclick = () => {
-                        generateStoryReply(msg.text);
-                    };
-                }
-            });
-
-            messagesContainer.appendChild(card);
-        });
-    }
-});
-
-function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-}
+            if (inboxLoadingState) i
