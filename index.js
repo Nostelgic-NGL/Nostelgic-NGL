@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Helper function using ReplyImage.png template and AndroidBridge to share story
+    // Helper function using ReplyImage.png template with a background card box for the message
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -330,27 +330,52 @@ document.addEventListener('DOMContentLoaded', async () => {
         templateImg.onload = () => {
             ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
 
-            // Styling text over the template's blank area
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 55px Poppins, sans-serif';
+            // Configure text styling
+            ctx.font = 'bold 50px Poppins, sans-serif';
             ctx.textAlign = 'center';
             
             const words = text.split(' ');
             let line = '';
-            let y = 950; // Vertical position inside the template
+            let lines = [];
             const maxWidth = 800;
             
+            // Text wrapping logic
             for (let n = 0; n < words.length; n++) {
                 let testLine = line + words[n] + ' ';
                 if (ctx.measureText(testLine).width > maxWidth && n > 0) {
-                    ctx.fillText(line, 540, y);
+                    lines.push(line);
                     line = words[n] + ' ';
-                    y += 80;
                 } else {
                     line = testLine;
                 }
             }
-            ctx.fillText(line, 540, y);
+            lines.push(line);
+
+            // Calculate card box dimensions based on text lines
+            const boxX = 140;
+            const boxY = 880;
+            const boxWidth = 800;
+            const lineHeight = 70;
+            const boxHeight = Math.max(160, lines.length * lineHeight + 60);
+            const cornerRadius = 30;
+
+            // Draw rounded background card box for the message
+            ctx.fillStyle = 'rgba(25, 33, 56, 0.85)'; // Semi-transparent dark background card
+            ctx.strokeStyle = 'rgba(236, 72, 153, 0.6)'; // Pink glowing border
+            ctx.lineWidth = 4;
+
+            ctx.beginPath();
+            ctx.roundRect(boxX, boxY, boxWidth, boxHeight, cornerRadius);
+            ctx.fill();
+            ctx.stroke();
+
+            // Draw text centered inside the box
+            ctx.fillStyle = '#ffffff';
+            let startY = boxY + (boxHeight - (lines.length * lineHeight)) / 2 + 45;
+            
+            for (let i = 0; i < lines.length; i++) {
+                ctx.fillText(lines[i], 540, startY + (i * lineHeight));
+            }
 
             const dataUrl = canvas.toDataURL('image/png', 0.9);
 
