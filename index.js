@@ -399,7 +399,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // THEME-AWARE DYNAMIC STORY REPLY IMAGE GENERATOR
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
