@@ -1,612 +1,296 @@
-import { auth, rtdb } from './firebase-config.js';
-import { ref, get, child, remove, update, query, limitToLast, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+package com.nostelgic.ngl
 
-function hideLoadingOverlay() {
-    const overlay = document.getElementById('homeLoadingOverlay');
-    if (overlay) {
-        overlay.style.opacity = '0';
-        setTimeout(() => overlay.classList.add('hidden'), 300);
-    }
-}
+import android.Manifest
+import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.ClipData
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.util.Base64
+import android.view.LayoutInflater
+import android.webkit.*
+import android.widget.Button
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
+import java.io.File
+import java.io.FileOutputStream
 
-function showCustomAlert(message) {
-    const alertModal = document.getElementById('customAlertModal');
-    const alertTitle = document.getElementById('customAlertTitle');
-    const alertText = document.getElementById('customAlertText');
-    const btnGroup = document.getElementById('customAlertBtnGroup');
-    
-    if (alertTitle) alertTitle.innerText = "Nostelgic NGL";
-    if (alertText) alertText.innerText = message;
-    
-    btnGroup.innerHTML = `<button class="custom-alert-btn custom-alert-ok" id="customAlertOkBtn">OK</button>`;
-    if (alertModal) alertModal.classList.remove('hidden');
+class MainActivity : AppCompatActivity() {
 
-    document.getElementById('customAlertOkBtn').onclick = () => {
-        if (alertModal) alertModal.classList.add('hidden');
-    };
-}
+    private lateinit var webView: WebView
+    private var internetDialog: AlertDialog? = null
+    private var filePathCallback: ValueCallback<Array<Uri>>? = null
 
-function showCustomConfirm(title, message, onConfirm) {
-    const alertModal = document.getElementById('customAlertModal');
-    const alertTitle = document.getElementById('customAlertTitle');
-    const alertText = document.getElementById('customAlertText');
-    const btnGroup = document.getElementById('customAlertBtnGroup');
-    
-    if (alertTitle) alertTitle.innerText = title;
-    if (alertText) alertText.innerText = message;
-    
-    btnGroup.innerHTML = `
-        <button class="custom-alert-btn custom-alert-cancel" id="customAlertCancelBtn">Cancel</button>
-        <button class="custom-alert-btn custom-alert-ok" id="customAlertConfirmBtn">Confirm</button>
-    `;
-    if (alertModal) alertModal.classList.remove('hidden');
-
-    document.getElementById('customAlertCancelBtn').onclick = () => {
-        if (alertModal) alertModal.classList.add('hidden');
-    };
-
-    document.getElementById('customAlertConfirmBtn').onclick = () => {
-        if (alertModal) alertModal.classList.add('hidden');
-        onConfirm();
-    };
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const uid = localStorage.getItem('ngl_uid');
-    if (!uid) {
-        window.location.replace("login.html");
-        return;
-    }
-
-    const homeView = document.getElementById('homeView');
-    const inboxView = document.getElementById('inboxView');
-    const messageDetailView = document.getElementById('messageDetailView');
-    const settingsView = document.getElementById('settingsView');
-
-    const navHomeBtn = document.getElementById('navHomeBtn');
-    const navInboxBtn = document.getElementById('navInboxBtn');
-    const settingsBtn = document.getElementById('settingsBtn');
-
-    const profileLinkText = document.getElementById('profileLinkText');
-    const userAvatarImg = document.getElementById('userAvatarImg');
-    const platformLabel = document.getElementById('platformLabel');
-    const copyLinkBtn = document.getElementById('copyLinkBtn');
-    const shareStoryBtn = document.getElementById('shareStoryBtn');
-    const changeAvatarBtn = document.getElementById('changeAvatarBtn');
-    const avatarFileInput = document.getElementById('avatarFileInput');
-
-    const messagesContainer = document.getElementById('messagesContainer');
-    const emptyState = document.getElementById('emptyState');
-    const inboxLoadingState = document.getElementById('inboxLoadingState');
-
-    const backToInboxBtn = document.getElementById('backToInboxBtn');
-    const detailMsgText = document.getElementById('detailMsgText');
-    const detailMsgDate = document.getElementById('detailMsgDate');
-    const detailDeleteBtn = document.getElementById('detailDeleteBtn');
-    const detailReplyBtn = document.getElementById('detailReplyBtn');
-
-    const howToReplyBtn = document.getElementById('howToReplyBtn');
-    const tutorialModal = document.getElementById('tutorialModal');
-    const closeTutorialXBtn = document.getElementById('closeTutorialXBtn');
-    const currentStepNum = document.getElementById('currentStepNum');
-    const tutStep1 = document.getElementById('tutStep1');
-    const tutStep2 = document.getElementById('tutStep2');
-    const tutStep3 = document.getElementById('tutStep3');
-    const prevStepBtn = document.getElementById('prevStepBtn');
-    const nextStepBtn = document.getElementById('nextStepBtn');
-
-    let currentStep = 1;
-    const totalSteps = 3;
-
-    function updateTutorialView() {
-        if (currentStepNum) currentStepNum.innerText = currentStep;
-        if (tutStep1) tutStep1.classList.add('hidden');
-        if (tutStep2) tutStep2.classList.add('hidden');
-        if (tutStep3) tutStep3.classList.add('hidden');
-
-        if (currentStep === 1) {
-            if (tutStep1) tutStep1.classList.remove('hidden');
-            if (prevStepBtn) prevStepBtn.classList.add('hidden');
-            if (nextStepBtn) nextStepBtn.innerText = 'Next';
-        } else if (currentStep === 2) {
-            if (tutStep2) tutStep2.classList.remove('hidden');
-            if (prevStepBtn) prevStepBtn.classList.remove('hidden');
-            if (nextStepBtn) nextStepBtn.innerText = 'Next';
-        } else if (currentStep === 3) {
-            if (tutStep3) tutStep3.classList.remove('hidden');
-            if (prevStepBtn) prevStepBtn.classList.remove('hidden');
-            if (nextStepBtn) nextStepBtn.innerText = 'Got It!';
+    // Permission launcher for Android 13+ notifications
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (!isGranted) {
+            Toast.makeText(this, "Notification permission denied", Toast.LENGTH_SHORT).show()
         }
     }
 
-    if (howToReplyBtn && tutorialModal) {
-        howToReplyBtn.addEventListener('click', () => {
-            currentStep = 1;
-            updateTutorialView();
-            tutorialModal.classList.remove('hidden');
-        });
-    }
-
-    if (nextStepBtn) {
-        nextStepBtn.addEventListener('click', () => {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateTutorialView();
-            } else {
-                tutorialModal.classList.add('hidden');
-            }
-        });
-    }
-
-    if (prevStepBtn) {
-        prevStepBtn.addEventListener('click', () => {
-            if (currentStep > 1) {
-                currentStep--;
-                updateTutorialView();
-            }
-        });
-    }
-
-    if (closeTutorialXBtn && tutorialModal) {
-        closeTutorialXBtn.addEventListener('click', () => {
-            tutorialModal.classList.add('hidden');
-        });
-    }
-
-    const pauseLinkOption = document.getElementById('pauseLinkOption');
-    const hardRefreshOption = document.getElementById('hardRefreshOption');
-    const feedbackOption = document.getElementById('feedbackOption');
-    const supportOption = document.getElementById('supportOption');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    const themeToggleBtn = document.getElementById('themeToggleBtn');
-    const themeIcon = document.getElementById('themeIcon');
-
-    const savedTheme = localStorage.getItem('ngl_theme') || 'light';
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        if (themeIcon) themeIcon.className = "fas fa-moon";
-    } else {
-        document.body.classList.remove('dark-mode');
-        if (themeIcon) themeIcon.className = "fas fa-sun";
-    }
-
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('ngl_theme', isDark ? 'dark' : 'light');
-            if (themeIcon) {
-                themeIcon.className = isDark ? "fas fa-moon" : "fas fa-sun";
-            }
-        });
-    }
-
-    function switchView(viewName) {
-        homeView.classList.add('hidden');
-        inboxView.classList.add('hidden');
-        messageDetailView.classList.add('hidden');
-        settingsView.classList.add('hidden');
-
-        navHomeBtn.classList.remove('active');
-        navInboxBtn.classList.remove('active');
-        settingsBtn.classList.remove('active');
-
-        if (viewName === 'home') {
-            homeView.classList.remove('hidden');
-            navHomeBtn.classList.add('active');
-        } else if (viewName === 'inbox') {
-            inboxView.classList.remove('hidden');
-            navInboxBtn.classList.add('active');
-            loadInboxMessages();
-        } else if (viewName === 'detail') {
-            messageDetailView.classList.remove('hidden');
-            navInboxBtn.classList.add('active');
-        } else if (viewName === 'settings') {
-            settingsView.classList.remove('hidden');
-            settingsBtn.classList.add('active');
+    private val fileChooserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            val results = WebChromeClient.FileChooserParams.parseResult(result.resultCode, data)
+            filePathCallback?.onReceiveValue(results)
+        } else {
+            filePathCallback?.onReceiveValue(null)
         }
+        filePathCallback = null
     }
 
-    if (navHomeBtn) navHomeBtn.addEventListener('click', () => switchView('home'));
-    if (navInboxBtn) navInboxBtn.addEventListener('click', () => switchView('inbox'));
-    if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
-    if (backToInboxBtn) backToInboxBtn.addEventListener('click', () => switchView('inbox'));
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-    const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
-    let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
+        createNotificationChannel()
+        checkNotificationPermission()
 
-    const cachedUsername = localStorage.getItem('ngl_cached_username');
-    const cachedAvatar = localStorage.getItem('ngl_cached_avatar');
-
-    if (cachedUsername) {
-        profileUrl = `${currentBaseUrl}/msgsender.html?u=${cachedUsername}`;
-        if (profileLinkText) profileLinkText.innerText = profileUrl;
-        if (platformLabel) platformLabel.innerText = `@${cachedUsername}`;
-        if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
-    }
-
-    try {
-        const dbRef = ref(rtdb);
-        const snapshot = await get(child(dbRef, `users/${uid}`));
-        
-        if (snapshot.exists()) {
-            const data = snapshot.val();
-            const username = data.username || localStorage.getItem('ngl_username') || 'user';
-            profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
-            
-            localStorage.setItem('ngl_cached_username', username);
-            if (data.avatarUrl) {
-                localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
-                if (userAvatarImg) userAvatarImg.src = data.avatarUrl;
-            }
-
-            if (profileLinkText) profileLinkText.innerText = profileUrl;
-            if (platformLabel) platformLabel.innerText = `@${username}`;
+        webView = findViewById(R.id.webView)
+        webView.settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            allowFileAccess = true
         }
-    } catch (error) {
-        console.error("Background sync error:", error);
-    } finally {
-        hideLoadingOverlay();
-    }
 
-    // REAL-TIME NOTIFICATION LISTENER FOR NEW MESSAGES
-    let isInitialLoad = true;
-    onChildAdded(ref(rtdb, `messages/${uid}`), (snapshot) => {
-        if (isInitialLoad) return; // Skip existing messages on app open
-        if (snapshot.exists()) {
-            const newMsg = snapshot.val();
-            if (window.AndroidBridge && typeof window.AndroidBridge.showNotification === 'function') {
-                window.AndroidBridge.showNotification("New Message !!", newMsg.text || "You received a new anonymous message!");
-            }
-        }
-    });
-    setTimeout(() => { isInitialLoad = false; }, 2000);
+        webView.addJavascriptInterface(WebAppInterface(this), "AndroidBridge")
 
-    if (changeAvatarBtn && avatarFileInput) {
-        changeAvatarBtn.addEventListener('click', () => {
-            avatarFileInput.click();
-        });
-
-        avatarFileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async (event) => {
-                const base64Image = event.target.result;
-                if (userAvatarImg) userAvatarImg.src = base64Image;
-                localStorage.setItem('ngl_cached_avatar', base64Image);
-
-                try {
-                    await update(ref(rtdb, `users/${uid}`), { avatarUrl: base64Image });
-                    showCustomAlert("Profile photo updated successfully! 🖼️");
-                } catch (err) {
-                    showCustomAlert("Photo saved locally, but failed to sync online.");
+        webView.webViewClient = object : WebViewClient() {
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
+                super.onReceivedError(view, request, error)
+                if (!isNetworkAvailable()) {
+                    showNoInternetDialog()
                 }
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-
-    if (copyLinkBtn) {
-        copyLinkBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(profileUrl).then(() => {
-                showCustomAlert("Link copied to clipboard! 📋");
-            }).catch(() => {
-                showCustomAlert("Failed to copy link.");
-            });
-        });
-    }
-
-    if (shareStoryBtn) {
-        shareStoryBtn.addEventListener('click', async () => {
-            const shareText = `Send me anonymous messages! 💬\n${profileUrl}`;
-
-            if (window.AndroidBridge && typeof window.AndroidBridge.shareText === 'function') {
-                window.AndroidBridge.shareText(shareText);
-            } else if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: 'Nostelgic NGL',
-                        text: 'Send me anonymous messages! 💬',
-                        url: profileUrl
-                    });
-                } catch (err) {
-                    console.log("Share dismissed or failed", err);
-                }
-            } else {
-                navigator.clipboard.writeText(profileUrl).then(() => {
-                    showCustomAlert("Link copied to clipboard! 📋");
-                });
             }
-        });
-    }
 
-    let isLinkPaused = localStorage.getItem('ngl_paused') === 'true';
-    if (pauseLinkOption) {
-        if (isLinkPaused) pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-play-circle" style="color: #22c55e; margin-right: 8px;"></i> Resume my link';
-        
-        pauseLinkOption.addEventListener('click', () => {
-            isLinkPaused = !isLinkPaused;
-            localStorage.setItem('ngl_paused', isLinkPaused);
-            if (isLinkPaused) {
-                pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-play-circle" style="color: #22c55e; margin-right: 8px;"></i> Resume my link';
-                showCustomAlert("Your link has been paused. Nobody can send messages right now.");
-            } else {
-                pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-pause-circle" style="color: #ec4899; margin-right: 8px;"></i> Pause my link';
-                showCustomAlert("Your link is now active again! 🚀");
-            }
-        });
-    }
+            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                val url = request?.url.toString()
 
-    if (hardRefreshOption) {
-        hardRefreshOption.addEventListener('click', () => {
-            const currentUid = localStorage.getItem('ngl_uid');
-            const currentTheme = localStorage.getItem('ngl_theme');
-            
-            localStorage.clear();
-            
-            if (currentUid) localStorage.setItem('ngl_uid', currentUid);
-            if (currentTheme) localStorage.setItem('ngl_theme', currentTheme);
-
-            window.location.reload(true);
-        });
-    }
-
-    if (feedbackOption) {
-        feedbackOption.addEventListener('click', () => {
-            window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Feedback%20for%20Nostelgic%20NGL";
-        });
-    }
-
-    if (supportOption) {
-        supportOption.addEventListener('click', () => {
-            window.location.href = "mailto:Nostelgic.NGL@gmail.com?subject=Support%20Request%20-%20Nostelgic%20NGL";
-        });
-    }
-
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            showCustomConfirm(
-                "Logout Account",
-                "If you logout, your account and all data will be permanently deleted. Are you sure you want to proceed?",
-                async () => {
-                    try {
-                        await remove(ref(rtdb, `users/${uid}`));
-                        await remove(ref(rtdb, `messages/${uid}`));
-                    } catch (e) {
-                        console.error(e);
+                when {
+                    url.startsWith("tel:") || url.startsWith("mailto:") -> {
+                        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+                        startActivity(intent)
+                        return true
                     }
-                    localStorage.clear();
-                    window.location.replace("login.html");
+
+                    url.contains("instagram.com") || !url.contains("nostelgic-ngl.github.io") -> {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+                            startActivity(intent)
+                        } catch (ex: Exception) {
+                            ex.printStackTrace()
+                        }
+                        return true
+                    }
+
+                    else -> {
+                        return false
+                    }
                 }
-            );
-        });
-    }
+            }
+        }
 
-    function generateStoryReply(text) {
-        const canvas = document.createElement('canvas');
-        canvas.width = 1080;
-        canvas.height = 1920;
-        const ctx = canvas.getContext('2d', { alpha: false });
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onShowFileChooser(
+                webView: WebView?,
+                callback: ValueCallback<Array<Uri>>?,
+                params: FileChooserParams?
+            ): Boolean {
+                filePathCallback?.onReceiveValue(null)
+                filePathCallback = callback
+                try {
+                    val intent = params?.createIntent()
+                    if (intent != null) {
+                        fileChooserLauncher.launch(intent)
+                    }
+                } catch (ex: Exception) {
+                    filePathCallback = null
+                    return false
+                }
+                return true
+            }
+        }
 
-        const templateImg = new Image();
-        templateImg.crossOrigin = "anonymous";
-        templateImg.src = 'ReplyImage.png';
-
-        templateImg.onload = () => {
-            ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
-
-            ctx.font = 'bold 36px Poppins, sans-serif';
-            ctx.textAlign = 'center';
-            
-            const words = text.split(' ');
-            let line = '';
-            let lines = [];
-            const maxWidth = 760;
-            
-            for (let n = 0; n < words.length; n++) {
-                let testLine = line + words[n] + ' ';
-                if (ctx.measureText(testLine).width > maxWidth && n > 0) {
-                    lines.push(line);
-                    line = words[n] + ' ';
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (webView.canGoBack()) {
+                    webView.goBack()
                 } else {
-                    line = testLine;
+                    finish()
                 }
             }
-            lines.push(line);
+        })
 
-            const boxX = 120;
-            const boxY = 280;
-            const boxWidth = 840;
-            const headerHeight = 70;
-            const lineHeight = 50;
-            const padding = 50;
-            
-            const boxHeight = Math.max(200, headerHeight + (lines.length * lineHeight) + padding);
-            const cornerRadius = 35;
-
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
-            ctx.strokeStyle = '#3b82f6';
-            ctx.lineWidth = 4;
-
-            ctx.beginPath();
-            ctx.roundRect(boxX, boxY, boxWidth, boxHeight, cornerRadius);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.font = '600 30px Poppins, sans-serif';
-            ctx.fillStyle = '#38bdf8';
-            ctx.fillText("Send Me Anonymous Message", 540, boxY + 55);
-
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(boxX + 50, boxY + 85);
-            ctx.lineTo(boxX + boxWidth - 50, boxY + 85);
-            ctx.stroke();
-
-            ctx.font = 'bold 36px Poppins, sans-serif';
-            ctx.fillStyle = '#ffffff';
-            
-            let startY = boxY + 135;
-            for (let i = 0; i < lines.length; i++) {
-                ctx.fillText(lines[i], 540, startY + (i * lineHeight));
-            }
-
-            const dataUrl = canvas.toDataURL('image/png', 0.9);
-
-            if (window.AndroidBridge && typeof window.AndroidBridge.shareStory === 'function') {
-                window.AndroidBridge.shareStory(dataUrl);
-            } else {
-                const downloadLink = document.createElement('a');
-                downloadLink.href = dataUrl;
-                downloadLink.download = 'ReplyImage.png';
-                downloadLink.click();
-            }
-        };
-
-        templateImg.onerror = () => {
-            showCustomAlert("Failed to load ReplyImage.png template.");
-        };
+        checkAndLoadUrl()
     }
 
-    async function loadInboxMessages() {
-        messagesContainer.innerHTML = '';
-        if (emptyState) emptyState.classList.add('hidden');
-        if (inboxLoadingState) inboxLoadingState.classList.remove('hidden');
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
 
-        let hasLoadedFromCache = false;
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Nostelgic NGL Messages"
+            val descriptionText = "Notifications for new anonymous messages"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel("ngl_channel_id", name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
 
-        const cachedMessages = localStorage.getItem(`ngl_messages_${uid}`);
-        if (cachedMessages) {
+    class WebAppInterface(private val context: Context) {
+
+        @JavascriptInterface
+        fun showNotification(title: String, message: String) {
+            val builder = NotificationCompat.Builder(context, "ngl_channel_id")
+                .setSmallIcon(android.R.drawable.ic_dialog_email)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
+        }
+
+        @JavascriptInterface
+        fun shareText(text: String) {
             try {
-                const messagesData = JSON.parse(cachedMessages);
-                if (messagesData && Object.keys(messagesData).length > 0) {
-                    hasLoadedFromCache = true;
-                    if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
-                    renderMessagesList(messagesData);
+                val sendIntent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, text)
+                    type = "text/plain"
                 }
-            } catch (e) {
-                console.error("Cache parse error", e);
-            }
-        }
-
-        try {
-            const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
-            const snapshot = await get(messagesQuery);
-            
-            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
-
-            if (snapshot.exists()) {
-                const messagesData = snapshot.val();
-                localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
-                renderMessagesList(messagesData);
-            } else {
-                if (!hasLoadedFromCache) {
-                    messagesContainer.innerHTML = '';
-                    if (emptyState) emptyState.classList.remove('hidden');
+                val shareIntent = Intent.createChooser(sendIntent, "Share via").apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
-            }
-        } catch (error) {
-            console.error("Error loading messages from server:", error);
-            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
-            if (!hasLoadedFromCache) {
-                messagesContainer.innerHTML = '';
-                if (emptyState) emptyState.classList.remove('hidden');
+                context.startActivity(shareIntent)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
             }
         }
-    }
 
-    function renderMessagesList(messagesData) {
-        messagesContainer.innerHTML = '';
-        if (emptyState) emptyState.classList.add('hidden');
-        
-        const messageKeys = Object.keys(messagesData).reverse();
-        
-        if (messageKeys.length === 0) {
-            if (emptyState) emptyState.classList.remove('hidden');
-            return;
-        }
+        @JavascriptInterface
+        fun shareStory(base64Data: String) {
+            try {
+                val base64Image = base64Data.substringAfter("base64,")
+                val imageBytes = Base64.decode(base64Image, Base64.DEFAULT)
 
-        messageKeys.forEach(msgId => {
-            const msg = messagesData[msgId];
-            const card = document.createElement('div');
-            card.className = 'message-card';
-            
-            const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'Just now';
-            
-            const isViewed = localStorage.getItem(`ngl_viewed_${msgId}`) === 'true';
-            const isReplied = localStorage.getItem(`ngl_replied_${msgId}`) === 'true';
+                val cachePath = File(context.cacheDir, "images")
+                cachePath.mkdirs()
+                val imageFile = File(cachePath, "ReplyImage.png")
+                val stream = FileOutputStream(imageFile)
+                stream.write(imageBytes)
+                stream.close()
 
-            let cardContent = '';
+                val imageUri = FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.fileprovider",
+                    imageFile
+                )
 
-            if (!isViewed) {
-                cardContent = `
-                    <div class="msg-header">
-                        <span style="color: #ec4899; font-weight: 700;"><i class="fas fa-envelope"></i> New Message !!</span>
-                        <span>${dateString}</span>
-                    </div>
-                `;
-            } else {
-                const snippetText = msg.text.length > 35 ? msg.text.substring(0, 35) + '...' : msg.text;
-                const repliedBadge = isReplied ? `<span style="color: #22c55e; margin-left: 6px;"><i class="fas fa-check-circle"></i></span>` : '';
-                
-                cardContent = `
-                    <div class="msg-header">
-                        <span style="color: var(--subtext-color); font-weight: 600;"><i class="fas fa-envelope-open"></i> Message ${repliedBadge}</span>
-                        <span>${dateString}</span>
-                    </div>
-                    <div class="msg-text">${escapeHtml(snippetText)}</div>
-                `;
-            }
+                val storyIntent = Intent("com.instagram.share.ADD_STORY").apply {
+                    setDataAndType(imageUri, "image/png")
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    putExtra("source_application", context.packageName)
+                    clipData = ClipData.newUri(context.contentResolver, "Instagram Story", imageUri)
+                    setPackage("com.instagram.android")
+                }
 
-            card.innerHTML = cardContent;
-
-            card.addEventListener('click', () => {
-                localStorage.setItem(`ngl_viewed_${msgId}`, 'true');
-
-                detailMsgText.innerText = msg.text;
-                detailMsgDate.innerText = dateString;
-                switchView('detail');
-
-                detailDeleteBtn.onclick = async () => {
-                    try {
-                        await remove(ref(rtdb, `messages/${uid}/${msgId}`));
-                        
-                        delete messagesData[msgId];
-                        localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
-                        localStorage.removeItem(`ngl_viewed_${msgId}`);
-                        localStorage.removeItem(`ngl_replied_${msgId}`);
-
-                        switchView('inbox');
-                        showCustomAlert("Message deleted.");
-                    } catch (err) {
-                        showCustomAlert("Failed to delete message.");
+                try {
+                    storyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(storyIntent)
+                } catch (ex: Exception) {
+                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = "image/png"
+                        putExtra(Intent.EXTRA_STREAM, imageUri)
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        clipData = ClipData.newUri(context.contentResolver, "Share", imageUri)
                     }
-                };
-
-                if (detailReplyBtn) {
-                    detailReplyBtn.onclick = () => {
-                        localStorage.setItem(`ngl_replied_${msgId}`, 'true');
-                        generateStoryReply(msg.text);
-                    };
+                    val chooser = Intent.createChooser(shareIntent, "Share Story to")
+                    chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(chooser)
                 }
-            });
 
-            messagesContainer.appendChild(card);
-        });
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
     }
-});
 
-function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    private fun checkAndLoadUrl() {
+        if (isNetworkAvailable()) {
+            internetDialog?.dismiss()
+            webView.loadUrl("https://nostelgic-ngl.github.io/Nostelgic-NGL/")
+        } else {
+            showNoInternetDialog()
+        }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun showNoInternetDialog() {
+        if (isFinishing) return
+        if (internetDialog != null && internetDialog?.isShowing == true) return
+
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_no_internet, null)
+        val btnRetry = dialogView.findViewById<Button>(R.id.btnRetry)
+
+        val builder = AlertDialog.Builder(this)
+        builder.setView(dialogView)
+        builder.setCancelable(false)
+
+        internetDialog = builder.create()
+        internetDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        btnRetry.setOnClickListener {
+            if (isNetworkAvailable()) {
+                internetDialog?.dismiss()
+                checkAndLoadUrl()
+            } else {
+                Toast.makeText(this, "Still offline! Check your Wi-Fi or Mobile Data.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        internetDialog?.show()
+    }
 }
