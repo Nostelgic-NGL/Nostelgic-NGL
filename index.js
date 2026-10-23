@@ -1,26 +1,17 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, update, query, limitToLast, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-window.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('homeLoadingOverlay');
-    if (overlay) {
-        overlay.style.display = 'none';
-        overlay.classList.add('hidden');
-    }
-});
-
 function hideLoadingOverlay() {
     const overlay = document.getElementById('homeLoadingOverlay');
     if (overlay) {
         overlay.style.opacity = '0';
-        overlay.style.display = 'none';
         setTimeout(() => overlay.classList.add('hidden'), 300);
     }
 }
 
 setTimeout(() => {
     hideLoadingOverlay();
-}, 400);
+}, 1000);
 
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
@@ -65,8 +56,6 @@ function showCustomConfirm(title, message, onConfirm) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    hideLoadingOverlay();
-
     const uid = localStorage.getItem('ngl_uid');
     if (!uid) {
         window.location.replace("login.html");
@@ -99,74 +88,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const detailMsgDate = document.getElementById('detailMsgDate');
     const detailDeleteBtn = document.getElementById('detailDeleteBtn');
     const detailReplyBtn = document.getElementById('detailReplyBtn');
-
-    const howToReplyDetailBtn = document.getElementById('howToReplyDetailBtn');
-    const tutorialModal = document.getElementById('tutorialModal');
-    const closeTutorialXBtn = document.getElementById('closeTutorialXBtn');
-    const currentStepNum = document.getElementById('currentStepNum');
-    const tutStep1 = document.getElementById('tutStep1');
-    const tutStep2 = document.getElementById('tutStep2');
-    const tutStep3 = document.getElementById('tutStep3');
-    const prevStepBtn = document.getElementById('prevStepBtn');
-    const nextStepBtn = document.getElementById('nextStepBtn');
-
-    let currentStep = 1;
-    const totalSteps = 3;
-
-    function updateTutorialView() {
-        if (currentStepNum) currentStepNum.innerText = currentStep;
-        if (tutStep1) tutStep1.classList.add('hidden');
-        if (tutStep2) tutStep2.classList.add('hidden');
-        if (tutStep3) tutStep3.classList.add('hidden');
-
-        if (currentStep === 1) {
-            if (tutStep1) tutStep1.classList.remove('hidden');
-            if (prevStepBtn) prevStepBtn.classList.add('hidden');
-            if (nextStepBtn) nextStepBtn.innerText = 'Next';
-        } else if (currentStep === 2) {
-            if (tutStep2) tutStep2.classList.remove('hidden');
-            if (prevStepBtn) prevStepBtn.classList.remove('hidden');
-            if (nextStepBtn) nextStepBtn.innerText = 'Next';
-        } else if (currentStep === 3) {
-            if (tutStep3) tutStep3.classList.remove('hidden');
-            if (prevStepBtn) prevStepBtn.classList.remove('hidden');
-            if (nextStepBtn) nextStepBtn.innerText = 'Got It!';
-        }
-    }
-
-    if (howToReplyDetailBtn && tutorialModal) {
-        howToReplyDetailBtn.addEventListener('click', () => {
-            currentStep = 1;
-            updateTutorialView();
-            tutorialModal.classList.remove('hidden');
-        });
-    }
-
-    if (nextStepBtn) {
-        nextStepBtn.addEventListener('click', () => {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateTutorialView();
-            } else {
-                tutorialModal.classList.add('hidden');
-            }
-        });
-    }
-
-    if (prevStepBtn) {
-        prevStepBtn.addEventListener('click', () => {
-            if (currentStep > 1) {
-                currentStep--;
-                updateTutorialView();
-            }
-        });
-    }
-
-    if (closeTutorialXBtn && tutorialModal) {
-        closeTutorialXBtn.addEventListener('click', () => {
-            tutorialModal.classList.add('hidden');
-        });
-    }
 
     const pauseLinkOption = document.getElementById('pauseLinkOption');
     const hardRefreshOption = document.getElementById('hardRefreshOption');
@@ -629,5 +550,5 @@ function escapeHtml(text) {
         '"': '&quot;',
         "'": '&#039;'
     };
-    return text.oped ? text : text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
