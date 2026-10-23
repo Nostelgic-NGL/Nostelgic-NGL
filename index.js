@@ -399,6 +399,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // THEME-AWARE DYNAMIC STORY REPLY IMAGE GENERATOR
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -443,10 +444,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             const boxHeight = Math.max(200, headerHeight + (lines.length * lineHeight) + padding);
             const cornerRadius = 35;
 
+            // DYNAMIC BOX BACKGROUND & BORDER BASED ON THEME
             if (isDarkMode) {
+                // Dark Mode Card Styling (Dark translucent background + Blue glowing border)
                 ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
                 ctx.strokeStyle = '#3b82f6';
             } else {
+                // Light Mode Card Styling (Clean solid white background + Elegant soft border)
                 ctx.fillStyle = '#ffffff';
                 ctx.strokeStyle = '#cbd5e1';
             }
@@ -457,10 +461,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.fill();
             ctx.stroke();
 
+            // HEADER TEXT COLOR
             ctx.font = '600 30px Poppins, sans-serif';
             ctx.fillStyle = isDarkMode ? '#38bdf8' : '#2563eb';
             ctx.fillText("Send Me Anonymous Message", 540, boxY + 55);
 
+            // SEPARATOR LINE COLOR
             ctx.strokeStyle = isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -468,6 +474,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.lineTo(boxX + boxWidth - 50, boxY + 85);
             ctx.stroke();
 
+            // MESSAGE TEXT COLOR (White for dark mode, dark slate for light mode)
             ctx.font = 'bold 36px Poppins, sans-serif';
             ctx.fillStyle = isDarkMode ? '#ffffff' : '#1e293b';
             
@@ -500,4 +507,134 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         let hasLoadedFromCache = false;
 
-        const cachedMe
+        const cachedMessages = localStorage.getItem(`ngl_messages_${uid}`);
+        if (cachedMessages) {
+            try {
+                const messagesData = JSON.parse(cachedMessages);
+                if (messagesData && Object.keys(messagesData).length > 0) {
+                    hasLoadedFromCache = true;
+                    if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
+                    renderMessagesList(messagesData);
+                }
+            } catch (e) {
+                console.error("Cache parse error", e);
+            }
+        }
+
+        try {
+            const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
+            const snapshot = await get(messagesQuery);
+            
+            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
+
+            if (snapshot.exists()) {
+                const messagesData = snapshot.val();
+                localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
+                renderMessagesList(messagesData);
+            } else {
+                if (!hasLoadedFromCache) {
+                    messagesContainer.innerHTML = '';
+                    if (emptyState) emptyState.classList.remove('hidden');
+                }
+            }
+        } catch (error) {
+            console.error("Error loading messages from server:", error);
+            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
+            if (!hasLoadedFromCache) {
+                messagesContainer.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+            }
+        }
+    }
+
+    function renderMessagesList(messagesData) {
+        messagesContainer.innerHTML = '';
+        if (emptyState) emptyState.classList.add('hidden');
+        
+        const messageKeys = Object.keys(messagesData).reverse();
+        
+        if (messageKeys.length === 0) {
+            if (emptyState) emptyState.classList.remove('hidden');
+            return;
+        }
+
+        messageKeys.forEach(msgId => {
+            const msg = messagesData[msgId];
+            const card = document.createElement('div');
+            card.className = 'message-card';
+            
+            const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'Just now';
+            
+            const isViewed = localStorage.getItem(`ngl_viewed_${msgId}`) === 'true';
+            const isReplied = localStorage.getItem(`ngl_replied_${msgId}`) === 'true';
+
+            let cardContent = '';
+
+            if (!isViewed) {
+                cardContent = `
+                    <div class="msg-header">
+                        <span style="color: #ec4899; font-weight: 700;"><i class="fas fa-envelope"></i> New Message !!</span>
+                        <span>${dateString}</span>
+                    </div>
+                `;
+            } else {
+                const snippetText = msg.text.length > 35 ? msg.text.substring(0, 35) + '...' : msg.text;
+                const repliedBadge = isReplied ? `<span style="color: #22c55e; margin-left: 6px;"><i class="fas fa-check-circle"></i></span>` : '';
+                
+                cardContent = `
+                    <div class="msg-header">
+                        <span style="color: var(--subtext-color); font-weight: 600;"><i class="fas fa-envelope-open"></i> Message ${repliedBadge}</span>
+                        <span>${dateString}</span>
+                    </div>
+                    <div class="msg-text">${escapeHtml(snippetText)}</div>
+                `;
+            }
+
+            card.innerHTML = cardContent;
+
+            card.addEventListener('click', () => {
+                localStorage.setItem(`ngl_viewed_${msgId}`, 'true');
+
+                detailMsgText.innerText = msg.text;
+                detailMsgDate.innerText = dateString;
+                switchView('detail');
+
+                detailDeleteBtn.onclick = async () => {
+                    try {
+                        await remove(ref(rtdb, `messages/${uid}/${msgId}`));
+                        
+                        delete messagesData[msgId];
+                        localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
+                        localStorage.removeItem(`ngl_viewed_${msgId}`);
+                        localStorage.removeItem(`ngl_replied_${msgId}`);
+
+                        switchView('inbox');
+                        showCustomAlert("Message deleted.");
+                    } catch (err) {
+                        showCustomAlert("Failed to delete message.");
+                    }
+                };
+
+                if (detailReplyBtn) {
+                    detailReplyBtn.onclick = () => {
+                        localStorage.setItem(`ngl_replied_${msgId}`, 'true');
+                        generateStoryReply(msg.text);
+                    };
+                }
+            });
+
+            messagesContainer.appendChild(card);
+        });
+    }
+});
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
