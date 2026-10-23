@@ -1,17 +1,17 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// Internet Connection Checker & Retry Logic
-function checkInternetConnection() {
-    const modal = document.getElementById('noInternetModal');
-    if (!navigator.onLine) {
-        if (modal) modal.classList.remove('hidden');
-    } else {
-        if (modal) modal.classList.add('hidden');
+// INSTANT OVERLAY REMOVAL: Page load hote hi turant loading screen hata do taaki kabhi na ruke
+function hideLoadingOverlayInstantly() {
+    const overlay = document.getElementById('homeLoadingOverlay');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.classList.add('hidden'), 200);
     }
 }
 
 window.addEventListener('load', () => {
+    hideLoadingOverlayInstantly();
     checkInternetConnection();
     
     const retryBtn = document.getElementById('retryConnectionBtn');
@@ -28,6 +28,19 @@ window.addEventListener('load', () => {
     }
 });
 
+// Fail-safe timer in case load event takes time
+setTimeout(hideLoadingOverlayInstantly, 300);
+
+// Internet Connection Checker & Retry Logic
+function checkInternetConnection() {
+    const modal = document.getElementById('noInternetModal');
+    if (!navigator.onLine) {
+        if (modal) modal.classList.remove('hidden');
+    } else {
+        if (modal) modal.classList.add('hidden');
+    }
+}
+
 window.addEventListener('online', checkInternetConnection);
 window.addEventListener('offline', checkInternetConnection);
 
@@ -42,7 +55,7 @@ function showCustomAlert(message) {
     if (alertText) alertText.innerText = message;
     
     btnGroup.innerHTML = `<button class="custom-alert-btn custom-alert-ok" id="customAlertOkBtn">OK</button>`;
-    if (alertModal) alertModal.classList.add('hidden');
+    if (alertModal) alertModal.classList.remove('hidden');
 
     document.getElementById('customAlertOkBtn').onclick = () => {
         if (alertModal) alertModal.classList.add('hidden');
@@ -63,7 +76,7 @@ function showCustomConfirm(title, message, onConfirm) {
         <button class="custom-alert-btn custom-alert-cancel" id="customAlertCancelBtn">Cancel</button>
         <button class="custom-alert-btn custom-alert-ok" id="customAlertConfirmBtn">Confirm</button>
     `;
-    if (alertModal) alertModal.classList.add('hidden');
+    if (alertModal) alertModal.classList.remove('hidden');
 
     document.getElementById('customAlertCancelBtn').onclick = () => {
         if (alertModal) alertModal.classList.add('hidden');
@@ -76,6 +89,7 @@ function showCustomConfirm(title, message, onConfirm) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    hideLoadingOverlayInstantly();
     checkInternetConnection();
 
     const uid = localStorage.getItem('ngl_uid');
@@ -101,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const platformLabel = document.getElementById('platformLabel');
     const copyLinkBtn = document.getElementById('copyLinkBtn');
     const shareStoryBtn = document.getElementById('shareStoryBtn');
-    const homeLoadingOverlay = document.getElementById('homeLoadingOverlay');
 
     // Inbox Elements
     const messagesContainer = document.getElementById('messagesContainer');
@@ -260,16 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
     }
 
-    // INSTANT OVERLAY REMOVAL
-    function hideLoadingOverlay() {
-        if (homeLoadingOverlay) {
-            homeLoadingOverlay.style.opacity = '0';
-            setTimeout(() => homeLoadingOverlay.classList.add('hidden'), 200);
-        }
-    }
-    setTimeout(hideLoadingOverlay, 400);
-
-    // Background sync with Firebase
+    // Background sync with Firebase (Non-blocking)
     (async () => {
         try {
             const dbRef = ref(rtdb);
@@ -291,8 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error("Background sync error:", error);
-        } finally {
-            hideLoadingOverlay();
         }
     })();
 
@@ -503,7 +505,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
-            const snapshot = await get(messagesQuery);
-            
-        
+            const messagesQuery = query(ref(rtdb, `messages/${uid}
