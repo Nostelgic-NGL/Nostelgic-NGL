@@ -202,12 +202,6 @@
             margin-bottom: 20px;
         }
 
-        .action-buttons-row {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-        }
-
         .btn-primary {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -221,6 +215,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            width: 100%;
             transition: all 0.2s ease;
         }
 
@@ -241,6 +236,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            width: 100%;
             box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
             transition: all 0.2s ease;
         }
@@ -408,18 +404,15 @@
                     <span id="profileLinkText">Loading link...</span>
                 </div>
 
-                <!-- Full Width Copy Button & Share Button Row -->
-                <div class="action-buttons-row">
-                    <button id="copyLinkBtn" class="btn-primary" style="flex: 2;"><i class="fas fa-copy"></i> Copy Link</button>
-                    <button id="shareStoryBtn" class="btn-gradient" style="flex: 1;"><i class="fas fa-share-alt"></i> Share</button>
-                </div>
+                <!-- Full Width Copy Link Button -->
+                <button id="copyLinkBtn" class="btn-primary"><i class="fas fa-copy"></i> Copy Link</button>
             </div>
 
-            <!-- Extra Matching Promo Card -->
+            <!-- Extra Matching Card with Share Button -->
             <div class="extra-promo-card">
                 <h3>Share on Instagram Story 🚀</h3>
                 <p>Get more anonymous messages by sharing your link directly on your story!</p>
-                <button id="howToReplyBtn" class="btn-gradient" style="width: 100%; justify-content: center;"><i class="fab fa-instagram"></i> How to Share</button>
+                <button id="shareStoryBtn" class="btn-gradient"><i class="fas fa-share-alt"></i> Share</button>
             </div>
         </div>
 
@@ -482,31 +475,6 @@
             <p id="customAlertText">Alert message here...</p>
             <div id="customAlertBtnGroup" class="modal-btn-group">
                 <button class="custom-alert-btn custom-alert-ok" id="customAlertOkBtn">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tutorial Modal -->
-    <div id="tutorialModal" class="modal-overlay hidden">
-        <div class="modal-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0;">How to Share (Step <span id="currentStepNum">1</span>/3)</h3>
-                <button id="closeTutorialXBtn" style="background: none; border: none; color: var(--text-color); font-size: 18px; cursor: pointer;"><i class="fas fa-times"></i></button>
-            </div>
-            
-            <div id="tutStep1" style="font-size: 14px; color: var(--subtext-color); margin-bottom: 20px; line-height: 1.6;">
-                1. Tap on the <b>"Share"</b> or <b>"Copy Link"</b> button on your home dashboard.
-            </div>
-            <div id="tutStep2" class="hidden" style="font-size: 14px; color: var(--subtext-color); margin-bottom: 20px; line-height: 1.6;">
-                2. Open Instagram and create a new Story using your favorite photo or background.
-            </div>
-            <div id="tutStep3" class="hidden" style="font-size: 14px; color: var(--subtext-color); margin-bottom: 20px; line-height: 1.6;">
-                3. Paste your link using the Link Sticker so your friends can send you anonymous messages!
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-                <button id="prevStepBtn" class="custom-alert-btn custom-alert-cancel hidden">Back</button>
-                <button id="nextStepBtn" class="custom-alert-btn custom-alert-ok">Next</button>
             </div>
         </div>
     </div>
