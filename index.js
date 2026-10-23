@@ -1,17 +1,17 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// Internet Connection Checker & Retry Logic
-function checkInternetConnection() {
-    const modal = document.getElementById('noInternetModal');
-    if (!navigator.onLine) {
-        if (modal) modal.classList.remove('hidden');
-    } else {
-        if (modal) modal.classList.add('hidden');
+// INSTANT OVERLAY REMOVAL: Page load hote hi turant loading screen hata do
+function hideLoadingOverlayInstantly() {
+    const overlay = document.getElementById('homeLoadingOverlay');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.classList.add('hidden'), 200);
     }
 }
 
 window.addEventListener('load', () => {
+    hideLoadingOverlayInstantly();
     checkInternetConnection();
     
     const retryBtn = document.getElementById('retryConnectionBtn');
@@ -27,6 +27,18 @@ window.addEventListener('load', () => {
         });
     }
 });
+
+setTimeout(hideLoadingOverlayInstantly, 300);
+
+// Internet Connection Checker & Retry Logic
+function checkInternetConnection() {
+    const modal = document.getElementById('noInternetModal');
+    if (!navigator.onLine) {
+        if (modal) modal.classList.remove('hidden');
+    } else {
+        if (modal) modal.classList.add('hidden');
+    }
+}
 
 window.addEventListener('online', checkInternetConnection);
 window.addEventListener('offline', checkInternetConnection);
@@ -75,7 +87,8 @@ function showCustomConfirm(title, message, onConfirm) {
     };
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
+    hideLoadingOverlayInstantly();
     checkInternetConnection();
 
     const uid = localStorage.getItem('ngl_uid');
@@ -260,27 +273,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Background sync with Firebase
-    try {
-        const dbRef = ref(rtdb);
-        const snapshot = await get(child(dbRef, `users/${uid}`));
-        
-        if (snapshot.exists()) {
-            const data = snapshot.val();
-            const username = data.username || localStorage.getItem('ngl_username') || 'user';
-            profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
+    (async () => {
+        try {
+            const dbRef = ref(rtdb);
+            const snapshot = await get(child(dbRef, `users/${uid}`));
             
-            localStorage.setItem('ngl_cached_username', username);
-            if (data.avatarUrl) localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const username = data.username || localStorage.getItem('ngl_username') || 'user';
+                profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
+                
+                localStorage.setItem('ngl_cached_username', username);
+                if (data.avatarUrl) localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
 
-            if (profileLinkText) profileLinkText.innerText = profileUrl;
-            if (platformLabel) platformLabel.innerText = `@${username}`;
-            if (data.avatarUrl && userAvatarImg) {
-                userAvatarImg.src = data.avatarUrl;
+                if (profileLinkText) profileLinkText.innerText = profileUrl;
+                if (platformLabel) platformLabel.innerText = `@${username}`;
+                if (data.avatarUrl && userAvatarImg) {
+                    userAvatarImg.src = data.avatarUrl;
+                }
             }
+        } catch (error) {
+            console.error("Background sync error:", error);
         }
-    } catch (error) {
-        console.error("Background sync error:", error);
-    }
+    })();
 
     // Copy Link Action
     if (copyLinkBtn) {
@@ -293,7 +308,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Share Story Action
+    // Share Story Action (Fixed Webview Share Error)
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', async () => {
             const shareData = {
@@ -308,8 +323,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 } catch (err) {
                     console.log("Share dismissed or failed", err);
                 }
+            } else if (window.AndroidBridge && typeof window.AndroidBridge.shareText === 'function') {
+                window.AndroidBridge.shareText(profileUrl);
             } else {
-                window.location.href = `native-share://${encodeURIComponent(profileUrl)}`;
+                navigator.clipboard.writeText(profileUrl).then(() => {
+                    showCustomAlert("Link copied to clipboard! 📋");
+                });
             }
         });
     }
@@ -514,7 +533,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Helper function to render message cards in the DOM with Read/Unread & Green Tick Status
+    // Helper function to render message cards with Read/Unread & Green Tick Status
     function renderMessagesList(messagesData) {
         messagesContainer.innerHTML = '';
         if (emptyState) emptyState.classList.add('hidden');
