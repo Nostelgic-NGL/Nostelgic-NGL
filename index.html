@@ -327,7 +327,7 @@
             color: #ec4899;
         }
 
-        /* Custom Alert Modal */
+        /* Custom Alert & Tutorial Modals */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -351,7 +351,7 @@
             border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 25px;
-            width: 90%;
+            width: 92%;
             max-width: 420px;
             text-align: center;
             box-shadow: 0 15px 35px rgba(0,0,0,0.3);
@@ -370,10 +370,10 @@
             line-height: 1.5;
         }
 
-        /* Larger Tutorial Images Styling */
+        /* Larger Tutorial Images Style */
         .tutorial-img {
             width: 100%;
-            max-height: 320px;
+            max-height: 380px;
             object-fit: contain;
             border-radius: 12px;
             margin-bottom: 15px;
@@ -534,26 +534,19 @@
 
     <!-- Tutorial Modal with Larger Images -->
     <div id="tutorialModal" class="modal-overlay hidden">
-        <div class="modal-card">
+        <div class="modal-card" style="max-width: 440px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 id="tutTitle" style="margin: 0; font-size: 16px; color: #ec4899;">How to Reply (Step 1 of 3)</h3>
+                <h3 id="tutTitle" style="margin: 0; color: #ec4899; font-size: 16px;">How to Reply (Step 1 of 3)</h3>
                 <button id="closeTutorialXBtn" style="background: none; border: none; color: var(--text-color); font-size: 18px; cursor: pointer;"><i class="fas fa-times"></i></button>
             </div>
             
-            <div id="tutStep1">
-                <p>1. Click on "Reply on Instagram" button from message details.</p>
-                <img src="tutorial_step1.jpg" alt="Step 1" class="tutorial-img">
-            </div>
-            <div id="tutStep2" class="hidden">
-                <p>2. Now find Instagram and click on it.</p>
-                <img src="tutorial_step2.jpg" alt="Step 2" class="tutorial-img">
-            </div>
-            <div id="tutStep3" class="hidden">
-                <p>3. Now click on Stories.</p>
-                <img src="tutorial_step3.jpg" alt="Step 3" class="tutorial-img">
+            <p id="tutDesc" style="font-size: 13px; color: var(--subtext-color); text-align: left; margin-bottom: 12px;"></p>
+            
+            <div id="tutImgContainer">
+                <!-- Image will be injected via JS -->
             </div>
 
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <div style="display: flex; gap: 10px; margin-top: 5px;">
                 <button id="prevStepBtn" class="custom-alert-btn custom-alert-cancel hidden">Back</button>
                 <button id="nextStepBtn" class="custom-alert-btn custom-alert-ok">Next</button>
             </div>
