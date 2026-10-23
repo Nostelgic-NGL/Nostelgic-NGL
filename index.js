@@ -1,26 +1,17 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, update, query, limitToLast, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-window.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('homeLoadingOverlay');
-    if (overlay) {
-        overlay.style.display = 'none';
-        overlay.classList.add('hidden');
-    }
-});
-
 function hideLoadingOverlay() {
     const overlay = document.getElementById('homeLoadingOverlay');
     if (overlay) {
         overlay.style.opacity = '0';
-        overlay.style.display = 'none';
         setTimeout(() => overlay.classList.add('hidden'), 300);
     }
 }
 
 setTimeout(() => {
     hideLoadingOverlay();
-}, 400);
+}, 1000);
 
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
@@ -65,8 +56,6 @@ function showCustomConfirm(title, message, onConfirm) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    hideLoadingOverlay();
-
     const uid = localStorage.getItem('ngl_uid');
     if (!uid) {
         window.location.replace("login.html");
@@ -99,74 +88,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const detailMsgDate = document.getElementById('detailMsgDate');
     const detailDeleteBtn = document.getElementById('detailDeleteBtn');
     const detailReplyBtn = document.getElementById('detailReplyBtn');
-
-    const howToReplyBtn = document.getElementById('howToReplyBtn');
-    const tutorialModal = document.getElementById('tutorialModal');
-    const closeTutorialXBtn = document.getElementById('closeTutorialXBtn');
-    const currentStepNum = document.getElementById('currentStepNum');
-    const tutStep1 = document.getElementById('tutStep1');
-    const tutStep2 = document.getElementById('tutStep2');
-    const tutStep3 = document.getElementById('tutStep3');
-    const prevStepBtn = document.getElementById('prevStepBtn');
-    const nextStepBtn = document.getElementById('nextStepBtn');
-
-    let currentStep = 1;
-    const totalSteps = 3;
-
-    function updateTutorialView() {
-        if (currentStepNum) currentStepNum.innerText = currentStep;
-        if (tutStep1) tutStep1.classList.add('hidden');
-        if (tutStep2) tutStep2.classList.add('hidden');
-        if (tutStep3) tutStep3.classList.add('hidden');
-
-        if (currentStep === 1) {
-            if (tutStep1) tutStep1.classList.remove('hidden');
-            if (prevStepBtn) prevStepBtn.classList.add('hidden');
-            if (nextStepBtn) nextStepBtn.innerText = 'Next';
-        } else if (currentStep === 2) {
-            if (tutStep2) tutStep2.classList.remove('hidden');
-            if (prevStepBtn) prevStepBtn.classList.remove('hidden');
-            if (nextStepBtn) nextStepBtn.innerText = 'Next';
-        } else if (currentStep === 3) {
-            if (tutStep3) tutStep3.classList.remove('hidden');
-            if (prevStepBtn) prevStepBtn.classList.remove('hidden');
-            if (nextStepBtn) nextStepBtn.innerText = 'Got It!';
-        }
-    }
-
-    if (howToReplyBtn && tutorialModal) {
-        howToReplyBtn.addEventListener('click', () => {
-            currentStep = 1;
-            updateTutorialView();
-            tutorialModal.classList.remove('hidden');
-        });
-    }
-
-    if (nextStepBtn) {
-        nextStepBtn.addEventListener('click', () => {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateTutorialView();
-            } else {
-                tutorialModal.classList.add('hidden');
-            }
-        });
-    }
-
-    if (prevStepBtn) {
-        prevStepBtn.addEventListener('click', () => {
-            if (currentStep > 1) {
-                currentStep--;
-                updateTutorialView();
-            }
-        });
-    }
-
-    if (closeTutorialXBtn && tutorialModal) {
-        closeTutorialXBtn.addEventListener('click', () => {
-            tutorialModal.classList.add('hidden');
-        });
-    }
 
     const pauseLinkOption = document.getElementById('pauseLinkOption');
     const hardRefreshOption = document.getElementById('hardRefreshOption');
@@ -399,7 +320,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // THEME-AWARE DYNAMIC STORY REPLY IMAGE GENERATOR
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -444,13 +364,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const boxHeight = Math.max(200, headerHeight + (lines.length * lineHeight) + padding);
             const cornerRadius = 35;
 
-            // DYNAMIC BOX BACKGROUND & BORDER BASED ON THEME
             if (isDarkMode) {
-                // Dark Mode Card Styling (Dark translucent background + Blue glowing border)
                 ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
                 ctx.strokeStyle = '#3b82f6';
             } else {
-                // Light Mode Card Styling (Clean solid white background + Elegant soft border)
                 ctx.fillStyle = '#ffffff';
                 ctx.strokeStyle = '#cbd5e1';
             }
@@ -461,12 +378,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.fill();
             ctx.stroke();
 
-            // HEADER TEXT COLOR
             ctx.font = '600 30px Poppins, sans-serif';
             ctx.fillStyle = isDarkMode ? '#38bdf8' : '#2563eb';
             ctx.fillText("Send Me Anonymous Message", 540, boxY + 55);
 
-            // SEPARATOR LINE COLOR
             ctx.strokeStyle = isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -474,7 +389,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.lineTo(boxX + boxWidth - 50, boxY + 85);
             ctx.stroke();
 
-            // MESSAGE TEXT COLOR (White for dark mode, dark slate for light mode)
             ctx.font = 'bold 36px Poppins, sans-serif';
             ctx.fillStyle = isDarkMode ? '#ffffff' : '#1e293b';
             
