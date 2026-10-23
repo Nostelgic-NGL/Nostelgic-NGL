@@ -1,19 +1,13 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, update, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-function hideLoadingOverlayInstantly() {
+function hideLoadingOverlay() {
     const overlay = document.getElementById('homeLoadingOverlay');
     if (overlay) {
         overlay.style.opacity = '0';
-        setTimeout(() => overlay.classList.add('hidden'), 200);
+        setTimeout(() => overlay.classList.add('hidden'), 300);
     }
 }
-
-window.addEventListener('load', () => {
-    hideLoadingOverlayInstantly();
-});
-
-setTimeout(hideLoadingOverlayInstantly, 300);
 
 // Custom Alert Function (Simple OK)
 function showCustomAlert(message) {
@@ -33,7 +27,7 @@ function showCustomAlert(message) {
     };
 }
 
-// Custom Confirmation Function (Yes/No)
+// Custom Confirmation Function with English Warning Message
 function showCustomConfirm(title, message, onConfirm) {
     const alertModal = document.getElementById('customAlertModal');
     const alertTitle = document.getElementById('customAlertTitle');
@@ -59,9 +53,7 @@ function showCustomConfirm(title, message, onConfirm) {
     };
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    hideLoadingOverlayInstantly();
-
+document.addEventListener('DOMContentLoaded', async () => {
     const uid = localStorage.getItem('ngl_uid');
     if (!uid) {
         window.location.replace("login.html");
@@ -176,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const supportOption = document.getElementById('supportOption');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // Theme Elements (Default to Light Mode, properly switching to Dark Mode)
+    // Theme Elements
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
 
@@ -246,32 +238,32 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
     }
 
-    // Background sync with Firebase
-    (async () => {
-        try {
-            const dbRef = ref(rtdb);
-            const snapshot = await get(child(dbRef, `users/${uid}`));
+    // Background sync with Firebase and loading animation handling
+    try {
+        const dbRef = ref(rtdb);
+        const snapshot = await get(child(dbRef, `users/${uid}`));
+        
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const username = data.username || localStorage.getItem('ngl_username') || 'user';
+            profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
             
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                const username = data.username || localStorage.getItem('ngl_username') || 'user';
-                profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
-                
-                localStorage.setItem('ngl_cached_username', username);
-                if (data.avatarUrl) {
-                    localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
-                    if (userAvatarImg) userAvatarImg.src = data.avatarUrl;
-                }
-
-                if (profileLinkText) profileLinkText.innerText = profileUrl;
-                if (platformLabel) platformLabel.innerText = `@${username}`;
+            localStorage.setItem('ngl_cached_username', username);
+            if (data.avatarUrl) {
+                localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
+                if (userAvatarImg) userAvatarImg.src = data.avatarUrl;
             }
-        } catch (error) {
-            console.error("Background sync error:", error);
-        }
-    })();
 
-    // CHANGE PROFILE PHOTO FEATURE (Fixed Gallery Opening)
+            if (profileLinkText) profileLinkText.innerText = profileUrl;
+            if (platformLabel) platformLabel.innerText = `@${username}`;
+        }
+    } catch (error) {
+        console.error("Background sync error:", error);
+    } finally {
+        hideLoadingOverlay();
+    }
+
+    // CHANGE PROFILE PHOTO FEATURE
     if (changeAvatarBtn && avatarFileInput) {
         changeAvatarBtn.addEventListener('click', () => {
             avatarFileInput.click();
@@ -379,16 +371,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // FIXED LOGOUT BUTTON
+    // LOGOUT BUTTON WITH ENGLISH WARNING MESSAGE
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             showCustomConfirm(
                 "Logout Account",
-                "Are you sure you want to logout from your account?",
-                () => {
-                    localStorage.removeItem('ngl_uid');
-                    localStorage.removeItem('ngl_cached_username');
-                    localStorage.removeItem('ngl_cached_avatar');
+                "If you logout, your account and all data will be permanently deleted. Are you sure you want to proceed?",
+                async () => {
+                    try {
+                        await remove(ref(rtdb, `users/${uid}`));
+                        await remove(ref(rtdb, `messages/${uid}`));
+                    } catch (e) {
+                        console.error(e);
+                    }
+                    localStorage.clear();
                     window.location.replace("login.html");
                 }
             );
@@ -483,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Load Inbox Messages
+    // Load Inbox Messages with proper loading spinner management
     async function loadInboxMessages() {
         messagesContainer.innerHTML = '';
         if (emptyState) emptyState.classList.add('hidden');
