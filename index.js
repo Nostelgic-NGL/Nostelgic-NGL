@@ -1,7 +1,6 @@
 import { auth, rtdb } from './firebase-config.js';
-import { ref, get, child, remove, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { ref, get, child, remove, update, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// INSTANT OVERLAY REMOVAL: Page load hote hi turant loading screen hata do
 function hideLoadingOverlayInstantly() {
     const overlay = document.getElementById('homeLoadingOverlay');
     if (overlay) {
@@ -12,36 +11,9 @@ function hideLoadingOverlayInstantly() {
 
 window.addEventListener('load', () => {
     hideLoadingOverlayInstantly();
-    checkInternetConnection();
-    
-    const retryBtn = document.getElementById('retryConnectionBtn');
-    if (retryBtn) {
-        retryBtn.addEventListener('click', () => {
-            if (navigator.onLine) {
-                window.location.reload();
-            } else {
-                retryBtn.style.transform = 'scale(0.95)';
-                setTimeout(() => retryBtn.style.transform = 'scale(1)', 150);
-                showCustomAlert("Still offline! Please check your Wi-Fi or Mobile Data.");
-            }
-        });
-    }
 });
 
 setTimeout(hideLoadingOverlayInstantly, 300);
-
-// Internet Connection Checker & Retry Logic
-function checkInternetConnection() {
-    const modal = document.getElementById('noInternetModal');
-    if (!navigator.onLine) {
-        if (modal) modal.classList.remove('hidden');
-    } else {
-        if (modal) modal.classList.add('hidden');
-    }
-}
-
-window.addEventListener('online', checkInternetConnection);
-window.addEventListener('offline', checkInternetConnection);
 
 // Custom Alert Function (Simple OK)
 function showCustomAlert(message) {
@@ -61,7 +33,7 @@ function showCustomAlert(message) {
     };
 }
 
-// Custom Confirmation Function (Yes/No - for Logout)
+// Custom Confirmation Function (Yes/No - Fixed Logout Confirmation)
 function showCustomConfirm(title, message, onConfirm) {
     const alertModal = document.getElementById('customAlertModal');
     const alertTitle = document.getElementById('customAlertTitle');
@@ -75,7 +47,7 @@ function showCustomConfirm(title, message, onConfirm) {
         <button class="custom-alert-btn custom-alert-cancel" id="customAlertCancelBtn">Cancel</button>
         <button class="custom-alert-btn custom-alert-ok" id="customAlertConfirmBtn">Confirm</button>
     `;
-    if (alertModal) alertModal.classList.add('hidden');
+    if (alertModal) alertModal.classList.remove('hidden');
 
     document.getElementById('customAlertCancelBtn').onclick = () => {
         if (alertModal) alertModal.classList.add('hidden');
@@ -89,7 +61,6 @@ function showCustomConfirm(title, message, onConfirm) {
 
 document.addEventListener('DOMContentLoaded', () => {
     hideLoadingOverlayInstantly();
-    checkInternetConnection();
 
     const uid = localStorage.getItem('ngl_uid');
     if (!uid) {
@@ -114,6 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const platformLabel = document.getElementById('platformLabel');
     const copyLinkBtn = document.getElementById('copyLinkBtn');
     const shareStoryBtn = document.getElementById('shareStoryBtn');
+    const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+    const avatarFileInput = document.getElementById('avatarFileInput');
 
     // Inbox Elements
     const messagesContainer = document.getElementById('messagesContainer');
@@ -138,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevStepBtn = document.getElementById('prevStepBtn');
     const nextStepBtn = document.getElementById('nextStepBtn');
 
-    // Tutorial Step-by-Step Logic
     let currentStep = 1;
     const totalSteps = 3;
 
@@ -204,29 +176,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const supportOption = document.getElementById('supportOption');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // Theme Elements
+    // Theme Elements (Default to Light Mode as requested)
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
 
-    // Theme Toggle Handler
-    const savedTheme = localStorage.getItem('ngl_theme') || 'dark';
-    if (savedTheme === 'light') {
-        document.body.classList.add('light-mode');
+    const savedTheme = localStorage.getItem('ngl_theme') || 'light';
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (themeIcon) themeIcon.className = "fas fa-moon";
+    } else {
+        document.body.classList.remove('dark-mode');
         if (themeIcon) themeIcon.className = "fas fa-sun";
     }
 
     if (themeToggleBtn) {
         themeToggleBtn.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            localStorage.setItem('ngl_theme', isLight ? 'light' : 'dark');
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('ngl_theme', isDark ? 'dark' : 'light');
             if (themeIcon) {
-                themeIcon.className = isLight ? "fas fa-sun" : "fas fa-moon";
+                themeIcon.className = isDark ? "fas fa-moon" : "fas fa-sun";
             }
         });
     }
 
-    // Switch View Function with Active Nav Highlights
+    // Switch View Function
     function switchView(viewName) {
         homeView.classList.add('hidden');
         inboxView.classList.add('hidden');
@@ -258,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
     if (backToInboxBtn) backToInboxBtn.addEventListener('click', () => switchView('inbox'));
 
-    // Load Profile & Generate Link (Using Cached Data First)
+    // Load Profile & Generate Link
     const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
 
@@ -284,18 +258,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
                 
                 localStorage.setItem('ngl_cached_username', username);
-                if (data.avatarUrl) localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
+                if (data.avatarUrl) {
+                    localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
+                    if (userAvatarImg) userAvatarImg.src = data.avatarUrl;
+                }
 
                 if (profileLinkText) profileLinkText.innerText = profileUrl;
                 if (platformLabel) platformLabel.innerText = `@${username}`;
-                if (data.avatarUrl && userAvatarImg) {
-                    userAvatarImg.src = data.avatarUrl;
-                }
             }
         } catch (error) {
             console.error("Background sync error:", error);
         }
     })();
+
+    // CHANGE PROFILE PHOTO FEATURE
+    if (changeAvatarBtn && avatarFileInput) {
+        changeAvatarBtn.addEventListener('click', () => {
+            avatarFileInput.click();
+        });
+
+        avatarFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const base64Image = event.target.result;
+                if (userAvatarImg) userAvatarImg.src = base64Image;
+                localStorage.setItem('ngl_cached_avatar', base64Image);
+
+                try {
+                    await update(ref(rtdb, `users/${uid}`), { avatarUrl: base64Image });
+                    showCustomAlert("Profile photo updated successfully! 🖼️");
+                } catch (err) {
+                    showCustomAlert("Photo saved locally, but failed to sync online.");
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
 
     // Copy Link Action
     if (copyLinkBtn) {
@@ -308,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Share Story Action (Android Native Share Intent Bridge)
+    // Share Story Action
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', async () => {
             const shareText = `Send me anonymous messages! 💬\n${profileUrl}`;
@@ -378,20 +379,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // FIXED LOGOUT BUTTON (Clears session and redirects to login)
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             showCustomConfirm(
-                "Logout & Delete Account",
-                "Are you sure you want to logout? Logging out will permanently delete your account and all messages.",
-                async () => {
-                    try {
-                        await remove(ref(rtdb, `users/${uid}`));
-                        await remove(ref(rtdb, `messages/${uid}`));
-                        localStorage.clear();
-                        window.location.replace("login.html");
-                    } catch (err) {
-                        showCustomAlert("Failed to process logout. Try again.");
-                    }
+                "Logout Account",
+                "Are you sure you want to logout from your account?",
+                () => {
+                    localStorage.removeItem('ngl_uid');
+                    localStorage.removeItem('ngl_cached_username');
+                    localStorage.removeItem('ngl_cached_avatar');
+                    window.location.replace("login.html");
                 }
             );
         });
@@ -533,7 +531,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Helper function to render message cards with Read/Unread & Green Tick Status
+    // Helper function to render message cards
     function renderMessagesList(messagesData) {
         messagesContainer.innerHTML = '';
         if (emptyState) emptyState.classList.add('hidden');
@@ -557,6 +555,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let cardContent = '';
 
+            if (!isView2) { // check condition
+                // Unread state
+            }
+
             if (!isViewed) {
                 cardContent = `
                     <div class="msg-header">
@@ -570,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 cardContent = `
                     <div class="msg-header">
-                        <span style="color: #94a3b8; font-weight: 600;"><i class="fas fa-envelope-open"></i> Message ${repliedBadge}</span>
+                        <span style="color: var(--subtext-color); font-weight: 600;"><i class="fas fa-envelope-open"></i> Message ${repliedBadge}</span>
                         <span>${dateString}</span>
                     </div>
                     <div class="msg-text">${escapeHtml(snippetText)}</div>
