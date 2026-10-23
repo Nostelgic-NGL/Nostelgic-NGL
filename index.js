@@ -1,26 +1,17 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, update, query, limitToLast, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-window.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('homeLoadingOverlay');
-    if (overlay) {
-        overlay.style.display = 'none';
-        overlay.classList.add('hidden');
-    }
-});
-
 function hideLoadingOverlay() {
     const overlay = document.getElementById('homeLoadingOverlay');
     if (overlay) {
         overlay.style.opacity = '0';
-        overlay.style.display = 'none';
         setTimeout(() => overlay.classList.add('hidden'), 300);
     }
 }
 
 setTimeout(() => {
     hideLoadingOverlay();
-}, 400);
+}, 1000);
 
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
@@ -65,8 +56,6 @@ function showCustomConfirm(title, message, onConfirm) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    hideLoadingOverlay();
-
     const uid = localStorage.getItem('ngl_uid');
     if (!uid) {
         window.location.replace("login.html");
@@ -99,74 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const detailMsgDate = document.getElementById('detailMsgDate');
     const detailDeleteBtn = document.getElementById('detailDeleteBtn');
     const detailReplyBtn = document.getElementById('detailReplyBtn');
-
-    const howToReplyBtn = document.getElementById('howToReplyBtn');
-    const tutorialModal = document.getElementById('tutorialModal');
-    const closeTutorialXBtn = document.getElementById('closeTutorialXBtn');
-    const currentStepNum = document.getElementById('currentStepNum');
-    const tutStep1 = document.getElementById('tutStep1');
-    const tutStep2 = document.getElementById('tutStep2');
-    const tutStep3 = document.getElementById('tutStep3');
-    const prevStepBtn = document.getElementById('prevStepBtn');
-    const nextStepBtn = document.getElementById('nextStepBtn');
-
-    let currentStep = 1;
-    const totalSteps = 3;
-
-    function updateTutorialView() {
-        if (currentStepNum) currentStepNum.innerText = currentStep;
-        if (tutStep1) tutStep1.classList.add('hidden');
-        if (tutStep2) tutStep2.classList.add('hidden');
-        if (tutStep3) tutStep3.classList.add('hidden');
-
-        if (currentStep === 1) {
-            if (tutStep1) tutStep1.classList.remove('hidden');
-            if (prevStepBtn) prevStepBtn.classList.add('hidden');
-            if (nextStepBtn) nextStepBtn.innerText = 'Next';
-        } else if (currentStep === 2) {
-            if (tutStep2) tutStep2.classList.remove('hidden');
-            if (prevStepBtn) prevStepBtn.classList.remove('hidden');
-            if (nextStepBtn) nextStepBtn.innerText = 'Next';
-        } else if (currentStep === 3) {
-            if (tutStep3) tutStep3.classList.remove('hidden');
-            if (prevStepBtn) prevStepBtn.classList.remove('hidden');
-            if (nextStepBtn) nextStepBtn.innerText = 'Got It!';
-        }
-    }
-
-    if (howToReplyBtn && tutorialModal) {
-        howToReplyBtn.addEventListener('click', () => {
-            currentStep = 1;
-            updateTutorialView();
-            tutorialModal.classList.remove('hidden');
-        });
-    }
-
-    if (nextStepBtn) {
-        nextStepBtn.addEventListener('click', () => {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateTutorialView();
-            } else {
-                tutorialModal.classList.add('hidden');
-            }
-        });
-    }
-
-    if (prevStepBtn) {
-        prevStepBtn.addEventListener('click', () => {
-            if (currentStep > 1) {
-                currentStep--;
-                updateTutorialView();
-            }
-        });
-    }
-
-    if (closeTutorialXBtn && tutorialModal) {
-        closeTutorialXBtn.addEventListener('click', () => {
-            tutorialModal.classList.add('hidden');
-        });
-    }
+    const howToReplyDetailBtn = document.getElementById('howToReplyDetailBtn');
 
     const pauseLinkOption = document.getElementById('pauseLinkOption');
     const hardRefreshOption = document.getElementById('hardRefreshOption');
@@ -227,6 +149,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (navInboxBtn) navInboxBtn.addEventListener('click', () => switchView('inbox'));
     if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
     if (backToInboxBtn) backToInboxBtn.addEventListener('click', () => switchView('inbox'));
+
+    if (howToReplyDetailBtn) {
+        howToReplyDetailBtn.addEventListener('click', () => {
+            showCustomAlert("1. Tap 'Reply on Instagram'.\n2. The image with your message will be shared to Instagram Stories.\n3. Add link sticker and post!");
+        });
+    }
 
     const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
@@ -339,16 +267,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let isLinkPaused = localStorage.getItem('ngl_paused') === 'true';
     if (pauseLinkOption) {
-        if (isLinkPaused) pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-play-circle" style="color: #22c55e; margin-right: 8px;"></i> Resume my link';
+        if (isLinkPaused) pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-play-circle" style="color: #22c55e; font-size: 18px;"></i> Resume my link';
         
         pauseLinkOption.addEventListener('click', () => {
             isLinkPaused = !isLinkPaused;
             localStorage.setItem('ngl_paused', isLinkPaused);
             if (isLinkPaused) {
-                pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-play-circle" style="color: #22c55e; margin-right: 8px;"></i> Resume my link';
+                pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-play-circle" style="color: #22c55e; font-size: 18px;"></i> Resume my link';
                 showCustomAlert("Your link has been paused. Nobody can send messages right now.");
             } else {
-                pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-pause-circle" style="color: #ec4899; margin-right: 8px;"></i> Pause my link';
+                pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-pause-circle" style="color: #ec4899; font-size: 18px;"></i> Pause my link';
                 showCustomAlert("Your link is now active again! 🚀");
             }
         });
@@ -399,7 +327,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // THEME-AWARE DYNAMIC STORY REPLY IMAGE GENERATOR
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -444,13 +371,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const boxHeight = Math.max(200, headerHeight + (lines.length * lineHeight) + padding);
             const cornerRadius = 35;
 
-            // DYNAMIC BOX BACKGROUND & BORDER BASED ON THEME
             if (isDarkMode) {
-                // Dark Mode Card Styling (Dark translucent background + Blue glowing border)
                 ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
                 ctx.strokeStyle = '#3b82f6';
             } else {
-                // Light Mode Card Styling (Clean solid white background + Elegant soft border)
                 ctx.fillStyle = '#ffffff';
                 ctx.strokeStyle = '#cbd5e1';
             }
@@ -461,12 +385,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.fill();
             ctx.stroke();
 
-            // HEADER TEXT COLOR
             ctx.font = '600 30px Poppins, sans-serif';
             ctx.fillStyle = isDarkMode ? '#38bdf8' : '#2563eb';
             ctx.fillText("Send Me Anonymous Message", 540, boxY + 55);
 
-            // SEPARATOR LINE COLOR
             ctx.strokeStyle = isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -474,7 +396,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.lineTo(boxX + boxWidth - 50, boxY + 85);
             ctx.stroke();
 
-            // MESSAGE TEXT COLOR (White for dark mode, dark slate for light mode)
             ctx.font = 'bold 36px Poppins, sans-serif';
             ctx.fillStyle = isDarkMode ? '#ffffff' : '#1e293b';
             
@@ -563,7 +484,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const card = document.createElement('div');
             card.className = 'message-card';
             
-            const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'Just now';
+            const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : '10/23/2026';
             
             const isViewed = localStorage.getItem(`ngl_viewed_${msgId}`) === 'true';
             const isReplied = localStorage.getItem(`ngl_replied_${msgId}`) === 'true';
@@ -572,21 +493,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (!isViewed) {
                 cardContent = `
-                    <div class="msg-header">
-                        <span style="color: #ec4899; font-weight: 700;"><i class="fas fa-envelope"></i> New Message !!</span>
-                        <span>${dateString}</span>
-                    </div>
+                    <span style="color: #ec4899; font-weight: 600;"><i class="fas fa-envelope"></i> New Message !!</span>
+                    <span style="color: var(--subtext-color); font-size: 13px;">${dateString}</span>
                 `;
             } else {
-                const snippetText = msg.text.length > 35 ? msg.text.substring(0, 35) + '...' : msg.text;
                 const repliedBadge = isReplied ? `<span style="color: #22c55e; margin-left: 6px;"><i class="fas fa-check-circle"></i></span>` : '';
-                
                 cardContent = `
-                    <div class="msg-header">
-                        <span style="color: var(--subtext-color); font-weight: 600;"><i class="fas fa-envelope-open"></i> Message ${repliedBadge}</span>
-                        <span>${dateString}</span>
-                    </div>
-                    <div class="msg-text">${escapeHtml(snippetText)}</div>
+                    <span style="color: var(--subtext-color); font-weight: 500;"><i class="fas fa-envelope-open"></i> Message ${repliedBadge}</span>
+                    <span style="color: var(--subtext-color); font-size: 13px;">${dateString}</span>
                 `;
             }
 
