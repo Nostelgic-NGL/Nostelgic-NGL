@@ -9,11 +9,6 @@ function hideLoadingOverlay() {
     }
 }
 
-// Safety timeout: Agar 2 second me bhi load na ho toh overlay force-fully hata do taaki app atke nahi
-setTimeout(() => {
-    hideLoadingOverlay();
-}, 2000);
-
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
     const alertTitle = document.getElementById('customAlertTitle');
@@ -57,6 +52,11 @@ function showCustomConfirm(title, message, onConfirm) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Guaranteed safety timeout: 800ms ke andar overlay har halat mein gayab ho jayegi
+    setTimeout(() => {
+        hideLoadingOverlay();
+    }, 800);
+
     const uid = localStorage.getItem('ngl_uid');
     if (!uid) {
         window.location.replace("login.html");
@@ -493,4 +493,4 @@ document.addEventListener('DOMContentLoaded', async () => {
                     hasLoadedFromCache = true;
                     if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
                     renderMessagesList(messagesData);
-          
+              
