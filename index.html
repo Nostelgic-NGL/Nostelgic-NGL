@@ -225,10 +225,6 @@
             transition: all 0.2s ease;
         }
 
-        .btn-primary:active {
-            transform: scale(0.97);
-        }
-
         .btn-gradient {
             background: var(--accent-gradient);
             border: none;
@@ -247,11 +243,6 @@
             transition: all 0.2s ease;
         }
 
-        .btn-gradient:active {
-            transform: scale(0.97);
-        }
-
-        /* Settings and Inbox Card Styles */
         .settings-btn {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -269,30 +260,18 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .settings-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Message Card Style for Inbox */
         .message-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 16px 20px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
         }
 
-        .message-card:active {
-            transform: scale(0.98);
-        }
-
-        /* Bottom Navbar */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -316,18 +295,12 @@
             font-size: 11px;
             gap: 4px;
             cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .nav-item i {
-            font-size: 18px;
         }
 
         .nav-item.active {
             color: #ec4899;
         }
 
-        /* Custom Alert Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -339,7 +312,6 @@
             justify-content: center;
             align-items: center;
             z-index: 10000;
-            backdrop-filter: blur(5px);
         }
 
         .modal-overlay.hidden {
@@ -354,35 +326,14 @@
             width: 90%;
             max-width: 420px;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
         }
 
-        .modal-card h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: var(--text-color);
-        }
-
-        .modal-card p {
-            font-size: 14px;
-            color: var(--subtext-color);
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
-        /* Larger Tutorial Images Styling */
         .tutorial-img {
             width: 100%;
             max-height: 320px;
             object-fit: contain;
             border-radius: 12px;
             margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-        }
-
-        .modal-btn-group {
-            display: flex;
-            gap: 10px;
         }
 
         .custom-alert-btn {
@@ -408,13 +359,11 @@
 </head>
 <body>
 
-    <!-- Loading Overlay -->
     <div id="homeLoadingOverlay">
         <div class="spinner"></div>
         <p style="color: var(--subtext-color); font-size: 14px;">Loading please wait...</p>
     </div>
 
-    <!-- Header -->
     <header>
         <h1>Nostelgic NGL</h1>
         <button id="themeToggleBtn" class="theme-btn">
@@ -422,10 +371,8 @@
         </button>
     </header>
 
-    <!-- App Container -->
     <div class="app-container">
         
-        <!-- Home View -->
         <div id="homeView" class="view-section">
             <div class="profile-card">
                 <div class="avatar-container">
@@ -446,7 +393,6 @@
             </div>
         </div>
 
-        <!-- Inbox View -->
         <div id="inboxView" class="view-section hidden">
             <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 5px;">Inbox</h2>
             <div id="inboxLoadingState" style="text-align: center; padding: 30px; color: var(--subtext-color);">Loading messages...</div>
@@ -454,7 +400,6 @@
             <div id="messagesContainer" style="display: flex; flex-direction: column; gap: 12px;"></div>
         </div>
 
-        <!-- Message Detail View -->
         <div id="messageDetailView" class="view-section hidden">
             <button id="backToInboxBtn" class="btn-primary" style="width: fit-content; padding: 8px 16px; margin-bottom: 10px;"><i class="fas fa-arrow-left"></i> Back to Inbox</button>
             <div class="profile-card" style="align-items: stretch; text-align: left;">
@@ -472,7 +417,6 @@
             </div>
         </div>
 
-        <!-- Settings View -->
         <div id="settingsView" class="view-section hidden">
             <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 5px;">Settings ⚙️</h2>
             <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
@@ -509,7 +453,6 @@
 
     </div>
 
-    <!-- Bottom Navigation Bar -->
     <nav class="bottom-nav">
         <button id="navHomeBtn" class="nav-item active">
             <i class="fas fa-home"></i>
@@ -525,7 +468,6 @@
         </button>
     </nav>
 
-    <!-- Custom Alert Modal -->
     <div id="customAlertModal" class="modal-overlay hidden">
         <div class="modal-card">
             <h3 id="customAlertTitle">Nostelgic NGL</h3>
@@ -536,7 +478,6 @@
         </div>
     </div>
 
-    <!-- Tutorial Modal -->
     <div id="tutorialModal" class="modal-overlay hidden">
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -564,7 +505,6 @@
         </div>
     </div>
 
-    <!-- Main JavaScript Logic -->
     <script type="module" src="index.js"></script>
 </body>
 </html>
