@@ -1,17 +1,17 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// INSTANT OVERLAY REMOVAL: Page load hote hi turant loading screen hata do taaki kabhi na ruke
-function hideLoadingOverlayInstantly() {
-    const overlay = document.getElementById('homeLoadingOverlay');
-    if (overlay) {
-        overlay.style.opacity = '0';
-        setTimeout(() => overlay.classList.add('hidden'), 200);
+// Internet Connection Checker & Retry Logic
+function checkInternetConnection() {
+    const modal = document.getElementById('noInternetModal');
+    if (!navigator.onLine) {
+        if (modal) modal.classList.remove('hidden');
+    } else {
+        if (modal) modal.classList.add('hidden');
     }
 }
 
 window.addEventListener('load', () => {
-    hideLoadingOverlayInstantly();
     checkInternetConnection();
     
     const retryBtn = document.getElementById('retryConnectionBtn');
@@ -27,19 +27,6 @@ window.addEventListener('load', () => {
         });
     }
 });
-
-// Fail-safe timer in case load event takes time
-setTimeout(hideLoadingOverlayInstantly, 300);
-
-// Internet Connection Checker & Retry Logic
-function checkInternetConnection() {
-    const modal = document.getElementById('noInternetModal');
-    if (!navigator.onLine) {
-        if (modal) modal.classList.remove('hidden');
-    } else {
-        if (modal) modal.classList.add('hidden');
-    }
-}
 
 window.addEventListener('online', checkInternetConnection);
 window.addEventListener('offline', checkInternetConnection);
@@ -88,8 +75,7 @@ function showCustomConfirm(title, message, onConfirm) {
     };
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    hideLoadingOverlayInstantly();
+document.addEventListener('DOMContentLoaded', async () => {
     checkInternetConnection();
 
     const uid = localStorage.getItem('ngl_uid');
@@ -273,30 +259,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
     }
 
-    // Background sync with Firebase (Non-blocking)
-    (async () => {
-        try {
-            const dbRef = ref(rtdb);
-            const snapshot = await get(child(dbRef, `users/${uid}`));
+    // Background sync with Firebase
+    try {
+        const dbRef = ref(rtdb);
+        const snapshot = await get(child(dbRef, `users/${uid}`));
+        
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const username = data.username || localStorage.getItem('ngl_username') || 'user';
+            profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
             
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                const username = data.username || localStorage.getItem('ngl_username') || 'user';
-                profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
-                
-                localStorage.setItem('ngl_cached_username', username);
-                if (data.avatarUrl) localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
+            localStorage.setItem('ngl_cached_username', username);
+            if (data.avatarUrl) localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
 
-                if (profileLinkText) profileLinkText.innerText = profileUrl;
-                if (platformLabel) platformLabel.innerText = `@${username}`;
-                if (data.avatarUrl && userAvatarImg) {
-                    userAvatarImg.src = data.avatarUrl;
-                }
+            if (profileLinkText) profileLinkText.innerText = profileUrl;
+            if (platformLabel) platformLabel.innerText = `@${username}`;
+            if (data.avatarUrl && userAvatarImg) {
+                userAvatarImg.src = data.avatarUrl;
             }
-        } catch (error) {
-            console.error("Background sync error:", error);
         }
-    })();
+    } catch (error) {
+        console.error("Background sync error:", error);
+    }
 
     // Copy Link Action
     if (copyLinkBtn) {
@@ -505,4 +489,120 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const messagesQuery = query(ref(rtdb, `messages/${uid}
+            const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
+            const snapshot = await get(messagesQuery);
+            
+            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
+
+            if (snapshot.exists()) {
+                const messagesData = snapshot.val();
+                localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
+                renderMessagesList(messagesData);
+            } else {
+                if (!hasLoadedFromCache) {
+                    messagesContainer.innerHTML = '';
+                    if (emptyState) emptyState.classList.remove('hidden');
+                }
+            }
+        } catch (error) {
+            console.error("Error loading messages from server:", error);
+            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
+            if (!hasLoadedFromCache) {
+                messagesContainer.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+            }
+        }
+    }
+
+    // Helper function to render message cards in the DOM with Read/Unread & Green Tick Status
+    function renderMessagesList(messagesData) {
+        messagesContainer.innerHTML = '';
+        if (emptyState) emptyState.classList.add('hidden');
+        
+        const messageKeys = Object.keys(messagesData).reverse();
+        
+        if (messageKeys.length === 0) {
+            if (emptyState) emptyState.classList.remove('hidden');
+            return;
+        }
+
+        messageKeys.forEach(msgId => {
+            const msg = messagesData[msgId];
+            const card = document.createElement('div');
+            card.className = 'message-card';
+            
+            const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'Just now';
+            
+            const isViewed = localStorage.getItem(`ngl_viewed_${msgId}`) === 'true';
+            const isReplied = localStorage.getItem(`ngl_replied_${msgId}`) === 'true';
+
+            let cardContent = '';
+
+            if (!isViewed) {
+                cardContent = `
+                    <div class="msg-header">
+                        <span style="color: #ec4899; font-weight: 700;"><i class="fas fa-envelope"></i> New Message !!</span>
+                        <span>${dateString}</span>
+                    </div>
+                `;
+            } else {
+                const snippetText = msg.text.length > 35 ? msg.text.substring(0, 35) + '...' : msg.text;
+                const repliedBadge = isReplied ? `<span style="color: #22c55e; margin-left: 6px;"><i class="fas fa-check-circle"></i></span>` : '';
+                
+                cardContent = `
+                    <div class="msg-header">
+                        <span style="color: #94a3b8; font-weight: 600;"><i class="fas fa-envelope-open"></i> Message ${repliedBadge}</span>
+                        <span>${dateString}</span>
+                    </div>
+                    <div class="msg-text">${escapeHtml(snippetText)}</div>
+                `;
+            }
+
+            card.innerHTML = cardContent;
+
+            card.addEventListener('click', () => {
+                localStorage.setItem(`ngl_viewed_${msgId}`, 'true');
+
+                detailMsgText.innerText = msg.text;
+                detailMsgDate.innerText = dateString;
+                switchView('detail');
+
+                detailDeleteBtn.onclick = async () => {
+                    try {
+                        await remove(ref(rtdb, `messages/${uid}/${msgId}`));
+                        
+                        delete messagesData[msgId];
+                        localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
+                        localStorage.removeItem(`ngl_viewed_${msgId}`);
+                        localStorage.removeItem(`ngl_replied_${msgId}`);
+
+                        switchView('inbox');
+                        showCustomAlert("Message deleted.");
+                    } catch (err) {
+                        showCustomAlert("Failed to delete message.");
+                    }
+                };
+
+                if (detailReplyBtn) {
+                    detailReplyBtn.onclick = () => {
+                        localStorage.setItem(`ngl_replied_${msgId}`, 'true');
+                        generateStoryReply(msg.text);
+                    };
+                }
+            });
+
+            messagesContainer.appendChild(card);
+        });
+    }
+});
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
