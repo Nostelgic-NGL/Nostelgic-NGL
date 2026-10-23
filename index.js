@@ -1,5 +1,5 @@
 import { auth, rtdb } from './firebase-config.js';
-import { ref, get, child, remove, update, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { ref, get, child, remove, update, query, limitToLast, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 function hideLoadingOverlay() {
     const overlay = document.getElementById('homeLoadingOverlay');
@@ -9,7 +9,6 @@ function hideLoadingOverlay() {
     }
 }
 
-// Custom Alert Function (Simple OK)
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
     const alertTitle = document.getElementById('customAlertTitle');
@@ -27,7 +26,6 @@ function showCustomAlert(message) {
     };
 }
 
-// Custom Confirmation Function with English Warning Message
 function showCustomConfirm(title, message, onConfirm) {
     const alertModal = document.getElementById('customAlertModal');
     const alertTitle = document.getElementById('customAlertTitle');
@@ -60,18 +58,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Views
     const homeView = document.getElementById('homeView');
     const inboxView = document.getElementById('inboxView');
     const messageDetailView = document.getElementById('messageDetailView');
     const settingsView = document.getElementById('settingsView');
 
-    // Nav Buttons
     const navHomeBtn = document.getElementById('navHomeBtn');
     const navInboxBtn = document.getElementById('navInboxBtn');
     const settingsBtn = document.getElementById('settingsBtn');
 
-    // Home Elements
     const profileLinkText = document.getElementById('profileLinkText');
     const userAvatarImg = document.getElementById('userAvatarImg');
     const platformLabel = document.getElementById('platformLabel');
@@ -80,19 +75,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const changeAvatarBtn = document.getElementById('changeAvatarBtn');
     const avatarFileInput = document.getElementById('avatarFileInput');
 
-    // Inbox Elements
     const messagesContainer = document.getElementById('messagesContainer');
     const emptyState = document.getElementById('emptyState');
     const inboxLoadingState = document.getElementById('inboxLoadingState');
 
-    // Detail View Elements
     const backToInboxBtn = document.getElementById('backToInboxBtn');
     const detailMsgText = document.getElementById('detailMsgText');
     const detailMsgDate = document.getElementById('detailMsgDate');
     const detailDeleteBtn = document.getElementById('detailDeleteBtn');
     const detailReplyBtn = document.getElementById('detailReplyBtn');
 
-    // Tutorial Modal Elements
     const howToReplyBtn = document.getElementById('howToReplyBtn');
     const tutorialModal = document.getElementById('tutorialModal');
     const closeTutorialXBtn = document.getElementById('closeTutorialXBtn');
@@ -161,14 +153,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Settings Options
     const pauseLinkOption = document.getElementById('pauseLinkOption');
     const hardRefreshOption = document.getElementById('hardRefreshOption');
     const feedbackOption = document.getElementById('feedbackOption');
     const supportOption = document.getElementById('supportOption');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // Theme Elements
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
 
@@ -192,7 +182,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Switch View Function
     function switchView(viewName) {
         homeView.classList.add('hidden');
         inboxView.classList.add('hidden');
@@ -224,7 +213,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
     if (backToInboxBtn) backToInboxBtn.addEventListener('click', () => switchView('inbox'));
 
-    // Load Profile & Generate Link
     const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
     let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
 
@@ -238,7 +226,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
     }
 
-    // Background sync with Firebase and loading animation handling
     try {
         const dbRef = ref(rtdb);
         const snapshot = await get(child(dbRef, `users/${uid}`));
@@ -263,7 +250,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         hideLoadingOverlay();
     }
 
-    // CHANGE PROFILE PHOTO FEATURE
+    // REAL-TIME NOTIFICATION LISTENER FOR NEW MESSAGES
+    let isInitialLoad = true;
+    onChildAdded(ref(rtdb, `messages/${uid}`), (snapshot) => {
+        if (isInitialLoad) return; // Skip existing messages on app open
+        if (snapshot.exists()) {
+            const newMsg = snapshot.val();
+            if (window.AndroidBridge && typeof window.AndroidBridge.showNotification === 'function') {
+                window.AndroidBridge.showNotification("New Message !!", newMsg.text || "You received a new anonymous message!");
+            }
+        }
+    });
+    setTimeout(() => { isInitialLoad = false; }, 2000);
+
     if (changeAvatarBtn && avatarFileInput) {
         changeAvatarBtn.addEventListener('click', () => {
             avatarFileInput.click();
@@ -290,7 +289,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Copy Link Action
     if (copyLinkBtn) {
         copyLinkBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(profileUrl).then(() => {
@@ -301,7 +299,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Share Story Action
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', async () => {
             const shareText = `Send me anonymous messages! 💬\n${profileUrl}`;
@@ -326,8 +323,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // ================= SETTINGS ACTIONS =================
-    
     let isLinkPaused = localStorage.getItem('ngl_paused') === 'true';
     if (pauseLinkOption) {
         if (isLinkPaused) pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-play-circle" style="color: #22c55e; margin-right: 8px;"></i> Resume my link';
@@ -371,7 +366,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // LOGOUT BUTTON WITH ENGLISH WARNING MESSAGE
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             showCustomConfirm(
@@ -391,7 +385,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Helper function using ReplyImage.png background template
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -479,7 +472,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
-    // Load Inbox Messages with proper loading spinner management
     async function loadInboxMessages() {
         messagesContainer.innerHTML = '';
         if (emptyState) emptyState.classList.add('hidden');
@@ -527,7 +519,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Helper function to render message cards
     function renderMessagesList(messagesData) {
         messagesContainer.innerHTML = '';
         if (emptyState) emptyState.classList.add('hidden');
