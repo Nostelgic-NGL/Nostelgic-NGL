@@ -250,16 +250,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         hideLoadingOverlay();
     }
 
-    // FIXED: Real-time listener for EVERY new incoming message
+    // FIXED: Notification will now ONLY show generic text, message content is completely hidden
     let isInitialLoad = true;
     setTimeout(() => { isInitialLoad = false; }, 1500);
 
     onChildAdded(ref(rtdb, `messages/${uid}`), (snapshot) => {
         if (isInitialLoad) return;
         if (snapshot.exists()) {
-            const newMsg = snapshot.val();
             if (window.AndroidBridge && typeof window.AndroidBridge.showNotification === 'function') {
-                window.AndroidBridge.showNotification("New Anonymous Message 💬", newMsg.text || "Tap to view your new message!");
+                window.AndroidBridge.showNotification("Nostelgic NGL", "New Anonymous Message 💬");
             }
         }
     });
@@ -551,7 +550,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 `;
             } else {
-                const snippetText = msg.text.length > 35 ? msg.text.source?.substring(0, 35) || msg.text.substring(0, 35) + '...' : msg.text;
+                const snippetText = msg.text.length > 35 ? msg.text.substring(0, 35) + '...' : msg.text;
                 const repliedBadge = isReplied ? `<span style="color: #22c55e; margin-left: 6px;"><i class="fas fa-check-circle"></i></span>` : '';
                 
                 cardContent = `
