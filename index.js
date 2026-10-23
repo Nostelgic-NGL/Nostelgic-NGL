@@ -9,6 +9,11 @@ function hideLoadingOverlay() {
     }
 }
 
+// Safety timeout: Agar 2 second me bhi load na ho toh overlay force-fully hata do taaki app atke nahi
+setTimeout(() => {
+    hideLoadingOverlay();
+}, 2000);
+
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
     const alertTitle = document.getElementById('customAlertTitle');
@@ -384,19 +389,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // AUTOMATIC THEME DETECTION FOR STORY REPLY IMAGE
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
         canvas.height = 1920;
         const ctx = canvas.getContext('2d', { alpha: false });
 
-        // Check if dark mode is active on body
         const isDarkMode = document.body.classList.contains('dark-mode');
 
         const templateImg = new Image();
         templateImg.crossOrigin = "anonymous";
-        // Automatically select template based on current theme
         templateImg.src = isDarkMode ? 'ReplyDark.png' : 'ReplyLight.png';
 
         templateImg.onload = () => {
@@ -491,4 +493,4 @@ document.addEventListener('DOMContentLoaded', async () => {
                     hasLoadedFromCache = true;
                     if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
                     renderMessagesList(messagesData);
-  
+          
