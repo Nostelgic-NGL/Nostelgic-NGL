@@ -33,7 +33,7 @@ function showCustomAlert(message) {
     };
 }
 
-// Custom Confirmation Function (Yes/No - Fixed Logout Confirmation)
+// Custom Confirmation Function (Yes/No)
 function showCustomConfirm(title, message, onConfirm) {
     const alertModal = document.getElementById('customAlertModal');
     const alertTitle = document.getElementById('customAlertTitle');
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const supportOption = document.getElementById('supportOption');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // Theme Elements (Default to Light Mode as requested)
+    // Theme Elements (Default to Light Mode, properly switching to Dark Mode)
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
 
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })();
 
-    // CHANGE PROFILE PHOTO FEATURE
+    // CHANGE PROFILE PHOTO FEATURE (Fixed Gallery Opening)
     if (changeAvatarBtn && avatarFileInput) {
         changeAvatarBtn.addEventListener('click', () => {
             avatarFileInput.click();
@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // FIXED LOGOUT BUTTON (Clears session and redirects to login)
+    // FIXED LOGOUT BUTTON
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             showCustomConfirm(
@@ -554,10 +554,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const isReplied = localStorage.getItem(`ngl_replied_${msgId}`) === 'true';
 
             let cardContent = '';
-
-            if (!isView2) { // check condition
-                // Unread state
-            }
 
             if (!isViewed) {
                 cardContent = `
