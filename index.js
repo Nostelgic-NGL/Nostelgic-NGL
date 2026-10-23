@@ -1,13 +1,28 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, update, query, limitToLast, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+// IMMEDIATE OVERLAY REMOVER: App khulte hi bina kisi delay ke overlay hata do
+window.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('homeLoadingOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+        overlay.classList.add('hidden');
+    }
+});
+
 function hideLoadingOverlay() {
     const overlay = document.getElementById('homeLoadingOverlay');
     if (overlay) {
         overlay.style.opacity = '0';
+        overlay.style.display = 'none';
         setTimeout(() => overlay.classList.add('hidden'), 300);
     }
 }
+
+// Extra safety timeout
+setTimeout(() => {
+    hideLoadingOverlay();
+}, 400);
 
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
@@ -52,10 +67,7 @@ function showCustomConfirm(title, message, onConfirm) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Guaranteed safety timeout: 800ms ke andar overlay har halat mein gayab ho jayegi
-    setTimeout(() => {
-        hideLoadingOverlay();
-    }, 800);
+    hideLoadingOverlay();
 
     const uid = localStorage.getItem('ngl_uid');
     if (!uid) {
@@ -488,9 +500,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         const cachedMessages = localStorage.getItem(`ngl_messages_${uid}`);
         if (cachedMessages) {
             try {
-                const messagesData = JSON.parse(cachedMessages);
-                if (messagesData && Object.keys(messagesData).length > 0) {
-                    hasLoadedFromCache = true;
-                    if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
-                    renderMessagesList(messagesData);
-              
+                const messagesData = JSON.
