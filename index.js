@@ -1,7 +1,6 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, update, query, limitToLast, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// IMMEDIATE OVERLAY REMOVER: App khulte hi bina kisi delay ke overlay hata do
 window.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('homeLoadingOverlay');
     if (overlay) {
@@ -19,7 +18,6 @@ function hideLoadingOverlay() {
     }
 }
 
-// Extra safety timeout
 setTimeout(() => {
     hideLoadingOverlay();
 }, 400);
@@ -401,6 +399,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // THEME-AWARE DYNAMIC STORY REPLY IMAGE GENERATOR
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -445,8 +444,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             const boxHeight = Math.max(200, headerHeight + (lines.length * lineHeight) + padding);
             const cornerRadius = 35;
 
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
-            ctx.strokeStyle = '#3b82f6';
+            // DYNAMIC BOX BACKGROUND & BORDER BASED ON THEME
+            if (isDarkMode) {
+                // Dark Mode Card Styling (Dark translucent background + Blue glowing border)
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+                ctx.strokeStyle = '#3b82f6';
+            } else {
+                // Light Mode Card Styling (Clean solid white background + Elegant soft border)
+                ctx.fillStyle = '#ffffff';
+                ctx.strokeStyle = '#cbd5e1';
+            }
             ctx.lineWidth = 4;
 
             ctx.beginPath();
@@ -454,19 +461,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.fill();
             ctx.stroke();
 
+            // HEADER TEXT COLOR
             ctx.font = '600 30px Poppins, sans-serif';
-            ctx.fillStyle = '#38bdf8';
+            ctx.fillStyle = isDarkMode ? '#38bdf8' : '#2563eb';
             ctx.fillText("Send Me Anonymous Message", 540, boxY + 55);
 
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            // SEPARATOR LINE COLOR
+            ctx.strokeStyle = isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.1)';
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(boxX + 50, boxY + 85);
             ctx.lineTo(boxX + boxWidth - 50, boxY + 85);
             ctx.stroke();
 
+            // MESSAGE TEXT COLOR (White for dark mode, dark slate for light mode)
             ctx.font = 'bold 36px Poppins, sans-serif';
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = isDarkMode ? '#ffffff' : '#1e293b';
             
             let startY = boxY + 135;
             for (let i = 0; i < lines.length; i++) {
@@ -538,7 +548,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderMessagesList(messagesData) {
-        messagesContainer.innerHTML = '`';
+        messagesContainer.innerHTML = '';
         if (emptyState) emptyState.classList.add('hidden');
         
         const messageKeys = Object.keys(messagesData).reverse();
