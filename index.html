@@ -3,41 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nostelgic NGL</title>
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
+    <title>Nostelgic NGL - Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: #131b2e;
-            --text-color: #ffffff;
-            --subtext-color: #94a3b8;
-            --accent-gradient: linear-gradient(135deg, #ec4899, #8b5cf6);
-            --border-color: rgba(255, 255, 255, 0.08);
+            --bg-color: #f8fafc;
+            --text-color: #0f172a;
+            --card-bg: #ffffff;
+            --card-border: rgba(0, 0, 0, 0.08);
+            --subtext-color: #64748b;
+            --input-bg: rgba(0, 0, 0, 0.02);
+            --nav-bg: #ffffff;
+            --nav-border: rgba(0, 0, 0, 0.08);
+            --modal-bg: #ffffff;
         }
 
         body.dark-mode {
             --bg-color: #0b0f19;
-            --card-bg: #131b2e;
             --text-color: #ffffff;
+            --card-bg: #131b2e;
+            --card-border: rgba(255, 255, 255, 0.08);
             --subtext-color: #94a3b8;
-        }
-
-        body:not(.dark-mode) {
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #0f172a;
-            --subtext-color: #64748b;
-            --border-color: rgba(0, 0, 0, 0.08);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            --input-bg: rgba(255, 255, 255, 0.03);
+            --nav-bg: #0b0f19;
+            --nav-border: rgba(255, 255, 255, 0.08);
+            --modal-bg: #131b2e;
         }
 
         body {
@@ -48,447 +41,378 @@
             flex-direction: column;
             justify-content: space-between;
             padding-bottom: 70px;
+            transition: background 0.3s, color 0.3s;
         }
+        .hidden { display: none !important; }
 
-        /* Loading Overlay */
-        #homeLoadingOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
-        }
-
-        #homeLoadingOverlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-            display: none;
-        }
-
-        .spinner {
-            width: 45px;
-            height: 45px;
-            border: 4px solid var(--border-color);
-            border-top: 4px solid #ec4899;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 15px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Header Top */
-        header {
+        .top-bar {
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
         }
-
-        h1 {
-            font-size: 22px;
-            font-weight: 700;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
+        .logo { font-size: 20px; font-weight: 700; background: linear-gradient(135deg, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .theme-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
             color: var(--text-color);
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.1s ease, background 0.2s;
         }
+        .theme-btn:active { transform: scale(0.92); }
 
-        /* Main App Container */
-        .app-container {
+        .main-container {
             flex: 1;
-            padding: 10px 20px;
-            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            max-width: 480px;
             width: 100%;
             margin: 0 auto;
         }
 
-        .view-section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .view-section.hidden {
-            display: none;
-        }
-
-        /* Profile Card */
         .profile-card {
             background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--card-border);
+            width: 100%;
             border-radius: 24px;
             padding: 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
         }
 
         .avatar-container {
             position: relative;
-            width: 100px;
-            height: 100px;
+            cursor: pointer;
             margin-bottom: 15px;
         }
-
-        .avatar-container img {
-            width: 100%;
-            height: 100%;
+        .avatar-box {
+            width: 90px; height: 90px;
             border-radius: 50%;
-            object-fit: cover;
+            overflow: hidden;
             border: 3px solid #ec4899;
         }
-
-        .camera-btn {
+        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .avatar-edit-badge {
             position: absolute;
-            bottom: 0;
-            right: 0;
+            bottom: 0; right: 0;
             background: #ec4899;
-            color: #fff;
-            border: none;
-            width: 32px;
-            height: 32px;
+            color: white;
+            width: 30px; height: 30px;
             border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             font-size: 12px;
+            border: 2px solid var(--card-bg);
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
-        .username-label {
-            font-size: 16px;
-            font-weight: 600;
+        .platform-badge {
+            background: rgba(236, 72, 153, 0.15);
             color: #ec4899;
-            margin-bottom: 20px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
         }
-
         .link-box {
-            background: rgba(0, 0, 0, 0.15);
-            border: 1px solid var(--border-color);
-            padding: 12px 15px;
+            background: var(--input-bg);
+            border: 1px dashed var(--card-border);
+            padding: 12px;
             border-radius: 12px;
             width: 100%;
-            text-align: center;
             font-size: 13px;
             color: var(--subtext-color);
             word-break: break-all;
             margin-bottom: 20px;
         }
 
-        .action-buttons-row {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-        }
-
-        .btn-primary {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 14px;
-            border-radius: 14px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            flex: 1;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary:active {
-            transform: scale(0.97);
-        }
-
-        .btn-gradient {
-            background: var(--accent-gradient);
-            border: none;
-            color: #ffffff;
-            padding: 14px;
-            border-radius: 14px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            flex: 1;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
-            transition: all 0.2s ease;
-        }
-
-        .btn-gradient:active {
-            transform: scale(0.97);
-        }
-
-        /* Message Card Style for Inbox */
-        .message-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .message-card:active {
-            transform: scale(0.98);
-        }
-
-        .msg-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            color: var(--subtext-color);
-            margin-bottom: 6px;
-        }
-
-        .msg-text {
-            font-size: 14px;
-            color: var(--text-color);
-            font-weight: 500;
-        }
-
-        /* Bottom Navbar */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--card-bg);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            z-index: 1000;
-        }
-
-        .nav-item {
-            background: none;
-            border: none;
-            color: var(--subtext-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 11px;
-            gap: 4px;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .nav-item i {
-            font-size: 18px;
-        }
-
-        .nav-item.active {
-            color: #ec4899;
-        }
-
-        /* Custom Alert Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-overlay.hidden {
-            display: none;
-        }
-
-        .modal-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 25px;
-            width: 85%;
-            max-width: 340px;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-        }
-
-        .modal-card h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: var(--text-color);
-        }
-
-        .modal-card p {
-            font-size: 14px;
-            color: var(--subtext-color);
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        .modal-btn-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .custom-alert-btn {
+        .btn-group { display: flex; gap: 10px; width: 100%; }
+        .action-btn {
             flex: 1;
             padding: 12px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
+            border-radius: 14px;
             border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: transform 0.1s ease, opacity 0.2s;
         }
+        .action-btn:active { transform: scale(0.96); opacity: 0.85; }
+        .btn-primary { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3); }
+        .btn-secondary { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-color); }
 
-        .custom-alert-ok {
-            background: var(--accent-gradient);
-            color: white;
+        .section-title { width: 100%; font-size: 22px; font-weight: 700; margin-bottom: 20px; text-align: left; color: var(--text-color); }
+        .messages-container { width: 100%; display: flex; flex-direction: column; gap: 15px; }
+        .message-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 18px;
+            display: flex; flex-direction: column; gap: 10px;
+            cursor: pointer;
+            transition: transform 0.1s ease, border-color 0.2s;
         }
+        .message-card:active { transform: scale(0.98); }
+        .msg-header { display: flex; justify-content: space-between; font-size: 12px; color: var(--subtext-color); }
+        .msg-text { font-size: 15px; color: var(--text-color); line-height: 1.5; word-break: break-word; font-weight: 600; }
 
-        .custom-alert-cancel {
-            background: rgba(255, 255, 255, 0.08);
+        .back-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
             color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
         }
+
+        .detail-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 24px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        }
+
+        .detail-text {
+            font-size: 18px;
+            color: var(--text-color);
+            line-height: 1.6;
+            word-break: break-word;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .settings-list { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+        .setting-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 16px;
+            border-radius: 14px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 15px; font-weight: 500; cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            text-decoration: none; color: var(--text-color);
+        }
+        .setting-item:active { transform: scale(0.98); background: var(--input-bg); }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--nav-bg);
+            border-top: 1px solid var(--nav-border);
+            display: flex; justify-content: space-around;
+            padding: 12px 0;
+            z-index: 100;
+        }
+        .nav-item {
+            background: none; border: none; color: var(--subtext-color);
+            font-size: 18px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px;
+            transition: transform 0.1s ease, color 0.2s;
+        }
+        .nav-item:active { transform: scale(0.88); }
+        .nav-item i { font-size: 20px; }
+        .nav-item.active { color: #ec4899; }
+
+        .custom-alert-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .custom-alert-box {
+            background: var(--modal-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            padding: 24px; border-radius: 20px;
+            width: 100%; max-width: 380px;
+            text-align: center; display: flex; flex-direction: column; gap: 15px;
+            max-height: 90vh; overflow-y: auto;
+        }
+        .custom-alert-box p { font-size: 14px; color: var(--subtext-color); }
+        .custom-alert-btn-group { display: flex; gap: 10px; margin-top: 5px; }
+        .custom-alert-btn {
+            flex: 1; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none;
+        }
+        .custom-alert-ok { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: white; }
+        .custom-alert-cancel { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-color); }
     </style>
 </head>
 <body>
 
-    <!-- Loading Overlay -->
-    <div id="homeLoadingOverlay">
-        <div class="spinner"></div>
-        <p style="color: var(--subtext-color); font-size: 14px;">Loading please wait...</p>
+    <div id="homeLoadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.3s ease;">
+        <div style="width: 42px; height: 42px; border: 4px solid var(--card-border); border-top: 4px solid #ec4899; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 14px;"></div>
+        <p style="color: var(--text-color); font-size: 14px; font-weight: 500;">Loading please wait...</p>
     </div>
 
-    <!-- Header -->
-    <header>
-        <h1>Nostelgic NGL</h1>
-        <button id="themeToggleBtn" class="theme-btn">
-            <i id="themeIcon" class="fas fa-sun"></i>
-        </button>
-    </header>
-
-    <!-- App Container -->
-    <div class="app-container">
-        
-        <!-- Home View -->
-        <div id="homeView" class="view-section">
-            <div class="profile-card">
-                <div class="avatar-container">
-                    <img id="userAvatarImg" src="default-avatar.png" alt="Avatar">
-                    <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
-                    <button id="changeAvatarBtn" class="camera-btn"><i class="fas fa-camera"></i></button>
-                </div>
-                <span id="platformLabel" class="username-label">@user</span>
-                
-                <div class="link-box">
-                    <span id="profileLinkText">Loading link...</span>
-                </div>
-
-                <div class="action-buttons-row">
-                    <button id="copyLinkBtn" class="btn-primary"><i class="fas fa-copy"></i> Copy Link</button>
-                    <button id="shareStoryBtn" class="btn-gradient"><i class="fas fa-share-alt"></i> Share</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Inbox View -->
-        <div id="inboxView" class="view-section hidden">
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">Your Messages 💬</h2>
-            <div id="inboxLoadingState" style="text-align: center; padding: 30px; color: var(--subtext-color);">Loading messages...</div>
-            <div id="emptyState" class="hidden" style="text-align: center; padding: 40px; color: var(--subtext-color);">No messages yet! Share your link to get started.</div>
-            <div id="messagesContainer" style="display: flex; flex-direction: column; gap: 12px;"></div>
-        </div>
-
-        <!-- Message Detail View -->
-        <div id="messageDetailView" class="view-section hidden">
-            <button id="backToInboxBtn" class="btn-primary" style="width: fit-content; padding: 8px 16px; margin-bottom: 10px;"><i class="fas fa-arrow-left"></i> Back</button>
-            <div class="profile-card" style="align-items: stretch; text-align: left;">
-                <span id="detailMsgDate" style="font-size: 12px; color: var(--subtext-color); margin-bottom: 10px;">Just now</span>
-                <p id="detailMsgText" style="font-size: 16px; line-height: 1.6; word-break: break-word; margin-bottom: 25px;"></p>
-                
-                <div style="display: flex; gap: 10px;">
-                    <button id="detailReplyBtn" class="btn-gradient" style="flex: 2;"><i class="fas fa-reply"></i> Reply on Instagram</button>
-                    <button id="detailDeleteBtn" class="btn-primary" style="flex: 1; border-color: rgba(239, 68, 68, 0.4); color: #ef4444;"><i class="fas fa-trash"></i> Delete</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings View -->
-        <div id="settingsView" class="view-section hidden">
-            <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">Settings ⚙️</h2>
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                <button id="pauseLinkOption" class="btn-primary" style="justify-content: flex-start;"><i class="fas fa-pause-circle" style="color: #ec4899; margin-right: 8px;"></i> Pause my link</button>
-                <button id="hardRefreshOption" class="btn-primary" style="justify-content: flex-start;"><i class="fas fa-sync-alt" style="color: #3b82f6; margin-right: 8px;"></i> Hard Refresh & Clear Cache</button>
-                <button id="feedbackOption" class="btn-primary" style="justify-content: flex-start;"><i class="fas fa-comment-dots" style="color: #10b981; margin-right: 8px;"></i> Send Feedback</button>
-                <button id="supportOption" class="btn-primary" style="justify-content: flex-start;"><i class="fas fa-headset" style="color: #f59e0b; margin-right: 8px;"></i> Support & Help</button>
-                <button id="logoutBtn" class="btn-primary" style="justify-content: flex-start; border-color: rgba(239, 68, 68, 0.4); color: #ef4444;"><i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i> Logout Account</button>
-            </div>
-        </div>
-
+    <div class="top-bar">
+        <div class="logo">Nostelgic NGL</div>
+        <button class="theme-btn" id="themeToggleBtn"><i class="fas fa-sun" id="themeIcon"></i></button>
     </div>
 
-    <!-- Bottom Navigation Bar -->
-    <nav class="bottom-nav">
-        <button id="navHomeBtn" class="nav-item active">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </button>
-        <button id="navInboxBtn" class="nav-item">
-            <i class="fas fa-inbox"></i>
-            <span>Inbox</span>
-        </button>
-        <button id="settingsBtn" class="nav-item">
-            <i class="fas fa-cog"></i>
-            <span>Settings</span>
-        </button>
-    </nav>
+    <div class="main-container">
+        <div id="homeView" class="profile-card">
+            <div class="avatar-container" id="changeAvatarBtn" title="Change Profile Photo">
+                <div class="avatar-box">
+                    <img id="userAvatarImg" src="https://via.placeholder.com/150" alt="Avatar">
+                </div>
+                <div class="avatar-edit-badge"><i class="fas fa-camera"></i></div>
+            </div>
+            
+            <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
 
-    <!-- Custom Alert Modal -->
-    <div id="customAlertModal" class="modal-overlay hidden">
-        <div class="modal-card">
-            <h3 id="customAlertTitle">Nostelgic NGL</h3>
-            <p id="customAlertText">Alert message here...</p>
-            <div id="customAlertBtnGroup" class="modal-btn-group">
+            <div class="platform-badge" id="platformLabel">@user</div>
+            <div class="link-box" id="profileLinkText">Loading link...</div>
+            <div class="btn-group">
+                <button class="action-btn btn-secondary" id="copyLinkBtn"><i class="fas fa-copy"></i> Copy Link</button>
+                <button class="action-btn btn-primary" id="shareStoryBtn"><i class="fas fa-share-nodes"></i> Share</button>
+            </div>
+        </div>
+
+        <div id="inboxView" class="hidden" style="width: 100%;">
+            <div class="section-title">Inbox</div>
+            <div class="messages-container" id="messagesContainer"></div>
+            
+            <div id="inboxLoadingState" style="text-align: center; color: var(--subtext-color); margin-top: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <div style="width: 40px; height: 40px; border: 4px solid var(--card-border); border-top: 4px solid #ec4899; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 14px;"></div>
+                <p style="color: var(--text-color); font-size: 14px; font-weight: 500;">Loading messages please wait...</p>
+            </div>
+
+            <div id="emptyState" class="hidden" style="text-align: center; color: var(--subtext-color); margin-top: 50px;">
+                <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 10px; opacity: 0.5;"></i>
+                <p>No messages yet!</p>
+            </div>
+        </div>
+
+        <div id="messageDetailView" class="hidden" style="width: 100%;">
+            <button class="back-btn" id="backToInboxBtn"><i class="fas fa-arrow-left"></i> Back to Inbox</button>
+            <div class="detail-card">
+                <div class="msg-header">
+                    <span id="detailMsgSender">New Message!</span>
+                    <span id="detailMsgDate">Just now</span>
+                </div>
+                <div class="detail-text" id="detailMsgText">Message text goes here...</div>
+                
+                <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                    <button class="action-btn btn-primary" id="detailReplyBtn"><i class="fab fa-instagram"></i> Reply on Instagram</button>
+                    
+                    <button class="action-btn" id="howToReplyBtn" style="background: rgba(139, 92, 246, 0.15); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.3);">
+                        <i class="fas fa-question-circle"></i> How to Reply on Instagram?
+                    </button>
+
+                    <button class="action-btn" id="detailDeleteBtn" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;"><i class="fas fa-trash"></i> Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="settingsView" class="hidden" style="width: 100%;">
+            <div class="section-title">Settings</div>
+            <div class="settings-list">
+                <div class="setting-item" id="pauseLinkOption">
+                    <span><i class="fas fa-pause-circle" style="color: #ec4899; margin-right: 8px;"></i> Pause my link</span>
+                    <i class="fas fa-chevron-right" style="color: var(--subtext-color); font-size: 13px;"></i>
+                </div>
+                <div class="setting-item" id="hardRefreshOption">
+                    <span><i class="fas fa-rotate" style="color: #38bdf8; margin-right: 8px;"></i> Clear Cache & Hard Refresh</span>
+                    <i class="fas fa-chevron-right" style="color: var(--subtext-color); font-size: 13px;"></i>
+                </div>
+                <a href="https://instagram.com/Jitu_Gurjar_99" class="setting-item">
+                    <span><i class="fab fa-instagram" style="color: #ec4899; margin-right: 8px;"></i> Follow Developer</span>
+                    <i class="fas fa-external-link-alt" style="color: var(--subtext-color); font-size: 13px;"></i>
+                </a>
+                <div class="setting-item" id="feedbackOption">
+                    <span><i class="fas fa-comment-dots" style="color: #a855f7; margin-right: 8px;"></i> Feedback</span>
+                    <i class="fas fa-chevron-right" style="color: var(--subtext-color); font-size: 13px;"></i>
+                </div>
+                <div class="setting-item" id="supportOption">
+                    <span><i class="fas fa-headset" style="color: #38bdf8; margin-right: 8px;"></i> Support</span>
+                    <i class="fas fa-chevron-right" style="color: var(--subtext-color); font-size: 13px;"></i>
+                </div>
+                <div class="setting-item" id="logoutBtn" style="color: #f59e0b;">
+                    <span><i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i> Logout</span>
+                    <i class="fas fa-chevron-right" style="font-size: 13px;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item active" id="navHomeBtn"><i class="fas fa-home"></i>Home</button>
+        <button class="nav-item" id="navInboxBtn"><i class="fas fa-inbox"></i>Inbox</button>
+        <button class="nav-item" id="settingsBtn"><i class="fas fa-gear"></i>Settings</button>
+    </div>
+
+    <div id="tutorialModal" class="custom-alert-modal hidden">
+        <div class="custom-alert-box" style="text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 12px; margin-bottom: 10px;">
+                <h3 style="font-size: 15px; font-weight: 600; color: #c084fc;"><i class="fas fa-lightbulb"></i> How to Reply (Step <span id="currentStepNum">1</span> of 3)</h3>
+                <button id="closeTutorialXBtn" style="background: none; border: none; color: inherit; font-size: 18px; cursor: pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div id="tutorialStepsContainer" style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+                <div class="tutorial-step-pane" id="tutStep1">
+                    <p style="font-weight: 600; margin-bottom: 8px;">1. Click on the <b>Reply on Instagram</b> button</p>
+                    <div style="width: 100%; height: 320px; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--card-border);">
+                        <img src="Step1.png" alt="Step 1" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="tutorial-step-pane hidden" id="tutStep2">
+                    <p style="font-weight: 600; margin-bottom: 8px;">2. Now find <b>Instagram</b> and click on it[cite: 7]</p>
+                    <div style="width: 100%; height: 320px; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--card-border);">
+                        <img src="Step2.png" alt="Step 2" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="tutorial-step-pane hidden" id="tutStep3">
+                    <p style="font-weight: 600; margin-bottom: 8px;">3. Now click on <b>Stories</b>[cite: 6]</p>
+                    <div style="width: 100%; height: 320px; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--card-border);">
+                        <img src="Step3.png" alt="Step 3" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="custom-alert-btn custom-alert-cancel hidden" id="prevStepBtn">Back</button>
+                <button class="custom-alert-btn custom-alert-ok" id="nextStepBtn" style="flex: 1;">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="customAlertModal" class="custom-alert-modal hidden">
+        <div class="custom-alert-box" style="text-align: center;">
+            <h3 style="font-size: 18px; font-weight: 600;" id="customAlertTitle">Nostelgic NGL</h3>
+            <p id="customAlertText">Alert message here</p>
+            <div class="custom-alert-btn-group" id="customAlertBtnGroup">
                 <button class="custom-alert-btn custom-alert-ok" id="customAlertOkBtn">OK</button>
             </div>
         </div>
     </div>
 
-    <!-- Main JavaScript Logic -->
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
     <script type="module" src="index.js"></script>
 </body>
 </html>
