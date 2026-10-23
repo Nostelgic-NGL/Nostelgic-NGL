@@ -9,7 +9,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        /* Default: Light Mode as requested */
+        /* Default: Light Mode */
         :root {
             --bg-color: #f8fafc;
             --text-color: #0f172a;
@@ -107,7 +107,6 @@
         }
         .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Change Profile Photo Overlay Badge */
         .avatar-edit-badge {
             position: absolute;
             bottom: 0; right: 0;
@@ -305,7 +304,8 @@
                 <div class="avatar-edit-badge"><i class="fas fa-camera"></i></div>
             </div>
             
-            <input type="file" id="avatarFileInput" accept="image/*" class="hidden">
+            <!-- File Input placed directly inside body to ensure gallery trigger works on all devices -->
+            <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
 
             <div class="platform-badge" id="platformLabel">@user</div>
             <div class="link-box" id="profileLinkText">Loading link...</div>
