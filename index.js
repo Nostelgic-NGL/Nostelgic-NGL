@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const detailDeleteBtn = document.getElementById('detailDeleteBtn');
     const detailReplyBtn = document.getElementById('detailReplyBtn');
 
-    const howToReplyBtn = document.getElementById('howToReplyBtn');
+    const howToReplyDetailBtn = document.getElementById('howToReplyDetailBtn');
     const tutorialModal = document.getElementById('tutorialModal');
     const closeTutorialXBtn = document.getElementById('closeTutorialXBtn');
     const currentStepNum = document.getElementById('currentStepNum');
@@ -134,8 +134,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    if (howToReplyBtn && tutorialModal) {
-        howToReplyBtn.addEventListener('click', () => {
+    if (howToReplyDetailBtn && tutorialModal) {
+        howToReplyDetailBtn.addEventListener('click', () => {
             currentStep = 1;
             updateTutorialView();
             tutorialModal.classList.remove('hidden');
@@ -399,7 +399,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // THEME-AWARE DYNAMIC STORY REPLY IMAGE GENERATOR
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -630,5 +629,5 @@ function escapeHtml(text) {
         '"': '&quot;',
         "'": '&#039;'
     };
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    return text.oped ? text : text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
