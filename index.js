@@ -250,18 +250,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         hideLoadingOverlay();
     }
 
-    // REAL-TIME NOTIFICATION LISTENER FOR NEW MESSAGES
+    // FIXED: Real-time listener for EVERY new incoming message
     let isInitialLoad = true;
+    setTimeout(() => { isInitialLoad = false; }, 1500);
+
     onChildAdded(ref(rtdb, `messages/${uid}`), (snapshot) => {
-        if (isInitialLoad) return; // Skip existing messages on app open
+        if (isInitialLoad) return;
         if (snapshot.exists()) {
             const newMsg = snapshot.val();
             if (window.AndroidBridge && typeof window.AndroidBridge.showNotification === 'function') {
-                window.AndroidBridge.showNotification("New Message !!", newMsg.text || "You received a new anonymous message!");
+                window.AndroidBridge.showNotification("New Anonymous Message 💬", newMsg.text || "Tap to view your new message!");
             }
         }
     });
-    setTimeout(() => { isInitialLoad = false; }, 2000);
 
     if (changeAvatarBtn && avatarFileInput) {
         changeAvatarBtn.addEventListener('click', () => {
@@ -550,7 +551,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 `;
             } else {
-                const snippetText = msg.text.length > 35 ? msg.text.substring(0, 35) + '...' : msg.text;
+                const snippetText = msg.text.length > 35 ? msg.text.source?.substring(0, 35) || msg.text.substring(0, 35) + '...' : msg.text;
                 const repliedBadge = isReplied ? `<span style="color: #22c55e; margin-left: 6px;"><i class="fas fa-check-circle"></i></span>` : '';
                 
                 cardContent = `
