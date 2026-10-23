@@ -75,7 +75,7 @@ function showCustomConfirm(title, message, onConfirm) {
         <button class="custom-alert-btn custom-alert-cancel" id="customAlertCancelBtn">Cancel</button>
         <button class="custom-alert-btn custom-alert-ok" id="customAlertConfirmBtn">Confirm</button>
     `;
-    if (alertModal) alertModal.classList.remove('hidden');
+    if (alertModal) alertModal.classList.add('hidden');
 
     document.getElementById('customAlertCancelBtn').onclick = () => {
         if (alertModal) alertModal.classList.add('hidden');
@@ -308,23 +308,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Share Story Action (Fixed Webview Share Error)
+    // Share Story Action (Android Native Share Intent Bridge)
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', async () => {
-            const shareData = {
-                title: 'Nostelgic NGL',
-                text: 'Send me anonymous messages! 💬',
-                url: profileUrl
-            };
+            const shareText = `Send me anonymous messages! 💬\n${profileUrl}`;
 
-            if (navigator.share) {
+            if (window.AndroidBridge && typeof window.AndroidBridge.shareText === 'function') {
+                window.AndroidBridge.shareText(shareText);
+            } else if (navigator.share) {
                 try {
-                    await navigator.share(shareData);
+                    await navigator.share({
+                        title: 'Nostelgic NGL',
+                        text: 'Send me anonymous messages! 💬',
+                        url: profileUrl
+                    });
                 } catch (err) {
                     console.log("Share dismissed or failed", err);
                 }
-            } else if (window.AndroidBridge && typeof window.AndroidBridge.shareText === 'function') {
-                window.AndroidBridge.shareText(profileUrl);
             } else {
                 navigator.clipboard.writeText(profileUrl).then(() => {
                     showCustomAlert("Link copied to clipboard! 📋");
