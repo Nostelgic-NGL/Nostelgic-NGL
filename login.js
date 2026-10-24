@@ -34,6 +34,30 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // Default mode is Light, persistent via localStorage
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const savedTheme = localStorage.getItem('ngl_theme') || 'light';
+
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (themeIcon) themeIcon.className = "fas fa-moon";
+    } else {
+        document.body.classList.remove('dark-mode');
+        if (themeIcon) themeIcon.className = "fas fa-sun";
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('ngl_theme', isDark ? 'dark' : 'light');
+            if (themeIcon) {
+                themeIcon.className = isDark ? "fas fa-moon" : "fas fa-sun";
+            }
+        });
+    }
+
     const welcomeScreen = document.getElementById('welcomeScreen');
     const getStartedBtn = document.getElementById('getStartedBtn');
     const step1 = document.getElementById('step1');
@@ -122,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             userData.platform = platform;
             const activeIndicator = targetCard.querySelector('.radio-indicator');
             if (activeIndicator) {
-                activeIndicator.innerHTML = '<div style="width: 20px; height: 20px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #030712;"></div></div>';
+                activeIndicator.innerHTML = '<div style="width: 20px; height: 20px; border-radius: 50%; background: #ec4899; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #ffffff;"></div></div>';
             }
         };
 
@@ -183,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (usernameStatusText) {
-                usernameStatusText.innerHTML = `<div style="display: inline-flex; align-items: center; gap: 8px; color: #94a3b8;"><div style="width: 14px; height: 14px; border: 2px solid #94a3b8; border-top: 2px solid transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div> Checking username, please wait...</div>`;
+                usernameStatusText.innerHTML = `<div style="display: inline-flex; align-items: center; gap: 8px; color: var(--subtext-color);"><div style="width: 14px; height: 14px; border: 2px solid var(--subtext-color); border-top: 2px solid transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div> Checking username, please wait...</div>`;
                 usernameStatusText.classList.remove('hidden');
             }
 
