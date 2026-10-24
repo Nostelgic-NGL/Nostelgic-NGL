@@ -243,6 +243,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
 
+    // DEFAULT MODE: LIGHT MODE, PERSISTENCE SAVED IN LOCALSTORAGE
     const savedTheme = localStorage.getItem('ngl_theme') || 'light';
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-mode');
@@ -379,10 +380,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // HOME SCREEN SHARE BUTTON: Detects Theme and loads Link-Share-Dark-Theme.png or Link-Share-Light-Theme.png
+    // SHARE BUTTON: Copies link automatically AND opens theme-aware share menu
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', () => {
-            generateLinkShareImage();
+            navigator.clipboard.writeText(profileUrl).then(() => {
+                generateLinkShareImage();
+            }).catch(() => {
+                generateLinkShareImage();
+            });
         });
     }
 
@@ -432,9 +437,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else if (navigator.share) {
                 navigator.share({ title: 'Nostelgic NGL', text: shareText, url: profileUrl }).catch(() => {});
             } else {
-                navigator.clipboard.writeText(profileUrl).then(() => {
-                    showCustomAlert("Link copied to clipboard! 📋");
-                });
+                showCustomAlert("Link copied to clipboard! 📋");
             }
         };
     }
