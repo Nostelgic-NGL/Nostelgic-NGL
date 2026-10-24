@@ -3,5 +3,5 @@
   "updateTitle": "New Update Available! 🚀",
   "updateMessage": "A new version of Nostelgic NGL is available. Please update now!",
   "updateUrl": "https://nostelgic-ngl.github.io/Nostelgic-NGL/",
-  "forceUpdate": false
+  "forceUpdate": true
 }
