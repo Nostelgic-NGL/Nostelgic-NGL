@@ -269,7 +269,7 @@
     </div>
 
     <div class="main-container">
-        <!-- Home View with Full-Width Copy Link and Separate Promo Card for Share -->
+        <!-- Home View -->
         <div id="homeView" style="width: 100%; display: flex; flex-direction: column; gap: 20px;">
             <div class="profile-card" style="margin-bottom: 0;">
                 <div class="avatar-container" id="changeAvatarBtn" title="Change Profile Photo">
@@ -284,15 +284,19 @@
                 <div class="platform-badge" id="platformLabel">@user</div>
                 <div class="link-box" id="profileLinkText">Loading link...</div>
                 
-                <!-- Full Width Copy Link Button -->
                 <button class="action-btn btn-secondary" id="copyLinkBtn"><i class="fas fa-copy"></i> Copy Link</button>
             </div>
 
-            <!-- Separate Promo Card for Share Button -->
+            <!-- Share Story Promo Card with Share Button & How to Share Tutorial Button -->
             <div class="profile-card" style="padding: 22px; text-align: center; margin-bottom: 0;">
                 <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 6px;">Share on Instagram Story 🚀</h3>
                 <p style="font-size: 13px; color: var(--subtext-color); margin-bottom: 15px;">Get more anonymous messages by sharing your link directly on your story!</p>
-                <button class="action-btn btn-primary" id="shareStoryBtn"><i class="fas fa-share-nodes"></i> Share</button>
+                <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                    <button class="action-btn btn-primary" id="shareStoryBtn"><i class="fas fa-share-nodes"></i> Share</button>
+                    <button class="action-btn" id="howToShareBtn" style="background: rgba(139, 92, 246, 0.15); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.3);">
+                        <i class="fas fa-question-circle"></i> How to Share on Instagram?
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -369,6 +373,67 @@
         <button class="nav-item" id="settingsBtn"><i class="fas fa-gear"></i>Settings</button>
     </div>
 
+    <!-- 7-Step Tutorial Modal for Share Button -->
+    <div id="shareTutorialModal" class="custom-alert-modal hidden">
+        <div class="custom-alert-box" style="text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 12px; margin-bottom: 10px;">
+                <h3 id="shareTutTitle" style="font-size: 15px; font-weight: 600; color: #c084fc;"><i class="fas fa-lightbulb"></i> How to Share (Step <span id="shareCurrentStepNum">1</span> of 7)</h3>
+                <button id="closeShareTutorialXBtn" style="background: none; border: none; color: inherit; font-size: 18px; cursor: pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div id="shareTutorialStepsContainer" style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+                <div class="share-tutorial-step-pane" id="shareTutStep1">
+                    <p style="font-weight: 600; margin-bottom: 8px;">1. First Click On Share Button</p>
+                    <div style="width: 100%; height: 320px; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--card-border);">
+                        <img src="Stepx1.png" alt="Step 1" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="share-tutorial-step-pane hidden" id="shareTutStep2">
+                    <p style="font-weight: 600; margin-bottom: 8px;">2. Now Find Instagram And Click On It</p>
+                    <div style="width: 100%; height: 320px; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--card-border);">
+                        <img src="Stepx2.png" alt="Step 2" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="share-tutorial-step-pane hidden" id="shareTutStep3">
+                    <p style="font-weight: 600; margin-bottom: 8px;">3. Now Click On Stories</p>
+                    <div style="width: 100%; height: 320px; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--card-border);">
+                        <img src="Stepx3.png" alt="Step 3" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="share-tutorial-step-pane hidden" id="shareTutStep4">
+                    <p style="font-weight: 600; margin-bottom: 8px;">4. Now Click On The Sticker Button</p>
+                    <div style="width: 100%; height: 320px; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--card-border);">
+                        <img src="Stepx4.png" alt="Step 4" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="share-tutorial-step-pane hidden" id="shareTutStep5">
+                    <p style="font-weight: 600; margin-bottom: 8px;">5. Now Click On Link</p>
+                    <div style="width: 100%; height: 320px; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--card-border);">
+                        <img src="Stepx5.png" alt="Step 5" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="share-tutorial-step-pane hidden" id="shareTutStep6">
+                    <p style="font-weight: 600; margin-bottom: 8px;">6. Now Paste Your Link And Click On Done</p>
+                    <div style="width: 100%; height: 320px; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--card-border);">
+                        <img src="Stepx6.png" alt="Step 6" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="share-tutorial-step-pane hidden" id="shareTutStep7">
+                    <p style="font-weight: 600; margin-bottom: 8px;">7. Now Adjust/Drag Your Link On The "Paste Your Link Here" Box</p>
+                    <div style="width: 100%; height: 320px; background: #000; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid var(--card-border);">
+                        <img src="Stepx7.png" alt="Step 7" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="custom-alert-btn custom-alert-cancel hidden" id="sharePrevStepBtn">Back</button>
+                <button class="custom-alert-btn custom-alert-ok" id="shareNextStepBtn" style="flex: 1;">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutorial Modal for Reply -->
     <div id="tutorialModal" class="custom-alert-modal hidden">
         <div class="custom-alert-box" style="text-align: left;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 12px; margin-bottom: 10px;">
