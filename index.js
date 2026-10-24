@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // HOME SCREEN SHARE BUTTON: Detects Theme and generates Link-Share Image
+    // HOME SCREEN SHARE BUTTON: Detects Theme and loads Link-Share-Dark-Theme.png or Link-Share-Light-Theme.png
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', () => {
             generateLinkShareImage();
@@ -349,7 +349,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             title: 'Nostelgic NGL',
                             text: `Send me anonymous messages! 💬\n${profileUrl}`,
                             files: [file]
-                        }).catch(err => console.log("Share failed", err));
+                        }).catch(err => console.log("Share dismissed or failed", err));
                     });
             } else {
                 const downloadLink = document.createElement('a');
@@ -360,7 +360,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         templateImg.onerror = () => {
-            // Fallback if template image is missing, share text directly
             const shareText = `Send me anonymous messages! 💬\n${profileUrl}`;
             if (window.AndroidBridge && typeof window.AndroidBridge.shareText === 'function') {
                 window.AndroidBridge.shareText(shareText);
