@@ -1,26 +1,13 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, update, query, limitToLast, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-window.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('homeLoadingOverlay');
-    if (overlay) {
-        overlay.style.display = 'none';
-        overlay.classList.add('hidden');
-    }
-});
-
 function hideLoadingOverlay() {
     const overlay = document.getElementById('homeLoadingOverlay');
     if (overlay) {
         overlay.style.opacity = '0';
-        overlay.style.display = 'none';
         setTimeout(() => overlay.classList.add('hidden'), 300);
     }
 }
-
-setTimeout(() => {
-    hideLoadingOverlay();
-}, 400);
 
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
@@ -65,8 +52,6 @@ function showCustomConfirm(title, message, onConfirm) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    hideLoadingOverlay();
-
     const uid = localStorage.getItem('ngl_uid');
     if (!uid) {
         window.location.replace("login.html");
@@ -243,7 +228,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const themeIcon = document.getElementById('themeIcon');
 
-    // DEFAULT MODE: LIGHT MODE, PERSISTENCE SAVED IN LOCALSTORAGE
+    // Default Light Mode with persistence
     const savedTheme = localStorage.getItem('ngl_theme') || 'light';
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-mode');
@@ -380,7 +365,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // SHARE BUTTON: Copies link automatically AND opens theme-aware share menu
+    // SHARE BUTTON: Copies link automatically AND generates theme-aware share image
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(profileUrl).then(() => {
@@ -437,7 +422,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else if (navigator.share) {
                 navigator.share({ title: 'Nostelgic NGL', text: shareText, url: profileUrl }).catch(() => {});
             } else {
-                showCustomAlert("Link copied to clipboard! 📋");
+                showCustomAlert("Link copied & ready to share! 📋");
             }
         };
     }
