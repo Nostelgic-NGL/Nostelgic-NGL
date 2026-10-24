@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const platformLabel = document.getElementById('platformLabel');
     const copyLinkBtn = document.getElementById('copyLinkBtn');
     const shareStoryBtn = document.getElementById('shareStoryBtn');
+    const howToShareBtn = document.getElementById('howToShareBtn');
     const changeAvatarBtn = document.getElementById('changeAvatarBtn');
     const avatarFileInput = document.getElementById('avatarFileInput');
 
@@ -104,31 +105,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tutorialModal = document.getElementById('tutorialModal');
     const closeTutorialXBtn = document.getElementById('closeTutorialXBtn');
     const currentStepNum = document.getElementById('currentStepNum');
-    const tutStep1 = document.getElementById('tutStep1');
-    const tutStep2 = document.getElementById('tutStep2');
-    const tutStep3 = document.getElementById('tutStep3');
     const prevStepBtn = document.getElementById('prevStepBtn');
     const nextStepBtn = document.getElementById('nextStepBtn');
+
+    // Share Tutorial Elements (7 Steps)
+    const shareTutorialModal = document.getElementById('shareTutorialModal');
+    const closeShareTutorialXBtn = document.getElementById('closeShareTutorialXBtn');
+    const shareCurrentStepNum = document.getElementById('shareCurrentStepNum');
+    const sharePrevStepBtn = document.getElementById('sharePrevStepBtn');
+    const shareNextStepBtn = document.getElementById('shareNextStepBtn');
 
     let currentStep = 1;
     const totalSteps = 3;
 
     function updateTutorialView() {
         if (currentStepNum) currentStepNum.innerText = currentStep;
-        if (tutStep1) tutStep1.classList.add('hidden');
-        if (tutStep2) tutStep2.classList.add('hidden');
-        if (tutStep3) tutStep3.classList.add('hidden');
+        for (let i = 1; i <= 3; i++) {
+            const pane = document.getElementById(`tutStep${i}`);
+            if (pane) {
+                if (i === currentStep) pane.classList.remove('hidden');
+                else pane.classList.add('hidden');
+            }
+        }
 
         if (currentStep === 1) {
-            if (tutStep1) tutStep1.classList.remove('hidden');
             if (prevStepBtn) prevStepBtn.classList.add('hidden');
             if (nextStepBtn) nextStepBtn.innerText = 'Next';
         } else if (currentStep === 2) {
-            if (tutStep2) tutStep2.classList.remove('hidden');
             if (prevStepBtn) prevStepBtn.classList.remove('hidden');
             if (nextStepBtn) nextStepBtn.innerText = 'Next';
         } else if (currentStep === 3) {
-            if (tutStep3) tutStep3.classList.remove('hidden');
             if (prevStepBtn) prevStepBtn.classList.remove('hidden');
             if (nextStepBtn) nextStepBtn.innerText = 'Got It!';
         }
@@ -165,6 +171,66 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (closeTutorialXBtn && tutorialModal) {
         closeTutorialXBtn.addEventListener('click', () => {
             tutorialModal.classList.add('hidden');
+        });
+    }
+
+    // Share Tutorial Logic (7 Steps)
+    let shareCurrentStep = 1;
+    const shareTotalSteps = 7;
+
+    function updateShareTutorialView() {
+        if (shareCurrentStepNum) shareCurrentStepNum.innerText = shareCurrentStep;
+        for (let i = 1; i <= 7; i++) {
+            const pane = document.getElementById(`shareTutStep${i}`);
+            if (pane) {
+                if (i === shareCurrentStep) pane.classList.remove('hidden');
+                else pane.classList.add('hidden');
+            }
+        }
+
+        if (shareCurrentStep === 1) {
+            if (sharePrevStepBtn) sharePrevStepBtn.classList.add('hidden');
+            if (shareNextStepBtn) shareNextStepBtn.innerText = 'Next';
+        } else if (shareCurrentStep === shareTotalSteps) {
+            if (sharePrevStepBtn) sharePrevStepBtn.classList.remove('hidden');
+            if (shareNextStepBtn) shareNextStepBtn.innerText = 'Got It!';
+        } else {
+            if (sharePrevStepBtn) sharePrevStepBtn.classList.remove('hidden');
+            if (shareNextStepBtn) shareNextStepBtn.innerText = 'Next';
+        }
+    }
+
+    if (howToShareBtn && shareTutorialModal) {
+        howToShareBtn.addEventListener('click', () => {
+            shareCurrentStep = 1;
+            updateShareTutorialView();
+            shareTutorialModal.classList.remove('hidden');
+        });
+    }
+
+    if (shareNextStepBtn) {
+        shareNextStepBtn.addEventListener('click', () => {
+            if (shareCurrentStep < shareTotalSteps) {
+                shareCurrentStep++;
+                updateShareTutorialView();
+            } else {
+                shareTutorialModal.classList.add('hidden');
+            }
+        });
+    }
+
+    if (sharePrevStepBtn) {
+        sharePrevStepBtn.addEventListener('click', () => {
+            if (shareCurrentStep > 1) {
+                shareCurrentStep--;
+                updateShareTutorialView();
+            }
+        });
+    }
+
+    if (closeShareTutorialXBtn && shareTutorialModal) {
+        closeShareTutorialXBtn.addEventListener('click', () => {
+            shareTutorialModal.classList.add('hidden');
         });
     }
 
