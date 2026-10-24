@@ -1,17 +1,26 @@
 import { auth, rtdb } from './firebase-config.js';
 import { ref, get, child, remove, update, query, limitToLast, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+window.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('homeLoadingOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+        overlay.classList.add('hidden');
+    }
+});
+
 function hideLoadingOverlay() {
     const overlay = document.getElementById('homeLoadingOverlay');
     if (overlay) {
         overlay.style.opacity = '0';
+        overlay.style.display = 'none';
         setTimeout(() => overlay.classList.add('hidden'), 300);
     }
 }
 
 setTimeout(() => {
     hideLoadingOverlay();
-}, 1000);
+}, 400);
 
 function showCustomAlert(message) {
     const alertModal = document.getElementById('customAlertModal');
@@ -56,6 +65,8 @@ function showCustomConfirm(title, message, onConfirm) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    hideLoadingOverlay();
+
     const uid = localStorage.getItem('ngl_uid');
     if (!uid) {
         window.location.replace("login.html");
@@ -88,47 +99,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     const detailMsgDate = document.getElementById('detailMsgDate');
     const detailDeleteBtn = document.getElementById('detailDeleteBtn');
     const detailReplyBtn = document.getElementById('detailReplyBtn');
-    const howToReplyDetailBtn = document.getElementById('howToReplyDetailBtn');
 
+    const howToReplyBtn = document.getElementById('howToReplyBtn');
     const tutorialModal = document.getElementById('tutorialModal');
     const closeTutorialXBtn = document.getElementById('closeTutorialXBtn');
-    const tutTitle = document.getElementById('tutTitle');
-    const tutDesc = document.getElementById('tutDesc');
-    const tutImgContainer = document.getElementById('tutImgContainer');
+    const currentStepNum = document.getElementById('currentStepNum');
+    const tutStep1 = document.getElementById('tutStep1');
+    const tutStep2 = document.getElementById('tutStep2');
+    const tutStep3 = document.getElementById('tutStep3');
     const prevStepBtn = document.getElementById('prevStepBtn');
     const nextStepBtn = document.getElementById('nextStepBtn');
 
     let currentStep = 1;
     const totalSteps = 3;
 
-    const tutorialData = [
-        { title: "How to Reply (Step 1 of 3)", desc: "1. After generating your story image, click on share.", img: "step1.jpg" },
-        { title: "How to Reply (Step 2 of 3)", desc: "2. Now find Instagram and click on it.", img: "step2.jpg" },
-        { title: "How to Reply (Step 3 of 3)", desc: "3. Now click on Stories.", img: "step3.jpg" }
-    ];
-
     function updateTutorialView() {
-        const current = tutorialData[currentStep - 1];
-        if (tutTitle) tutTitle.innerText = current.title;
-        if (tutDesc) tutDesc.innerText = current.desc;
-        if (tutImgContainer) {
-            tutImgContainer.innerHTML = `<img src="${current.img}" class="tutorial-img" alt="Step ${currentStep}">`;
-        }
+        if (currentStepNum) currentStepNum.innerText = currentStep;
+        if (tutStep1) tutStep1.classList.add('hidden');
+        if (tutStep2) tutStep2.classList.add('hidden');
+        if (tutStep3) tutStep3.classList.add('hidden');
 
         if (currentStep === 1) {
+            if (tutStep1) tutStep1.classList.remove('hidden');
             if (prevStepBtn) prevStepBtn.classList.add('hidden');
             if (nextStepBtn) nextStepBtn.innerText = 'Next';
         } else if (currentStep === 2) {
+            if (tutStep2) tutStep2.classList.remove('hidden');
             if (prevStepBtn) prevStepBtn.classList.remove('hidden');
             if (nextStepBtn) nextStepBtn.innerText = 'Next';
         } else if (currentStep === 3) {
+            if (tutStep3) tutStep3.classList.remove('hidden');
             if (prevStepBtn) prevStepBtn.classList.remove('hidden');
             if (nextStepBtn) nextStepBtn.innerText = 'Got It!';
         }
     }
 
-    if (howToReplyDetailBtn && tutorialModal) {
-        howToReplyDetailBtn.addEventListener('click', () => {
+    if (howToReplyBtn && tutorialModal) {
+        howToReplyBtn.addEventListener('click', () => {
             currentStep = 1;
             updateTutorialView();
             tutorialModal.classList.remove('hidden');
@@ -306,44 +313,70 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // THEME-AWARE LINK SHARE STORY BUTTON LOGIC
+    // HOME SCREEN SHARE BUTTON: Detects Theme and generates Link-Share Image
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', () => {
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            const imageName = isDarkMode ? 'Link-Share-Dark-Theme.png' : 'Link-Share-Light-Theme.png';
-
-            const canvas = document.createElement('canvas');
-            canvas.width = 1080;
-            canvas.height = 1920;
-            const ctx = canvas.getContext('2d', { alpha: false });
-
-            const templateImg = new Image();
-            templateImg.crossOrigin = "anonymous";
-            templateImg.src = imageName;
-
-            templateImg.onload = () => {
-                ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
-                const dataUrl = canvas.toDataURL('image/png', 0.9);
-
-                if (window.AndroidBridge && typeof window.AndroidBridge.shareStory === 'function') {
-                    window.AndroidBridge.shareStory(dataUrl);
-                } else {
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = dataUrl;
-                    downloadLink.download = imageName;
-                    downloadLink.click();
-                }
-            };
-
-            templateImg.onerror = () => {
-                showCustomAlert(`Failed to load ${imageName}. Please check file names.`);
-            };
+            generateLinkShareImage();
         });
+    }
+
+    function generateLinkShareImage() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1920;
+        const ctx = canvas.getContext('2d', { alpha: false });
+
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        const templateImageName = isDarkMode ? 'Link-Share-Dark-Theme.png' : 'Link-Share-Light-Theme.png';
+
+        const templateImg = new Image();
+        templateImg.crossOrigin = "anonymous";
+        templateImg.src = templateImageName;
+
+        templateImg.onload = () => {
+            ctx.drawImage(templateImg, 0, 0, canvas.width, canvas.height);
+
+            const dataUrl = canvas.toDataURL('image/png', 0.9);
+
+            if (window.AndroidBridge && typeof window.AndroidBridge.shareStory === 'function') {
+                window.AndroidBridge.shareStory(dataUrl);
+            } else if (navigator.share && navigator.canShare) {
+                fetch(dataUrl)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const file = new File([blob], templateImageName, { type: 'image/png' });
+                        navigator.share({
+                            title: 'Nostelgic NGL',
+                            text: `Send me anonymous messages! 💬\n${profileUrl}`,
+                            files: [file]
+                        }).catch(err => console.log("Share failed", err));
+                    });
+            } else {
+                const downloadLink = document.createElement('a');
+                downloadLink.href = dataUrl;
+                downloadLink.download = templateImageName;
+                downloadLink.click();
+            }
+        };
+
+        templateImg.onerror = () => {
+            // Fallback if template image is missing, share text directly
+            const shareText = `Send me anonymous messages! 💬\n${profileUrl}`;
+            if (window.AndroidBridge && typeof window.AndroidBridge.shareText === 'function') {
+                window.AndroidBridge.shareText(shareText);
+            } else if (navigator.share) {
+                navigator.share({ title: 'Nostelgic NGL', text: shareText, url: profileUrl }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(profileUrl).then(() => {
+                    showCustomAlert("Link copied to clipboard! 📋");
+                });
+            }
+        };
     }
 
     let isLinkPaused = localStorage.getItem('ngl_paused') === 'true';
     if (pauseLinkOption) {
-        if (isLinkPaused) pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-play-circle" style="color: #22c55e; margin-right: 8px;"></i> Pause my link';
+        if (isLinkPaused) pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-play-circle" style="color: #22c55e; margin-right: 8px;"></i> Resume my link';
         
         pauseLinkOption.addEventListener('click', () => {
             isLinkPaused = !isLinkPaused;
@@ -403,6 +436,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // THEME-AWARE DYNAMIC STORY REPLY IMAGE GENERATOR FOR MESSAGES
     function generateStoryReply(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
@@ -488,4 +522,150 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const downloadLink = document.createElement('a');
                 downloadLink.href = dataUrl;
                 downloadLink.download = isDarkMode ? 'ReplyDark.png' : 'ReplyLight.png';
-                downloadLink.clic
+                downloadLink.click();
+            }
+        };
+
+        templateImg.onerror = () => {
+            showCustomAlert("Failed to load template image. Check file names.");
+        };
+    }
+
+    async function loadInboxMessages() {
+        messagesContainer.innerHTML = '';
+        if (emptyState) emptyState.classList.add('hidden');
+        if (inboxLoadingState) inboxLoadingState.classList.remove('hidden');
+
+        let hasLoadedFromCache = false;
+
+        const cachedMessages = localStorage.getItem(`ngl_messages_${uid}`);
+        if (cachedMessages) {
+            try {
+                const messagesData = JSON.parse(cachedMessages);
+                if (messagesData && Object.keys(messagesData).length > 0) {
+                    hasLoadedFromCache = true;
+                    if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
+                    renderMessagesList(messagesData);
+                }
+            } catch (e) {
+                console.error("Cache parse error", e);
+            }
+        }
+
+        try {
+            const messagesQuery = query(ref(rtdb, `messages/${uid}`), limitToLast(50));
+            const snapshot = await get(messagesQuery);
+            
+            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
+
+            if (snapshot.exists()) {
+                const messagesData = snapshot.val();
+                localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
+                renderMessagesList(messagesData);
+            } else {
+                if (!hasLoadedFromCache) {
+                    messagesContainer.innerHTML = '';
+                    if (emptyState) emptyState.classList.remove('hidden');
+                }
+            }
+        } catch (error) {
+            console.error("Error loading messages from server:", error);
+            if (inboxLoadingState) inboxLoadingState.classList.add('hidden');
+            if (!hasLoadedFromCache) {
+                messagesContainer.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+            }
+        }
+    }
+
+    function renderMessagesList(messagesData) {
+        messagesContainer.innerHTML = '';
+        if (emptyState) emptyState.classList.add('hidden');
+        
+        const messageKeys = Object.keys(messagesData).reverse();
+        
+        if (messageKeys.length === 0) {
+            if (emptyState) emptyState.classList.remove('hidden');
+            return;
+        }
+
+        messageKeys.forEach(msgId => {
+            const msg = messagesData[msgId];
+            const card = document.createElement('div');
+            card.className = 'message-card';
+            
+            const dateString = msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : 'Just now';
+            
+            const isViewed = localStorage.getItem(`ngl_viewed_${msgId}`) === 'true';
+            const isReplied = localStorage.getItem(`ngl_replied_${msgId}`) === 'true';
+
+            let cardContent = '';
+
+            if (!isViewed) {
+                cardContent = `
+                    <div class="msg-header">
+                        <span style="color: #ec4899; font-weight: 700;"><i class="fas fa-envelope"></i> New Message !!</span>
+                        <span>${dateString}</span>
+                    </div>
+                `;
+            } else {
+                const snippetText = msg.text.length > 35 ? msg.text.substring(0, 35) + '...' : msg.text;
+                const repliedBadge = isReplied ? `<span style="color: #22c55e; margin-left: 6px;"><i class="fas fa-check-circle"></i></span>` : '';
+                
+                cardContent = `
+                    <div class="msg-header">
+                        <span style="color: var(--subtext-color); font-weight: 600;"><i class="fas fa-envelope-open"></i> Message ${repliedBadge}</span>
+                        <span>${dateString}</span>
+                    </div>
+                    <div class="msg-text">${escapeHtml(snippetText)}</div>
+                `;
+            }
+
+            card.innerHTML = cardContent;
+
+            card.addEventListener('click', () => {
+                localStorage.setItem(`ngl_viewed_${msgId}`, 'true');
+
+                detailMsgText.innerText = msg.text;
+                detailMsgDate.innerText = dateString;
+                switchView('detail');
+
+                detailDeleteBtn.onclick = async () => {
+                    try {
+                        await remove(ref(rtdb, `messages/${uid}/${msgId}`));
+                        
+                        delete messagesData[msgId];
+                        localStorage.setItem(`ngl_messages_${uid}`, JSON.stringify(messagesData));
+                        localStorage.removeItem(`ngl_viewed_${msgId}`);
+                        localStorage.removeItem(`ngl_replied_${msgId}`);
+
+                        switchView('inbox');
+                        showCustomAlert("Message deleted.");
+                    } catch (err) {
+                        showCustomAlert("Failed to delete message.");
+                    }
+                };
+
+                if (detailReplyBtn) {
+                    detailReplyBtn.onclick = () => {
+                        localStorage.setItem(`ngl_replied_${msgId}`, 'true');
+                        generateStoryReply(msg.text);
+                    };
+                }
+            });
+
+            messagesContainer.appendChild(card);
+        });
+    }
+});
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
