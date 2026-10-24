@@ -5,7 +5,7 @@ function hideLoadingOverlay() {
     const overlay = document.getElementById('homeLoadingOverlay');
     if (overlay) {
         overlay.style.opacity = '0';
-        setTimeout(() => overlay.classList.add('hidden'), 300);
+        setTimeout(() => overlay.classList.add('hidden'), 200);
     }
 }
 
@@ -51,7 +51,7 @@ function showCustomConfirm(title, message, onConfirm) {
     };
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     const uid = localStorage.getItem('ngl_uid');
     if (!uid) {
         window.location.replace("login.html");
@@ -100,6 +100,106 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sharePrevStepBtn = document.getElementById('sharePrevStepBtn');
     const shareNextStepBtn = document.getElementById('shareNextStepBtn');
 
+    // INSTANT VIEW SWITCHING (Zero Delay)
+    function switchView(viewName) {
+        homeView.classList.add('hidden');
+        inboxView.classList.add('hidden');
+        messageDetailView.classList.add('hidden');
+        settingsView.classList.add('hidden');
+
+        navHomeBtn.classList.remove('active');
+        navInboxBtn.classList.remove('active');
+        settingsBtn.classList.remove('active');
+
+        if (viewName === 'home') {
+            homeView.classList.remove('hidden');
+            navHomeBtn.classList.add('active');
+        } else if (viewName === 'inbox') {
+            inboxView.classList.remove('hidden');
+            navInboxBtn.classList.add('active');
+            loadInboxMessages();
+        } else if (viewName === 'detail') {
+            messageDetailView.classList.remove('hidden');
+            navInboxBtn.classList.add('active');
+        } else if (viewName === 'settings') {
+            settingsView.classList.remove('hidden');
+            settingsBtn.classList.add('active');
+        }
+    }
+
+    if (navHomeBtn) navHomeBtn.addEventListener('click', () => switchView('home'));
+    if (navInboxBtn) navInboxBtn.addEventListener('click', () => switchView('inbox'));
+    if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
+    if (backToInboxBtn) backToInboxBtn.addEventListener('click', () => switchView('inbox'));
+
+    // INSTANT THEME APPLICATION & PERSISTENCE
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const savedTheme = localStorage.getItem('ngl_theme') || 'light';
+
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (themeIcon) themeIcon.className = "fas fa-moon";
+    } else {
+        document.body.classList.remove('dark-mode');
+        if (themeIcon) themeIcon.className = "fas fa-sun";
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('ngl_theme', isDark ? 'dark' : 'light');
+            if (themeIcon) {
+                themeIcon.className = isDark ? "fas fa-moon" : "fas fa-sun";
+            }
+        });
+    }
+
+    // INSTANT CACHE LOAD FOR ZERO DELAY ON STARTUP
+    const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+    let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
+
+    const cachedUsername = localStorage.getItem('ngl_cached_username');
+    const cachedAvatar = localStorage.getItem('ngl_cached_avatar');
+
+    if (cachedUsername) {
+        profileUrl = `${currentBaseUrl}/msgsender.html?u=${cachedUsername}`;
+        if (profileLinkText) profileLinkText.innerText = profileUrl;
+        if (platformLabel) platformLabel.innerText = `@${cachedUsername}`;
+        if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
+        hideLoadingOverlay();
+    }
+
+    // BACKGROUND DATA SYNC
+    async function fetchUserData() {
+        try {
+            const dbRef = ref(rtdb);
+            const snapshot = await get(child(dbRef, `users/${uid}`));
+            
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                const username = data.username || localStorage.getItem('ngl_username') || 'user';
+                profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
+                
+                localStorage.setItem('ngl_cached_username', username);
+                if (data.avatarUrl) {
+                    localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
+                    if (userAvatarImg) userAvatarImg.src = data.avatarUrl;
+                }
+
+                if (profileLinkText) profileLinkText.innerText = profileUrl;
+                if (platformLabel) platformLabel.innerText = `@${username}`;
+            }
+        } catch (error) {
+            console.error("Background sync error:", error);
+        } finally {
+            hideLoadingOverlay();
+        }
+    }
+    fetchUserData();
+
+    // TUTORIAL MODAL HANDLERS
     let currentStep = 1;
     const totalSteps = 3;
 
@@ -159,7 +259,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Share Tutorial Logic (7 Steps)
+    // SHARE TUTORIAL HANDLERS (7 STEPS)
     let shareCurrentStep = 1;
     const shareTotalSteps = 7;
 
@@ -219,116 +319,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    const pauseLinkOption = document.getElementById('pauseLinkOption');
-    const hardRefreshOption = document.getElementById('hardRefreshOption');
-    const feedbackOption = document.getElementById('feedbackOption');
-    const supportOption = document.getElementById('supportOption');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    const themeToggleBtn = document.getElementById('themeToggleBtn');
-    const themeIcon = document.getElementById('themeIcon');
-
-    // Default Light Mode with persistence
-    const savedTheme = localStorage.getItem('ngl_theme') || 'light';
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        if (themeIcon) themeIcon.className = "fas fa-moon";
-    } else {
-        document.body.classList.remove('dark-mode');
-        if (themeIcon) themeIcon.className = "fas fa-sun";
-    }
-
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('ngl_theme', isDark ? 'dark' : 'light');
-            if (themeIcon) {
-                themeIcon.className = isDark ? "fas fa-moon" : "fas fa-sun";
-            }
-        });
-    }
-
-    function switchView(viewName) {
-        homeView.classList.add('hidden');
-        inboxView.classList.add('hidden');
-        messageDetailView.classList.add('hidden');
-        settingsView.classList.add('hidden');
-
-        navHomeBtn.classList.remove('active');
-        navInboxBtn.classList.remove('active');
-        settingsBtn.classList.remove('active');
-
-        if (viewName === 'home') {
-            homeView.classList.remove('hidden');
-            navHomeBtn.classList.add('active');
-        } else if (viewName === 'inbox') {
-            inboxView.classList.remove('hidden');
-            navInboxBtn.classList.add('active');
-            loadInboxMessages();
-        } else if (viewName === 'detail') {
-            messageDetailView.classList.remove('hidden');
-            navInboxBtn.classList.add('active');
-        } else if (viewName === 'settings') {
-            settingsView.classList.remove('hidden');
-            settingsBtn.classList.add('active');
-        }
-    }
-
-    if (navHomeBtn) navHomeBtn.addEventListener('click', () => switchView('home'));
-    if (navInboxBtn) navInboxBtn.addEventListener('click', () => switchView('inbox'));
-    if (settingsBtn) settingsBtn.addEventListener('click', () => switchView('settings'));
-    if (backToInboxBtn) backToInboxBtn.addEventListener('click', () => switchView('inbox'));
-
-    const currentBaseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
-    let profileUrl = `${currentBaseUrl}/msgsender.html?u=user`;
-
-    const cachedUsername = localStorage.getItem('ngl_cached_username');
-    const cachedAvatar = localStorage.getItem('ngl_cached_avatar');
-
-    if (cachedUsername) {
-        profileUrl = `${currentBaseUrl}/msgsender.html?u=${cachedUsername}`;
-        if (profileLinkText) profileLinkText.innerText = profileUrl;
-        if (platformLabel) platformLabel.innerText = `@${cachedUsername}`;
-        if (cachedAvatar && userAvatarImg) userAvatarImg.src = cachedAvatar;
-    }
-
-    try {
-        const dbRef = ref(rtdb);
-        const snapshot = await get(child(dbRef, `users/${uid}`));
-        
-        if (snapshot.exists()) {
-            const data = snapshot.val();
-            const username = data.username || localStorage.getItem('ngl_username') || 'user';
-            profileUrl = `${currentBaseUrl}/msgsender.html?u=${username}`;
-            
-            localStorage.setItem('ngl_cached_username', username);
-            if (data.avatarUrl) {
-                localStorage.setItem('ngl_cached_avatar', data.avatarUrl);
-                if (userAvatarImg) userAvatarImg.src = data.avatarUrl;
-            }
-
-            if (profileLinkText) profileLinkText.innerText = profileUrl;
-            if (platformLabel) platformLabel.innerText = `@${username}`;
-        }
-    } catch (error) {
-        console.error("Background sync error:", error);
-    } finally {
-        hideLoadingOverlay();
-    }
-
-    let isInitialLoad = true;
-    setTimeout(() => { isInitialLoad = false; }, 1500);
-
-    onChildAdded(ref(rtdb, `messages/${uid}`), (snapshot) => {
-        if (isInitialLoad) return;
-        if (snapshot.exists()) {
-            if (window.AndroidBridge && typeof window.AndroidBridge.showNotification === 'function') {
-                window.AndroidBridge.showNotification("Nostelgic NGL", "New Anonymous Message 💬");
-            }
-        }
-    });
-
+    // AVATAR UPLOAD HANDLER
     if (changeAvatarBtn && avatarFileInput) {
         changeAvatarBtn.addEventListener('click', () => {
             avatarFileInput.click();
@@ -355,6 +346,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // COPY LINK HANDLER
     if (copyLinkBtn) {
         copyLinkBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(profileUrl).then(() => {
@@ -365,7 +357,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // SHARE BUTTON: Copies link automatically AND generates theme-aware share image
+    // SHARE BUTTON: AUTO-COPY LINK & OPEN SHARE MENU INSTANTLY
     if (shareStoryBtn) {
         shareStoryBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(profileUrl).then(() => {
@@ -427,6 +419,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
+    // SETTINGS OPTIONS HANDLERS
     let isLinkPaused = localStorage.getItem('ngl_paused') === 'true';
     if (pauseLinkOption) {
         if (isLinkPaused) pauseLinkOption.querySelector('span').innerHTML = '<i class="fas fa-play-circle" style="color: #22c55e; margin-right: 8px;"></i> Resume my link';
@@ -584,6 +577,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
+    // INBOX MESSAGES LOADER WITH INSTANT CACHE RENDERING
     async function loadInboxMessages() {
         messagesContainer.innerHTML = '';
         if (emptyState) emptyState.classList.add('hidden');
@@ -710,6 +704,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             messagesContainer.appendChild(card);
         });
     }
+
+    let isInitialLoad = true;
+    setTimeout(() => { isInitialLoad = false; }, 1500);
+
+    onChildAdded(ref(rtdb, `messages/${uid}`), (snapshot) => {
+        if (isInitialLoad) return;
+        if (snapshot.exists()) {
+            if (window.AndroidBridge && typeof window.AndroidBridge.showNotification === 'function') {
+                window.AndroidBridge.showNotification("Nostelgic NGL", "New Anonymous Message 💬");
+            }
+        }
+    });
 });
 
 function escapeHtml(text) {
